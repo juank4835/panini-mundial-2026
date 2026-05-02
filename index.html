@@ -1362,13 +1362,25 @@
     return null;
   }
 
+  let lastPushedMyState = null; // serialized snapshot — para evitar pushes duplicados
+  let lastPushAt = 0;
+  let backoffUntil = 0;
+
   async function pushSync() {
     if (!localStorage.getItem(SYNC_TOKEN_KEY)) return;
+    if (Date.now() < backoffUntil) {
+      setSyncStatus('error', 'Esperando rate limit…');
+      return;
+    }
+    // Skip si nada cambió desde el último push (evita ráfagas repetidas)
+    const myStateJson = JSON.stringify(myEstado);
+    if (myStateJson === lastPushedMyState && !dirtyMeta) {
+      return;
+    }
     setSyncStatus('syncing', 'Subiendo…');
     try {
       let gistId = localStorage.getItem(SYNC_GIST_KEY);
       const files = {};
-      // Solo escribo a MI archivo — sin contención con otros clientes
       files[MY_FILENAME] = { content: JSON.stringify(myEstado, null, 2) };
       if (dirtyMeta) {
         files[META_FILENAME] = { content: JSON.stringify({
@@ -1377,27 +1389,58 @@
           updatedBy: myClientId
         }, null, 2) };
       }
+      const headers = {
+        'Authorization': 'Bearer ' + localStorage.getItem(SYNC_TOKEN_KEY),
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json',
+        'X-GitHub-Api-Version': '2022-11-28'
+      };
+      let res;
       if (gistId) {
-        await gistApi('PATCH', 'gists/' + gistId, { files });
-      } else {
-        const created = await gistApi('POST', 'gists', {
-          description: 'Panini Mundial 2026 — sync colaborativo',
-          public: false, files
+        res = await fetch('https://api.github.com/gists/' + gistId, {
+          method: 'PATCH', headers, body: JSON.stringify({ files })
         });
+      } else {
+        res = await fetch('https://api.github.com/gists', {
+          method: 'POST', headers, body: JSON.stringify({
+            description: 'Panini Mundial 2026 — sync colaborativo',
+            public: false, files
+          })
+        });
+      }
+      if (!res.ok) {
+        if (res.status === 403 || res.status === 429) {
+          const reset = res.headers.get('x-ratelimit-reset');
+          const retryAfter = res.headers.get('retry-after');
+          let waitMs = 60000;
+          if (retryAfter) waitMs = parseInt(retryAfter) * 1000;
+          else if (reset) waitMs = Math.max(0, parseInt(reset) * 1000 - Date.now());
+          backoffUntil = Date.now() + Math.min(waitMs, 600000);
+          const resetTime = new Date(backoffUntil).toLocaleTimeString();
+          throw new Error('Rate limit · reintenta ' + resetTime);
+        }
+        throw new Error('HTTP ' + res.status);
+      }
+      // Capturar etag del PATCH/POST para que el siguiente poll devuelva 304
+      const newEtag = res.headers.get('etag');
+      if (newEtag) localStorage.setItem(SYNC_ETAG_KEY, newEtag);
+      if (!gistId) {
+        const created = await res.json();
         localStorage.setItem(SYNC_GIST_KEY, created.id);
       }
+      lastPushedMyState = myStateJson;
+      lastPushAt = Date.now();
       if (dirtyMeta) dirtyMeta = false;
-      // Invalidar etag para forzar pull en próximo poll (otros pueden no haber recibido aún)
-      localStorage.removeItem(SYNC_ETAG_KEY);
       localStorage.setItem(SYNC_LAST_KEY, new Date().toISOString());
       setSyncStatus('ok', 'Sync ' + new Date().toLocaleTimeString());
     } catch(e) {
-      setSyncStatus('error', 'Error: ' + e.message);
+      setSyncStatus('error', e.message);
     }
   }
 
   async function pullSync() {
     if (!localStorage.getItem(SYNC_TOKEN_KEY)) return null;
+    if (Date.now() < backoffUntil) return null;
     try {
       let gistId = localStorage.getItem(SYNC_GIST_KEY);
       if (!gistId) {
@@ -1405,7 +1448,7 @@
         if (!gistId) return null;
         localStorage.setItem(SYNC_GIST_KEY, gistId);
       }
-      // Petición condicional con ETag — 304 si nada cambió
+      // Petición condicional con ETag — 304 si nada cambió (no consume rate)
       const etag = localStorage.getItem(SYNC_ETAG_KEY);
       const headers = {
         'Authorization': 'Bearer ' + localStorage.getItem(SYNC_TOKEN_KEY),
@@ -1414,7 +1457,18 @@
       };
       if (etag) headers['If-None-Match'] = etag;
       const res = await fetch('https://api.github.com/gists/' + gistId, { headers });
-      if (res.status === 304) return null; // sin cambios
+      if (res.status === 304) return null;
+      if (res.status === 403 || res.status === 429) {
+        const reset = res.headers.get('x-ratelimit-reset');
+        const retryAfter = res.headers.get('retry-after');
+        let waitMs = 60000;
+        if (retryAfter) waitMs = parseInt(retryAfter) * 1000;
+        else if (reset) waitMs = Math.max(0, parseInt(reset) * 1000 - Date.now());
+        backoffUntil = Date.now() + Math.min(waitMs, 600000);
+        const resetTime = new Date(backoffUntil).toLocaleTimeString();
+        setSyncStatus('error', 'Rate limit · reintenta ' + resetTime);
+        return null;
+      }
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const newEtag = res.headers.get('etag');
       if (newEtag) localStorage.setItem(SYNC_ETAG_KEY, newEtag);
@@ -1509,15 +1563,21 @@
     if (!localStorage.getItem(SYNC_TOKEN_KEY)) return;
     if (pushTimer) clearTimeout(pushTimer);
     setSyncStatus('syncing', 'Pendiente…');
-    pushTimer = setTimeout(() => { pushSync(); }, 400);
+    // Debounce más amplio para coalescer ráfagas de clicks (evita secondary rate limit)
+    pushTimer = setTimeout(() => { pushTimer = null; pushSync(); }, 1500);
   }
 
   let pollTimer = null;
   function startPolling() {
     if (pollTimer) clearInterval(pollTimer);
+    // Polling cada 20s. Como usamos If-None-Match, los polls sin cambios son 304
+    // y NO consumen el rate limit. Sostenible incluso con muchos tabs abiertos.
     pollTimer = setInterval(() => {
-      if (!document.hidden && !pushTimer) pullSync();
-    }, 5000);
+      if (document.hidden) return;
+      if (pushTimer) return; // hay push pendiente, no pulleamos aún
+      if (Date.now() - lastPushAt < 4000) return; // gracia tras nuestro propio push
+      pullSync();
+    }, 20000);
   }
 
   function renderSync() {
