@@ -470,10 +470,10 @@
 <body>
 
 <h1>Álbum Panini Mundial 2026</h1>
-<p class="subtitle">Tracker personal · pegadas, repetidas, faltantes e intercambio</p>
+<p class="subtitle">Tracker colaborativo · pegadas, repetidas, faltantes e intercambio <span id="sync-status-line" style="margin-left:10px;font-size:11px;color:var(--text-3);">…</span></p>
 
 <div class="info-box">
-  Cada equipo numera de <b>1 a 20</b>. ID en intercambios: <code>COL-13</code> = mona 13 de Colombia. Click en mona = +1; <b>+/−</b> abajo para ajustes.
+  Cada equipo numera de <b>1 a 20</b>. ID en intercambios: <code>COL-13</code> = mona 13 de Colombia. Click en mona = +1; <b>+/−</b> abajo para ajustes. <b>Sync automática</b>: cualquier persona que abra el link contribuye y todos suman al mismo álbum.
 </div>
 
 <div class="stats-grid" id="stats"></div>
@@ -502,7 +502,21 @@
   const SYNC_TOKEN_KEY = 'panini_sync_token_v1';
   const SYNC_GIST_KEY = 'panini_sync_gist_id_v1';
   const SYNC_LAST_KEY = 'panini_sync_last_v1';
-  const SYNC_FILENAME = 'panini-mundial-2026-state.json';
+  const SYNC_FILENAME = 'panini-mundial-2026-state.json'; // legacy
+  const SYNC_ETAG_KEY = 'panini_sync_etag_v1';
+  const MY_CLIENT_KEY = 'panini_client_id_v1';
+  const MY_STATE_KEY = 'panini_my_state_v1';
+  const META_FILENAME = 'meta.json';
+
+  // ID único de este navegador. Cada navegador escribe en su propio archivo
+  // dentro del gist. El total mostrado = suma de todos los archivos client-*.json
+  // Esto permite que varias personas editen sin conflictos.
+  let myClientId = localStorage.getItem(MY_CLIENT_KEY);
+  if (!myClientId) {
+    myClientId = 'c_' + Math.random().toString(36).slice(2, 10) + '_' + Date.now().toString(36);
+    localStorage.setItem(MY_CLIENT_KEY, myClientId);
+  }
+  const MY_FILENAME = 'client-' + myClientId + '.json';
 
   // Token y gist incrustados — sync automático sin configuración por dispositivo.
   // El token tiene scope 'gist' únicamente. Si se compromete: revocar en
@@ -608,6 +622,7 @@
 
   function saveOrden() {
     try { localStorage.setItem(ORDER_KEY, JSON.stringify(equiposOrden)); } catch(e) {}
+    dirtyMeta = true;
     schedulePush();
   }
 
@@ -661,22 +676,68 @@
   let secciones = buildSections();
   const TOTAL = secciones.reduce((s, sec) => s + sec.items.length, 0);
 
-  let estado = {};
+  // Mi contribución personal (lo que YO he chuleado)
+  let myEstado = {};
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) estado = JSON.parse(saved);
+    const saved = localStorage.getItem(MY_STATE_KEY);
+    if (saved) myEstado = JSON.parse(saved);
   } catch(e) {}
 
-  function save() {
+  // Estados de OTROS clientes (descargados del gist) keyed por clientId
+  let otherClientStates = {};
+
+  // Total mostrado = suma de myEstado + todos los otherClientStates
+  let estado = {};
+  let dirtyMeta = false; // si el orden cambió y hay que pushearlo
+
+  function recomputeTotal() {
+    const t = {};
+    for (const k in myEstado) t[k] = (t[k] || 0) + myEstado[k];
+    for (const cid in otherClientStates) {
+      const cs = otherClientStates[cid];
+      for (const k in cs) t[k] = (t[k] || 0) + cs[k];
+    }
+    estado = t;
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(estado)); } catch(e) {}
+  }
+
+  // Total inicial desde solo mi cache (otros llegan cuando pulleo)
+  recomputeTotal();
+
+  function saveMyEstado() {
+    try { localStorage.setItem(MY_STATE_KEY, JSON.stringify(myEstado)); } catch(e) {}
+    recomputeTotal();
     schedulePush();
   }
 
   function getEstado(id) { return estado[id] || 0; }
+  function getMyEstado(id) { return myEstado[id] || 0; }
+
+  // setEstado mantiene la API antigua pero opera sobre MI contribución.
+  // - Si v > total actual: incremento mi parte por la diferencia
+  // - Si v < total actual: decremento mi parte (clamped a lo que yo tengo)
+  // - Si v <= 0: limpio toda mi contribución a este sticker
   function setEstado(id, v) {
-    if (v <= 0) delete estado[id];
-    else estado[id] = v;
-    save();
+    const curTotal = getEstado(id);
+    const myCur = getMyEstado(id);
+    if (v <= 0) {
+      if (myCur > 0) {
+        delete myEstado[id];
+        saveMyEstado();
+      }
+      return;
+    }
+    if (v > curTotal) {
+      myEstado[id] = myCur + (v - curTotal);
+      saveMyEstado();
+    } else if (v < curTotal) {
+      const reduce = Math.min(curTotal - v, myCur);
+      if (reduce > 0) {
+        myEstado[id] = myCur - reduce;
+        if (myEstado[id] <= 0) delete myEstado[id];
+        saveMyEstado();
+      }
+    }
   }
 
   // Encontrar item por id (case insensitive, normalizado)
@@ -704,11 +765,11 @@
 
   function renderTabs() {
     const tabs = document.getElementById('tabs');
-    const grupos = ['consulta', 'todos', 'intro', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'history', 'intercambio', 'orden', 'sync'];
+    const grupos = ['consulta', 'todos', 'intro', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'history', 'intercambio', 'orden'];
     const labels = {
       consulta: '🔍 ¿La tengo?',
       todos: 'Todos', intro: 'Intro', history: 'History',
-      intercambio: '⇄ Intercambio', orden: '↕ Orden', sync: '☁ Sync'
+      intercambio: '⇄ Intercambio', orden: '↕ Orden'
     };
     tabs.innerHTML = grupos.map(g => {
       const lbl = labels[g] || ('Gr ' + g);
@@ -1122,13 +1183,6 @@
       return;
     }
 
-    if (tabActiva === 'sync') {
-      ctrls.style.display = 'none';
-      cont.innerHTML = renderSync();
-      bindSync();
-      return;
-    }
-
     ctrls.style.display = '';
 
     if (tabActiva === 'intercambio') {
@@ -1270,9 +1324,9 @@
   function renderSyncStatus() {
     const el = document.getElementById('sync-status-line');
     if (!el) return;
-    const colors = { idle: 'var(--text-2)', syncing: 'var(--accent)', ok: 'var(--green)', error: 'var(--danger)' };
+    const colors = { idle: 'var(--text-3)', syncing: 'var(--accent)', ok: 'var(--green)', error: 'var(--danger)' };
     const icons = { idle: '○', syncing: '⟳', ok: '●', error: '✗' };
-    el.innerHTML = '<span style="color:' + (colors[syncStatus.state] || 'var(--text-2)') + ';font-size:14px;">' +
+    el.innerHTML = '<span style="color:' + (colors[syncStatus.state] || 'var(--text-3)') + ';">' +
       icons[syncStatus.state] + '</span> ' + syncStatus.message;
   }
 
@@ -1313,71 +1367,140 @@
     setSyncStatus('syncing', 'Subiendo…');
     try {
       let gistId = localStorage.getItem(SYNC_GIST_KEY);
-      const payload = {
-        estado, orden: equiposOrden,
-        updatedAt: new Date().toISOString()
-      };
       const files = {};
-      files[SYNC_FILENAME] = { content: JSON.stringify(payload, null, 2) };
+      // Solo escribo a MI archivo — sin contención con otros clientes
+      files[MY_FILENAME] = { content: JSON.stringify(myEstado, null, 2) };
+      if (dirtyMeta) {
+        files[META_FILENAME] = { content: JSON.stringify({
+          orden: equiposOrden,
+          updatedAt: new Date().toISOString(),
+          updatedBy: myClientId
+        }, null, 2) };
+      }
       if (gistId) {
         await gistApi('PATCH', 'gists/' + gistId, { files });
       } else {
-        const existing = await findExistingGist().catch(() => null);
-        if (existing) {
-          gistId = existing;
-          localStorage.setItem(SYNC_GIST_KEY, gistId);
-          await gistApi('PATCH', 'gists/' + gistId, { files });
-        } else {
-          const created = await gistApi('POST', 'gists', {
-            description: 'Panini Mundial 2026 — sync de progreso',
-            public: false, files
-          });
-          localStorage.setItem(SYNC_GIST_KEY, created.id);
-        }
+        const created = await gistApi('POST', 'gists', {
+          description: 'Panini Mundial 2026 — sync colaborativo',
+          public: false, files
+        });
+        localStorage.setItem(SYNC_GIST_KEY, created.id);
       }
-      localStorage.setItem(SYNC_LAST_KEY, payload.updatedAt);
-      setSyncStatus('ok', 'Subido ' + new Date().toLocaleTimeString());
+      if (dirtyMeta) dirtyMeta = false;
+      // Invalidar etag para forzar pull en próximo poll (otros pueden no haber recibido aún)
+      localStorage.removeItem(SYNC_ETAG_KEY);
+      localStorage.setItem(SYNC_LAST_KEY, new Date().toISOString());
+      setSyncStatus('ok', 'Sync ' + new Date().toLocaleTimeString());
     } catch(e) {
-      setSyncStatus('error', 'Error subiendo: ' + e.message);
+      setSyncStatus('error', 'Error: ' + e.message);
     }
   }
 
   async function pullSync() {
     if (!localStorage.getItem(SYNC_TOKEN_KEY)) return null;
-    setSyncStatus('syncing', 'Descargando…');
     try {
       let gistId = localStorage.getItem(SYNC_GIST_KEY);
       if (!gistId) {
         gistId = await findExistingGist();
-        if (!gistId) {
-          setSyncStatus('idle', 'Sin gist remoto aún');
-          return null;
-        }
+        if (!gistId) return null;
         localStorage.setItem(SYNC_GIST_KEY, gistId);
       }
-      const gist = await gistApi('GET', 'gists/' + gistId);
-      const file = gist.files && gist.files[SYNC_FILENAME];
-      if (!file) {
-        setSyncStatus('error', 'Gist sin archivo de estado');
-        return null;
+      // Petición condicional con ETag — 304 si nada cambió
+      const etag = localStorage.getItem(SYNC_ETAG_KEY);
+      const headers = {
+        'Authorization': 'Bearer ' + localStorage.getItem(SYNC_TOKEN_KEY),
+        'Accept': 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28'
+      };
+      if (etag) headers['If-None-Match'] = etag;
+      const res = await fetch('https://api.github.com/gists/' + gistId, { headers });
+      if (res.status === 304) return null; // sin cambios
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const newEtag = res.headers.get('etag');
+      if (newEtag) localStorage.setItem(SYNC_ETAG_KEY, newEtag);
+      const gist = await res.json();
+      if (!gist.files) return null;
+
+      // Migración: si hay archivo legacy y aún no hay client-*.json, importar como mío
+      const legacyFile = gist.files[SYNC_FILENAME];
+      const hasAnyClient = Object.keys(gist.files).some(f => f.startsWith('client-') && f.endsWith('.json'));
+      let migrated = false;
+      if (legacyFile && !hasAnyClient && Object.keys(myEstado).length === 0) {
+        try {
+          const old = JSON.parse(legacyFile.content);
+          if (old && old.estado && Object.keys(old.estado).length > 0) {
+            myEstado = old.estado;
+            try { localStorage.setItem(MY_STATE_KEY, JSON.stringify(myEstado)); } catch(e) {}
+            migrated = true;
+          }
+          if (old && old.orden && Array.isArray(old.orden) && old.orden.length === 48) {
+            equiposOrden = old.orden;
+            try { localStorage.setItem(ORDER_KEY, JSON.stringify(equiposOrden)); } catch(e) {}
+            secciones = buildSections();
+          }
+        } catch(e) {}
       }
-      const data = JSON.parse(file.content);
-      if (data.estado) {
-        estado = data.estado;
-        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(estado)); } catch(e) {}
+
+      // Leer todos los client-*.json (excepto el mío)
+      const newOtherStates = {};
+      for (const fname in gist.files) {
+        if (fname.startsWith('client-') && fname.endsWith('.json')) {
+          const cid = fname.slice(7, -5);
+          if (cid === myClientId) continue;
+          const f = gist.files[fname];
+          try {
+            const content = f.truncated && f.raw_url ?
+              await fetch(f.raw_url).then(r => r.text()) :
+              f.content;
+            const cs = JSON.parse(content);
+            if (cs && typeof cs === 'object' && !Array.isArray(cs)) newOtherStates[cid] = cs;
+          } catch(e) {}
+        } else if (fname === META_FILENAME) {
+          try {
+            const meta = JSON.parse(gist.files[fname].content);
+            if (meta && meta.orden && Array.isArray(meta.orden) && meta.orden.length === 48) {
+              const newOrdenStr = JSON.stringify(meta.orden);
+              if (newOrdenStr !== JSON.stringify(equiposOrden) && meta.updatedBy !== myClientId) {
+                equiposOrden = meta.orden;
+                try { localStorage.setItem(ORDER_KEY, JSON.stringify(equiposOrden)); } catch(e) {}
+                secciones = buildSections();
+              }
+            }
+          } catch(e) {}
+        }
       }
-      if (data.orden && Array.isArray(data.orden) && data.orden.length === 48) {
-        equiposOrden = data.orden;
-        try { localStorage.setItem(ORDER_KEY, JSON.stringify(equiposOrden)); } catch(e) {}
-        secciones = buildSections();
+
+      const beforeOthers = JSON.stringify(otherClientStates);
+      const afterOthers = JSON.stringify(newOtherStates);
+      const changed = migrated || beforeOthers !== afterOthers;
+      otherClientStates = newOtherStates;
+
+      if (changed) {
+        recomputeTotal();
+        renderStats();
+        if (tabActiva !== 'consulta' && tabActiva !== 'orden') {
+          renderContenido();
+        }
       }
-      localStorage.setItem(SYNC_LAST_KEY, data.updatedAt || new Date().toISOString());
-      setSyncStatus('ok', 'Descargado ' + new Date().toLocaleTimeString());
-      renderStats();
-      renderContenido();
-      return data;
+
+      // Si migramos, pushear nuestro estado y borrar el archivo legacy
+      if (migrated) {
+        try {
+          const filesToPatch = {};
+          filesToPatch[MY_FILENAME] = { content: JSON.stringify(myEstado, null, 2) };
+          filesToPatch[SYNC_FILENAME] = null; // null = borrar
+          filesToPatch[META_FILENAME] = { content: JSON.stringify({
+            orden: equiposOrden, updatedAt: new Date().toISOString(), updatedBy: myClientId
+          }, null, 2) };
+          await gistApi('PATCH', 'gists/' + gistId, { files: filesToPatch });
+          localStorage.removeItem(SYNC_ETAG_KEY); // siguiente pull traerá el nuevo
+        } catch(e) {}
+      }
+
+      setSyncStatus('ok', 'Sync ' + new Date().toLocaleTimeString());
+      return gist;
     } catch(e) {
-      setSyncStatus('error', 'Error descargando: ' + e.message);
+      setSyncStatus('error', 'Pull: ' + e.message);
       return null;
     }
   }
@@ -1385,8 +1508,16 @@
   function schedulePush() {
     if (!localStorage.getItem(SYNC_TOKEN_KEY)) return;
     if (pushTimer) clearTimeout(pushTimer);
-    setSyncStatus('syncing', 'Cambios pendientes…');
-    pushTimer = setTimeout(() => { pushSync(); }, 1500);
+    setSyncStatus('syncing', 'Pendiente…');
+    pushTimer = setTimeout(() => { pushSync(); }, 400);
+  }
+
+  let pollTimer = null;
+  function startPolling() {
+    if (pollTimer) clearInterval(pollTimer);
+    pollTimer = setInterval(() => {
+      if (!document.hidden && !pushTimer) pullSync();
+    }, 5000);
   }
 
   function renderSync() {
@@ -1431,16 +1562,23 @@
     document.getElementById('buscar').addEventListener('input', aplicarBusqueda);
 
     document.getElementById('btn-reset').onclick = () => {
-      if (confirm('¿Borrar todo el progreso? El orden de equipos se mantiene.')) {
-        estado = {};
-        save();
+      if (confirm('¿Borrar SOLO TU contribución a este álbum? Lo que hayan marcado otras personas se mantiene en el total.')) {
+        myEstado = {};
+        saveMyEstado();
         renderStats();
         renderContenido();
       }
     };
 
     document.getElementById('btn-export').onclick = () => {
-      const data = { estado, orden: equiposOrden, exportedAt: new Date().toISOString() };
+      const data = {
+        totalEstado: estado,
+        myEstado: myEstado,
+        otherClientStates: otherClientStates,
+        orden: equiposOrden,
+        exportedAt: new Date().toISOString(),
+        myClientId: myClientId
+      };
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -1458,7 +1596,12 @@
       r.onload = (ev) => {
         try {
           const data = JSON.parse(ev.target.result);
-          if (data.estado) { estado = data.estado; save(); }
+          // Importar SOLO mi contribución (estado o myEstado, lo que venga)
+          const incoming = data.myEstado || data.estado;
+          if (incoming && typeof incoming === 'object') {
+            myEstado = incoming;
+            saveMyEstado();
+          }
           if (data.orden && Array.isArray(data.orden)) {
             equiposOrden = data.orden;
             saveOrden();
@@ -1466,7 +1609,7 @@
           }
           renderStats();
           renderContenido();
-          alert('Importado correctamente');
+          alert('Importado como TU contribución personal. Las contribuciones de otros usuarios no se modifican.');
         } catch(err) { alert('Archivo inválido'); }
       };
       r.readAsText(f);
@@ -1476,8 +1619,14 @@
     renderStats();
     renderContenido();
 
+    // Sync inicial + polling cada 5s + pull al volver el foco
     if (localStorage.getItem(SYNC_TOKEN_KEY)) {
       pullSync();
+      startPolling();
+      window.addEventListener('focus', () => { if (!pushTimer) pullSync(); });
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden && !pushTimer) pullSync();
+      });
     }
   }
 })();
