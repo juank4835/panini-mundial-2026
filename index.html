@@ -499,6 +499,10 @@
 
   const STORAGE_KEY = 'panini_mundial_2026_v5';
   const ORDER_KEY = 'panini_mundial_2026_v5_order';
+  const SYNC_TOKEN_KEY = 'panini_sync_token_v1';
+  const SYNC_GIST_KEY = 'panini_sync_gist_id_v1';
+  const SYNC_LAST_KEY = 'panini_sync_last_v1';
+  const SYNC_FILENAME = 'panini-mundial-2026-state.json';
 
   const introStickers = [
     { id: '00',   label: 'Logo Panini' },
@@ -589,6 +593,7 @@
 
   function saveOrden() {
     try { localStorage.setItem(ORDER_KEY, JSON.stringify(equiposOrden)); } catch(e) {}
+    schedulePush();
   }
 
   const jugadoresCOL = [
@@ -649,6 +654,7 @@
 
   function save() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(estado)); } catch(e) {}
+    schedulePush();
   }
 
   function getEstado(id) { return estado[id] || 0; }
@@ -683,11 +689,11 @@
 
   function renderTabs() {
     const tabs = document.getElementById('tabs');
-    const grupos = ['consulta', 'todos', 'intro', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'history', 'intercambio', 'orden'];
+    const grupos = ['consulta', 'todos', 'intro', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'history', 'intercambio', 'orden', 'sync'];
     const labels = {
       consulta: '🔍 ¿La tengo?',
       todos: 'Todos', intro: 'Intro', history: 'History',
-      intercambio: '⇄ Intercambio', orden: '↕ Orden'
+      intercambio: '⇄ Intercambio', orden: '↕ Orden', sync: '☁ Sync'
     };
     tabs.innerHTML = grupos.map(g => {
       const lbl = labels[g] || ('Gr ' + g);
@@ -1101,6 +1107,13 @@
       return;
     }
 
+    if (tabActiva === 'sync') {
+      ctrls.style.display = 'none';
+      cont.innerHTML = renderSync();
+      bindSync();
+      return;
+    }
+
     ctrls.style.display = '';
 
     if (tabActiva === 'intercambio') {
@@ -1230,6 +1243,221 @@
     });
   }
 
+  // ===== Sync con Gist privado de GitHub =====
+  let syncStatus = { state: 'idle', message: 'Sin conectar' };
+  let pushTimer = null;
+
+  function setSyncStatus(s, m) {
+    syncStatus = { state: s, message: m || s };
+    renderSyncStatus();
+  }
+
+  function renderSyncStatus() {
+    const el = document.getElementById('sync-status-line');
+    if (!el) return;
+    const colors = { idle: 'var(--text-2)', syncing: 'var(--accent)', ok: 'var(--green)', error: 'var(--danger)' };
+    const icons = { idle: '○', syncing: '⟳', ok: '●', error: '✗' };
+    el.innerHTML = '<span style="color:' + (colors[syncStatus.state] || 'var(--text-2)') + ';font-size:14px;">' +
+      icons[syncStatus.state] + '</span> ' + syncStatus.message;
+  }
+
+  async function gistApi(method, path, body) {
+    const token = localStorage.getItem(SYNC_TOKEN_KEY);
+    if (!token) throw new Error('Sin token');
+    const headers = {
+      'Authorization': 'Bearer ' + token,
+      'Accept': 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28'
+    };
+    if (body) headers['Content-Type'] = 'application/json';
+    const res = await fetch('https://api.github.com/' + path, {
+      method, headers, body: body ? JSON.stringify(body) : undefined
+    });
+    if (!res.ok) {
+      const txt = await res.text().catch(() => '');
+      throw new Error('HTTP ' + res.status + ' ' + txt.slice(0, 80));
+    }
+    return res.json();
+  }
+
+  async function findExistingGist() {
+    let page = 1;
+    while (page <= 5) {
+      const list = await gistApi('GET', 'gists?per_page=100&page=' + page);
+      for (const g of list) {
+        if (g.files && g.files[SYNC_FILENAME]) return g.id;
+      }
+      if (list.length < 100) break;
+      page++;
+    }
+    return null;
+  }
+
+  async function pushSync() {
+    if (!localStorage.getItem(SYNC_TOKEN_KEY)) return;
+    setSyncStatus('syncing', 'Subiendo…');
+    try {
+      let gistId = localStorage.getItem(SYNC_GIST_KEY);
+      const payload = {
+        estado, orden: equiposOrden,
+        updatedAt: new Date().toISOString()
+      };
+      const files = {};
+      files[SYNC_FILENAME] = { content: JSON.stringify(payload, null, 2) };
+      if (gistId) {
+        await gistApi('PATCH', 'gists/' + gistId, { files });
+      } else {
+        const existing = await findExistingGist().catch(() => null);
+        if (existing) {
+          gistId = existing;
+          localStorage.setItem(SYNC_GIST_KEY, gistId);
+          await gistApi('PATCH', 'gists/' + gistId, { files });
+        } else {
+          const created = await gistApi('POST', 'gists', {
+            description: 'Panini Mundial 2026 — sync de progreso',
+            public: false, files
+          });
+          localStorage.setItem(SYNC_GIST_KEY, created.id);
+        }
+      }
+      localStorage.setItem(SYNC_LAST_KEY, payload.updatedAt);
+      setSyncStatus('ok', 'Subido ' + new Date().toLocaleTimeString());
+    } catch(e) {
+      setSyncStatus('error', 'Error subiendo: ' + e.message);
+    }
+  }
+
+  async function pullSync() {
+    if (!localStorage.getItem(SYNC_TOKEN_KEY)) return null;
+    setSyncStatus('syncing', 'Descargando…');
+    try {
+      let gistId = localStorage.getItem(SYNC_GIST_KEY);
+      if (!gistId) {
+        gistId = await findExistingGist();
+        if (!gistId) {
+          setSyncStatus('idle', 'Sin gist remoto aún');
+          return null;
+        }
+        localStorage.setItem(SYNC_GIST_KEY, gistId);
+      }
+      const gist = await gistApi('GET', 'gists/' + gistId);
+      const file = gist.files && gist.files[SYNC_FILENAME];
+      if (!file) {
+        setSyncStatus('error', 'Gist sin archivo de estado');
+        return null;
+      }
+      const data = JSON.parse(file.content);
+      if (data.estado) {
+        estado = data.estado;
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(estado)); } catch(e) {}
+      }
+      if (data.orden && Array.isArray(data.orden) && data.orden.length === 48) {
+        equiposOrden = data.orden;
+        try { localStorage.setItem(ORDER_KEY, JSON.stringify(equiposOrden)); } catch(e) {}
+        secciones = buildSections();
+      }
+      localStorage.setItem(SYNC_LAST_KEY, data.updatedAt || new Date().toISOString());
+      setSyncStatus('ok', 'Descargado ' + new Date().toLocaleTimeString());
+      renderStats();
+      renderContenido();
+      return data;
+    } catch(e) {
+      setSyncStatus('error', 'Error descargando: ' + e.message);
+      return null;
+    }
+  }
+
+  function schedulePush() {
+    if (!localStorage.getItem(SYNC_TOKEN_KEY)) return;
+    if (pushTimer) clearTimeout(pushTimer);
+    setSyncStatus('syncing', 'Cambios pendientes…');
+    pushTimer = setTimeout(() => { pushSync(); }, 1500);
+  }
+
+  function renderSync() {
+    const token = localStorage.getItem(SYNC_TOKEN_KEY);
+    const gistId = localStorage.getItem(SYNC_GIST_KEY);
+    const last = localStorage.getItem(SYNC_LAST_KEY);
+    const isConnected = !!token;
+    let html = '<div class="info-box">Sincroniza tu progreso entre dispositivos en un <b>Gist privado</b> de tu cuenta de GitHub. El token se guarda solo en este navegador.</div>';
+    html += '<div class="consulta-box">';
+    html += '<div style="margin-bottom:14px;font-size:13px;"><b>Estado:</b> <span id="sync-status-line">…</span></div>';
+    if (!isConnected) {
+      html += '<div style="margin-bottom:14px;font-size:13px;color:var(--text-2);">' +
+        '<p style="margin:0 0 8px;">Para activar la sincronización:</p>' +
+        '<ol style="padding-left:20px;margin:0;">' +
+          '<li>Crea un <b>Personal Access Token (classic)</b> en <a href="https://github.com/settings/tokens/new?scopes=gist&description=Panini+Mundial+2026" target="_blank" rel="noopener" style="color:var(--accent);">github.com/settings/tokens</a></li>' +
+          '<li>Marca solo el permiso <code>gist</code></li>' +
+          '<li>Copia el token (empieza con <code>ghp_</code>) y pégalo aquí abajo</li>' +
+        '</ol></div>';
+    } else {
+      html += '<div style="font-size:13px;color:var(--text-2);margin-bottom:12px;">' +
+        '✓ Token guardado.' + (gistId ? ' Gist: <code>' + gistId.slice(0,8) + '…</code>' : ' Sin gist aún.') +
+        (last ? '<br>Última sync: ' + new Date(last).toLocaleString() : '') + '</div>';
+    }
+    html += '<div class="consulta-input-row">' +
+      '<input type="password" id="sync-token-input" placeholder="ghp_..." value="' + (isConnected ? '••••••••••••••••' : '') + '" autocomplete="off">' +
+      '<button id="sync-save-token" style="background:var(--accent);color:var(--bg);border:0;border-radius:var(--radius);padding:0 14px;cursor:pointer;font-family:inherit;font-weight:500;">' +
+        (isConnected ? 'Cambiar' : 'Conectar') + '</button>' +
+    '</div>';
+    if (isConnected) {
+      html += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">' +
+        '<button id="sync-pull" style="background:var(--green);color:white;border:0;border-radius:var(--radius);padding:8px 14px;cursor:pointer;font-family:inherit;">↓ Descargar</button>' +
+        '<button id="sync-push" style="background:var(--bg-3);color:var(--text);border:0.5px solid var(--border-2);border-radius:var(--radius);padding:8px 14px;cursor:pointer;font-family:inherit;">↑ Subir</button>' +
+        '<button id="sync-disconnect" style="background:transparent;color:var(--danger);border:0.5px solid var(--danger);border-radius:var(--radius);padding:8px 14px;cursor:pointer;font-family:inherit;margin-left:auto;">Desconectar</button>' +
+      '</div>';
+    }
+    html += '</div>';
+    html += '<div class="hint" style="margin-top:12px;">Auto-sync: cada cambio se sube ~1.5s después. Al abrir la página se descarga el último estado del gist automáticamente.</div>';
+    return html;
+  }
+
+  function bindSync() {
+    const token = localStorage.getItem(SYNC_TOKEN_KEY);
+    const last = localStorage.getItem(SYNC_LAST_KEY);
+    if (token) {
+      setSyncStatus(syncStatus.state === 'error' ? 'error' : 'idle',
+        syncStatus.state === 'error' ? syncStatus.message :
+        (last ? 'Listo · última sync ' + new Date(last).toLocaleTimeString() : 'Conectado'));
+    } else {
+      setSyncStatus('idle', 'Sin conectar');
+    }
+    const inp = document.getElementById('sync-token-input');
+    const saveBtn = document.getElementById('sync-save-token');
+    if (saveBtn && inp) {
+      saveBtn.onclick = () => {
+        const v = inp.value.trim();
+        if (!v || v.startsWith('•')) { alert('Pega un token nuevo'); return; }
+        localStorage.setItem(SYNC_TOKEN_KEY, v);
+        setSyncStatus('syncing', 'Verificando token…');
+        gistApi('GET', 'user').then(u => {
+          setSyncStatus('ok', 'Conectado como @' + u.login);
+          pullSync().then(r => {
+            if (!r) pushSync();
+            renderContenido();
+          });
+        }).catch(e => {
+          localStorage.removeItem(SYNC_TOKEN_KEY);
+          setSyncStatus('error', 'Token inválido: ' + e.message);
+          renderContenido();
+        });
+      };
+    }
+    const pullBtn = document.getElementById('sync-pull');
+    if (pullBtn) pullBtn.onclick = () => pullSync();
+    const pushBtn = document.getElementById('sync-push');
+    if (pushBtn) pushBtn.onclick = () => pushSync();
+    const dcBtn = document.getElementById('sync-disconnect');
+    if (dcBtn) dcBtn.onclick = () => {
+      if (confirm('¿Desconectar? El gist permanece en tu cuenta de GitHub. El token se borra de este navegador.')) {
+        localStorage.removeItem(SYNC_TOKEN_KEY);
+        localStorage.removeItem(SYNC_GIST_KEY);
+        localStorage.removeItem(SYNC_LAST_KEY);
+        renderContenido();
+      }
+    };
+  }
+
   // Init
   document.addEventListener('DOMContentLoaded', init);
   if (document.readyState !== 'loading') init();
@@ -1285,6 +1513,10 @@
     renderTabs();
     renderStats();
     renderContenido();
+
+    if (localStorage.getItem(SYNC_TOKEN_KEY)) {
+      pullSync();
+    }
   }
 })();
 </script>
