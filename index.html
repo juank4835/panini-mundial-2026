@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Álbum Panini Mundial 2026 · Tracker</title>
+<meta name="description" content="Tracker personal del álbum Panini del Mundial 2026 — pegadas, repetidas, faltantes y lista de intercambio.">
+<style>
+  :root {
+    --bg: #1a1a18;
+    --bg-2: #262624;
+    --bg-3: #333330;
+    --text: #f0eee6;
+    --text-2: #b4b2a9;
+    --text-3: #888780;
+    --border: rgba(240, 238, 230, 0.12);
+    --border-2: rgba(240, 238, 230, 0.25);
+    --accent: #FF8C1A;
+    --green: #1D9E75;
+    --green-dark: #0F6E56;
+    --amber: #EF9F27;
+    --amber-text: #412402;
+    --amber-dark: #BA7517;
+    --danger: #E24B4A;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 16px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 22px;
+    font-weight: 500;
+    margin: 0 0 4px;
+  }
+  .subtitle {
+    color: var(--text-2);
+    font-size: 13px;
+    margin-bottom: 1.5rem;
+  }
+  .info-box {
+    background: var(--bg-2);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--text-2);
+    margin-bottom: 1rem;
+    border-left: 3px solid var(--accent);
+  }
+  .info-box code {
+    background: var(--bg-3);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-size: 11px;
+  }
+  /* Stats */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    margin-bottom: 1.25rem;
+  }
+  .stat-card {
+    background: var(--bg-2);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+  }
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-2);
+  }
+  .stat-value {
+    font-size: 22px;
+    font-weight: 500;
+    margin-top: 4px;
+  }
+  .progress-bar {
+    height: 6px;
+    background: var(--bg-3);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--green);
+    transition: width 0.3s;
+  }
+  .hint {
+    font-size: 11px;
+    color: var(--text-3);
+    margin-top: 4px;
+  }
+  /* Tabs */
+  .panini-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 1rem;
+    padding-bottom: 12px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .panini-tab {
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    color: var(--text-2);
+    font-family: inherit;
+  }
+  .panini-tab:hover {
+    border-color: var(--border-2);
+    color: var(--text);
+  }
+  .panini-tab.active {
+    background: var(--bg-2);
+    color: var(--text);
+    font-weight: 500;
+    border-color: var(--border-2);
+  }
+  /* Controls */
+  .controls {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+    align-items: center;
+  }
+  .controls input[type="text"], .controls button {
+    background: var(--bg-2);
+    color: var(--text);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 7px 12px;
+    font-size: 13px;
+    font-family: inherit;
+  }
+  .controls input[type="text"] {
+    width: 200px;
+  }
+  .controls input[type="text"]:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .controls button {
+    cursor: pointer;
+  }
+  .controls button:hover {
+    background: var(--bg-3);
+  }
+  .btn-danger {
+    color: var(--danger) !important;
+  }
+  /* Sticker grid */
+  .sticker-wrap {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 3px;
+  }
+  .sticker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 60px;
+    border-radius: var(--radius) var(--radius) 0 0;
+    border: 0.5px solid var(--border);
+    border-bottom: 0;
+    background: var(--bg-2);
+    cursor: pointer;
+    font-size: 11px;
+    user-select: none;
+    position: relative;
+    transition: transform 0.05s;
+    color: var(--text);
+  }
+  .sticker:hover { border-color: var(--border-2); }
+  .sticker:active { transform: scale(0.96); }
+  .sticker.pegada {
+    background: var(--green);
+    color: white;
+    border-color: var(--green-dark);
+  }
+  .sticker.repetida {
+    background: var(--amber);
+    color: var(--amber-text);
+    border-color: var(--amber-dark);
+  }
+  .sticker .num {
+    font-weight: 500;
+    font-size: 13px;
+  }
+  .sticker .name {
+    font-size: 9px;
+    line-height: 1.1;
+    margin-top: 2px;
+    max-width: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .sticker .qty {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: var(--text);
+    color: var(--bg);
+    font-size: 10px;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    padding: 0 4px;
+  }
+  .sticker-controls {
+    display: flex;
+    width: 64px;
+    border: 0.5px solid var(--border);
+    border-top: 0;
+    border-radius: 0 0 var(--radius) var(--radius);
+    overflow: hidden;
+  }
+  .sticker-controls button {
+    flex: 1;
+    padding: 3px 0;
+    font-size: 14px;
+    line-height: 1;
+    border: 0;
+    background: var(--bg-2);
+    color: var(--text-2);
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .sticker-controls button:hover {
+    background: var(--bg-3);
+    color: var(--text);
+  }
+  .sticker-controls button:first-child {
+    border-right: 0.5px solid var(--border);
+  }
+  .seccion {
+    margin-bottom: 1.5rem;
+  }
+  .seccion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+  .seccion-titulo {
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .seccion-stats {
+    font-size: 12px;
+    color: var(--text-2);
+  }
+  /* Intercambio */
+  .intercambio-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .intercambio-col {
+    background: var(--bg-2);
+    border-radius: var(--radius-lg);
+    padding: 14px;
+  }
+  .intercambio-titulo {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .intercambio-list {
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-size: 12px;
+    max-height: 380px;
+    overflow-y: auto;
+    line-height: 1.7;
+  }
+  .btn-copy {
+    background: var(--bg-3);
+    color: var(--text-2);
+    border: 0.5px solid var(--border-2);
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .btn-copy:hover { color: var(--text); background: var(--bg); }
+  .btn-copy.copied { color: var(--green); border-color: var(--green); }
+  /* Consulta */
+  .consulta-box {
+    background: var(--bg-2);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    margin-bottom: 1rem;
+  }
+  .consulta-input-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .consulta-input-row input {
+    flex: 1;
+    padding: 10px 14px;
+    font-size: 16px;
+    background: var(--bg);
+    border: 0.5px solid var(--border-2);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .consulta-input-row input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .consulta-resultado {
+    padding: 16px;
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border);
+    background: var(--bg);
+  }
+  .resultado-icono {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 18px;
+    margin-right: 12px;
+    vertical-align: middle;
+  }
+  .resultado-titulo {
+    font-size: 18px;
+    font-weight: 500;
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .resultado-detalle {
+    margin-top: 12px;
+    color: var(--text-2);
+    font-size: 13px;
+  }
+  .resultado-detalle b { color: var(--text); }
+  .resultado-acciones {
+    margin-top: 14px;
+    display: flex;
+    gap: 8px;
+  }
+  .resultado-acciones button {
+    background: var(--bg-2);
+    color: var(--text);
+    border: 0.5px solid var(--border-2);
+    border-radius: var(--radius);
+    padding: 8px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .resultado-acciones button:hover {
+    background: var(--bg-3);
+  }
+  .resultado-acciones button.primary {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+    font-weight: 500;
+  }
+  .estado-falta { color: var(--danger); }
+  .estado-pegada { color: var(--green); }
+  .estado-repetida { color: var(--amber); }
+  /* Reorder */
+  .reorder-list {
+    background: var(--bg-2);
+    border-radius: var(--radius-lg);
+    padding: 14px;
+    max-height: 520px;
+    overflow-y: auto;
+  }
+  .reorder-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 10px;
+    background: var(--bg);
+    border-radius: var(--radius);
+    margin-bottom: 4px;
+    border: 0.5px solid var(--border);
+    cursor: grab;
+    font-size: 13px;
+  }
+  .reorder-item.dragging { opacity: 0.4; }
+  .reorder-item.drag-over { border-color: var(--green); border-width: 2px; }
+  .reorder-item .pos {
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-size: 11px;
+    color: var(--text-3);
+    min-width: 40px;
+  }
+  .reorder-item .nombre { flex: 1; }
+  .reorder-item input.edit-name {
+    flex: 1;
+    font-size: 13px;
+    padding: 2px 6px;
+    border: 0.5px solid var(--border-2);
+    background: var(--bg-2);
+    color: var(--text);
+    border-radius: 4px;
+    font-family: inherit;
+  }
+  .reorder-item .arrows { display: flex; gap: 2px; }
+  .reorder-item .arrows button {
+    padding: 2px 8px;
+    font-size: 11px;
+    background: var(--bg-2);
+    color: var(--text-2);
+    border: 0.5px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .reorder-item .arrows button:hover {
+    color: var(--text);
+    border-color: var(--border-2);
+  }
+  .reorder-item .arrows button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+  /* Footer */
+  footer {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 0.5px solid var(--border);
+    text-align: center;
+    color: var(--text-3);
+    font-size: 12px;
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+  @media (max-width: 600px) {
+    .intercambio-grid { grid-template-columns: 1fr; }
+    body { padding: 12px; }
+    h1 { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Álbum Panini Mundial 2026</h1>
+<p class="subtitle">Tracker personal · pegadas, repetidas, faltantes e intercambio</p>
+
+<div class="info-box">
+  Cada equipo numera de <b>1 a 20</b>. ID en intercambios: <code>COL-13</code> = mona 13 de Colombia. Click en mona = +1; <b>+/−</b> abajo para ajustes.
+</div>
+
+<div class="stats-grid" id="stats"></div>
+<div class="panini-tabs" id="tabs"></div>
+
+<div class="controls" id="controls-row">
+  <input type="text" id="buscar" placeholder="Filtrar por código o nombre">
+  <button id="btn-export">Exportar</button>
+  <button id="btn-import">Importar</button>
+  <button id="btn-reset" class="btn-danger">Reiniciar todo</button>
+  <input type="file" id="file-input" accept=".json" style="display:none">
+</div>
+
+<div id="contenido"></div>
+
+<footer>
+  Hecho con ❤️ por Juan Camilo · <a href="https://github.com/juank4835/reportes-financieros">repo</a>
+</footer>
+
+<script>
+(function() {
+  'use strict';
+
+  const STORAGE_KEY = 'panini_mundial_2026_v5';
+  const ORDER_KEY = 'panini_mundial_2026_v5_order';
+
+  const introStickers = [
+    { id: '00',   label: 'Logo Panini' },
+    { id: 'FWC1', label: 'Logo Mundial · Sup' },
+    { id: 'FWC2', label: 'Logo Mundial · Inf' },
+    { id: 'FWC3', label: 'Mascotas' },
+    { id: 'FWC4', label: 'Slogan oficial' },
+    { id: 'FWC5', label: 'Balón oficial' },
+    { id: 'FWC6', label: 'Canadá · Emblema' },
+    { id: 'FWC7', label: 'México · Emblema' },
+    { id: 'FWC8', label: 'USA · Emblema' }
+  ];
+
+  const historyStickers = [
+    { id: 'FWC9',  label: 'Italia · 1934' },
+    { id: 'FWC10', label: 'Uruguay · 1950' },
+    { id: 'FWC11', label: 'Alemania · 1954' },
+    { id: 'FWC12', label: 'Brasil · 1962' },
+    { id: 'FWC13', label: 'Alemania · 1974' },
+    { id: 'FWC14', label: 'Argentina · 1986' },
+    { id: 'FWC15', label: 'Brasil · 1994' },
+    { id: 'FWC16', label: 'Brasil · 2002' },
+    { id: 'FWC17', label: 'Italia · 2006' },
+    { id: 'FWC18', label: 'Alemania · 2014' },
+    { id: 'FWC19', label: 'Argentina · 2022' }
+  ];
+
+  const ordenInicial = [
+    { code: 'MEX', name: 'México', grupo: 'A' },
+    { code: 'RSA', name: 'Sudáfrica', grupo: 'A' },
+    { code: 'KOR', name: 'Corea del Sur', grupo: 'A' },
+    { code: 'CZE', name: 'Rep. Checa', grupo: 'A' },
+    { code: 'CAN', name: 'Canadá', grupo: 'B' },
+    { code: 'BIH', name: 'Bosnia y Herz.', grupo: 'B' },
+    { code: 'QAT', name: 'Catar', grupo: 'B' },
+    { code: 'SUI', name: 'Suiza', grupo: 'B' },
+    { code: 'BRA', name: 'Brasil', grupo: 'C' },
+    { code: 'MAR', name: 'Marruecos', grupo: 'C' },
+    { code: 'HAI', name: 'Haití', grupo: 'C' },
+    { code: 'SCO', name: 'Escocia', grupo: 'C' },
+    { code: 'USA', name: 'Estados Unidos', grupo: 'D' },
+    { code: 'PAR', name: 'Paraguay', grupo: 'D' },
+    { code: 'AUS', name: 'Australia', grupo: 'D' },
+    { code: 'TUR', name: 'Turquía', grupo: 'D' },
+    { code: 'GER', name: 'Alemania', grupo: 'E' },
+    { code: 'CUW', name: 'Curazao', grupo: 'E' },
+    { code: 'CIV', name: 'Costa de Marfil', grupo: 'E' },
+    { code: 'ECU', name: 'Ecuador', grupo: 'E' },
+    { code: 'NED', name: 'Países Bajos', grupo: 'F' },
+    { code: 'JPN', name: 'Japón', grupo: 'F' },
+    { code: 'SWE', name: 'Suecia', grupo: 'F' },
+    { code: 'TUN', name: 'Túnez', grupo: 'F' },
+    { code: 'BEL', name: 'Bélgica', grupo: 'G' },
+    { code: 'EGY', name: 'Egipto', grupo: 'G' },
+    { code: 'IRN', name: 'Irán', grupo: 'G' },
+    { code: 'NZL', name: 'Nueva Zelanda', grupo: 'G' },
+    { code: 'ESP', name: 'España', grupo: 'H' },
+    { code: 'CPV', name: 'Cabo Verde', grupo: 'H' },
+    { code: 'KSA', name: 'Arabia Saudita', grupo: 'H' },
+    { code: 'URU', name: 'Uruguay', grupo: 'H' },
+    { code: 'FRA', name: 'Francia', grupo: 'I' },
+    { code: 'SEN', name: 'Senegal', grupo: 'I' },
+    { code: 'IRQ', name: 'Iraq', grupo: 'I' },
+    { code: 'NOR', name: 'Noruega', grupo: 'I' },
+    { code: 'ARG', name: 'Argentina', grupo: 'J' },
+    { code: 'ALG', name: 'Argelia', grupo: 'J' },
+    { code: 'AUT', name: 'Austria', grupo: 'J' },
+    { code: 'JOR', name: 'Jordania', grupo: 'J' },
+    { code: 'POR', name: 'Portugal', grupo: 'K' },
+    { code: 'COD', name: 'RD Congo', grupo: 'K' },
+    { code: 'UZB', name: 'Uzbekistán', grupo: 'K' },
+    { code: 'COL', name: 'Colombia', grupo: 'K' },
+    { code: 'ENG', name: 'Inglaterra', grupo: 'L' },
+    { code: 'CRO', name: 'Croacia', grupo: 'L' },
+    { code: 'GHA', name: 'Ghana', grupo: 'L' },
+    { code: 'PAN', name: 'Panamá', grupo: 'L' }
+  ];
+
+  let equiposOrden = null;
+  try {
+    const saved = localStorage.getItem(ORDER_KEY);
+    if (saved) {
+      const arr = JSON.parse(saved);
+      if (Array.isArray(arr) && arr.length === 48) equiposOrden = arr;
+    }
+  } catch(e) {}
+  if (!equiposOrden) equiposOrden = ordenInicial.slice();
+
+  function saveOrden() {
+    try { localStorage.setItem(ORDER_KEY, JSON.stringify(equiposOrden)); } catch(e) {}
+  }
+
+  const jugadoresCOL = [
+    'Camilo Vargas', 'David Ospina', 'Davinson Sánchez', 'Yerry Mina', 'Daniel Muñoz',
+    'Johan Mojica', 'Jhon Lucumí', 'Santiago Arias', 'Jefferson Lerma', 'Escudo COL',
+    'Kevin Castaño', 'Richard Ríos', 'James Rodríguez', 'Juan F. Quintero', 'Jorge Carrascal',
+    'Jhon Arias', 'Jhon Córdoba', 'Luis Suárez', 'Luis Díaz', 'Equipo COL'
+  ];
+
+  function buildSections() {
+    const secs = [];
+    secs.push({
+      id: 'intro',
+      titulo: 'Intro · Logo, mascotas y anfitriones',
+      items: introStickers.map(s => ({ id: s.id, label: s.label, displayNum: s.id }))
+    });
+
+    equiposOrden.forEach((eq, idx) => {
+      const items = [];
+      for (let i = 1; i <= 20; i++) {
+        let label = '';
+        if (eq.code === 'COL') {
+          label = jugadoresCOL[i-1] || ('Jugador ' + i);
+        } else {
+          if (i === 10) label = 'Escudo';
+          else if (i === 20) label = 'Equipo';
+          else label = 'Jugador ' + i;
+        }
+        const id = eq.code + '-' + i;
+        items.push({ id: id, label: label, displayNum: String(i) });
+      }
+      secs.push({
+        id: 'eq_' + idx,
+        titulo: (idx+1) + '. ' + eq.name + (eq.grupo ? ' · Grupo ' + eq.grupo : ''),
+        items: items,
+        equipo: eq,
+        idx: idx
+      });
+    });
+
+    secs.push({
+      id: 'history',
+      titulo: 'History · Campeones de mundiales',
+      items: historyStickers.map(s => ({ id: s.id, label: s.label, displayNum: s.id }))
+    });
+
+    return secs;
+  }
+
+  let secciones = buildSections();
+  const TOTAL = secciones.reduce((s, sec) => s + sec.items.length, 0);
+
+  let estado = {};
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) estado = JSON.parse(saved);
+  } catch(e) {}
+
+  function save() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(estado)); } catch(e) {}
+  }
+
+  function getEstado(id) { return estado[id] || 0; }
+  function setEstado(id, v) {
+    if (v <= 0) delete estado[id];
+    else estado[id] = v;
+    save();
+  }
+
+  // Encontrar item por id (case insensitive, normalizado)
+  function findItem(rawId) {
+    const norm = rawId.trim().toUpperCase().replace(/\s+/g, '');
+    for (const sec of secciones) {
+      for (const it of sec.items) {
+        if (it.id.toUpperCase() === norm) return { item: it, seccion: sec };
+      }
+    }
+    // Probar también sin guion (COL13 → COL-13)
+    const m = norm.match(/^([A-Z0-9]+?)[-]?(\d+)$/);
+    if (m) {
+      const target = m[1] + '-' + parseInt(m[2]);
+      for (const sec of secciones) {
+        for (const it of sec.items) {
+          if (it.id.toUpperCase() === target) return { item: it, seccion: sec };
+        }
+      }
+    }
+    return null;
+  }
+
+  let tabActiva = 'consulta';
+
+  function renderTabs() {
+    const tabs = document.getElementById('tabs');
+    const grupos = ['consulta', 'todos', 'intro', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'history', 'intercambio', 'orden'];
+    const labels = {
+      consulta: '🔍 ¿La tengo?',
+      todos: 'Todos', intro: 'Intro', history: 'History',
+      intercambio: '⇄ Intercambio', orden: '↕ Orden'
+    };
+    tabs.innerHTML = grupos.map(g => {
+      const lbl = labels[g] || ('Gr ' + g);
+      return '<button class="panini-tab ' + (g === tabActiva ? 'active' : '') + '" data-tab="' + g + '">' + lbl + '</button>';
+    }).join('');
+    tabs.querySelectorAll('.panini-tab').forEach(b => {
+      b.onclick = () => { tabActiva = b.dataset.tab; renderTabs(); renderContenido(); };
+    });
+  }
+
+  function renderStats() {
+    let pegadas = 0, repetidasUnicas = 0, repetidasTotal = 0;
+    secciones.forEach(sec => sec.items.forEach(it => {
+      const v = getEstado(it.id);
+      if (v >= 1) pegadas++;
+      if (v >= 2) { repetidasUnicas++; repetidasTotal += (v - 1); }
+    }));
+    const faltantes = TOTAL - pegadas;
+    const pct = (pegadas / TOTAL * 100).toFixed(1);
+    let sobresRestantes = 0;
+    if (faltantes > 0) {
+      let monasNec = 0;
+      for (let k = 1; k <= faltantes; k++) monasNec += TOTAL / k;
+      sobresRestantes = Math.ceil(monasNec / 7);
+    }
+    document.getElementById('stats').innerHTML =
+      '<div class="stat-card"><div class="stat-label">Pegadas</div>' +
+        '<div class="stat-value">' + pegadas + ' / ' + TOTAL + '</div>' +
+        '<div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%"></div></div>' +
+        '<div class="hint">' + pct + '% completado</div></div>' +
+      '<div class="stat-card"><div class="stat-label">Faltantes</div>' +
+        '<div class="stat-value">' + faltantes + '</div></div>' +
+      '<div class="stat-card"><div class="stat-label">Repetidas</div>' +
+        '<div class="stat-value">' + repetidasTotal + '</div>' +
+        '<div class="hint">' + repetidasUnicas + ' monas distintas</div></div>' +
+      '<div class="stat-card"><div class="stat-label">Sobres estimados</div>' +
+        '<div class="stat-value">' + sobresRestantes.toLocaleString('es-CO') + '</div>' +
+        '<div class="hint">~$' + (sobresRestantes * 5000).toLocaleString('es-CO') + '</div></div>';
+  }
+
+  function renderSticker(item) {
+    const v = getEstado(item.id);
+    let cls = 'sticker';
+    if (v >= 2) cls += ' repetida';
+    else if (v === 1) cls += ' pegada';
+    const qty = v >= 2 ? '<span class="qty">+' + (v-1) + '</span>' : '';
+    return '<div class="sticker-wrap">' +
+      '<div class="' + cls + '" data-id="' + item.id + '" title="' + item.id + ' · ' + item.label + '">' +
+        '<span class="num">' + item.displayNum + '</span>' +
+        '<span class="name">' + item.label + '</span>' +
+        qty +
+      '</div>' +
+      '<div class="sticker-controls">' +
+        '<button data-id="' + item.id + '" data-act="dec" title="Restar">−</button>' +
+        '<button data-id="' + item.id + '" data-act="inc" title="Sumar">+</button>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function renderSeccion(sec) {
+    let pegadas = 0, repetidas = 0;
+    sec.items.forEach(it => {
+      const v = getEstado(it.id);
+      if (v >= 1) pegadas++;
+      if (v >= 2) repetidas += (v-1);
+    });
+    return '<div class="seccion" data-sec="' + sec.id + '">' +
+      '<div class="seccion-header">' +
+        '<div class="seccion-titulo">' + sec.titulo + '</div>' +
+        '<div class="seccion-stats">' + pegadas + '/' + sec.items.length + ' · ' + repetidas + ' rep</div>' +
+      '</div>' +
+      '<div>' + sec.items.map(renderSticker).join('') + '</div>' +
+    '</div>';
+  }
+
+  // Recolectar repetidas como lista plana
+  function getRepetidasFlat() {
+    const result = [];
+    secciones.forEach(sec => sec.items.forEach(it => {
+      const v = getEstado(it.id);
+      if (v >= 2) {
+        for (let i = 0; i < v-1; i++) result.push(it.id);
+      }
+    }));
+    return result;
+  }
+
+  // Recolectar repetidas con conteos para vista compacta
+  function getRepetidasCompacta() {
+    const result = [];
+    secciones.forEach(sec => sec.items.forEach(it => {
+      const v = getEstado(it.id);
+      if (v >= 2) {
+        result.push(v > 2 ? it.id + '(×' + (v-1) + ')' : it.id);
+      }
+    }));
+    return result;
+  }
+
+  function getFaltantesFlat() {
+    const result = [];
+    secciones.forEach(sec => sec.items.forEach(it => {
+      if (getEstado(it.id) === 0) result.push(it.id);
+    }));
+    return result;
+  }
+
+  function copyToClipboard(text, btn) {
+    navigator.clipboard.writeText(text).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = '✓ Copiado';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = orig;
+        btn.classList.remove('copied');
+      }, 1500);
+    }).catch(() => {
+      // Fallback
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch(e) {}
+      document.body.removeChild(ta);
+      btn.textContent = '✓ Copiado';
+      setTimeout(() => { btn.textContent = 'Copiar'; }, 1500);
+    });
+  }
+
+  function renderIntercambio() {
+    // Agrupar por equipo + intro + history
+    const porEquipo = {};
+    let faltanIntro = [], faltanHist = [];
+    let repIntro = [], repHist = [];
+
+    secciones.forEach(sec => {
+      sec.items.forEach(it => {
+        const v = getEstado(it.id);
+        if (sec.id === 'intro') {
+          if (v === 0) faltanIntro.push(it.displayNum);
+          if (v >= 2) repIntro.push({ id: it.displayNum, qty: v-1 });
+        } else if (sec.id === 'history') {
+          if (v === 0) faltanHist.push(it.displayNum);
+          if (v >= 2) repHist.push({ id: it.displayNum, qty: v-1 });
+        } else if (sec.equipo) {
+          const k = sec.equipo.code;
+          if (!porEquipo[k]) porEquipo[k] = { name: sec.equipo.name, faltan: [], rep: [] };
+          if (v === 0) porEquipo[k].faltan.push(it.displayNum);
+          if (v >= 2) porEquipo[k].rep.push({ id: it.displayNum, qty: v-1 });
+        }
+      });
+    });
+
+    const fmtRep = (arr) => arr.length ?
+      arr.map(r => r.qty > 1 ? r.id + '(×' + r.qty + ')' : r.id).join(', ') : '—';
+    const fmtFalt = (arr) => arr.length ? arr.join(', ') : '—';
+
+    let faltanHTML = '';
+    let repHTML = '';
+    let totFaltan = 0, totRep = 0;
+
+    if (faltanIntro.length) { faltanHTML += '<b>Intro:</b> ' + fmtFalt(faltanIntro) + '<br>'; totFaltan += faltanIntro.length; }
+    if (repIntro.length) { repHTML += '<b>Intro:</b> ' + fmtRep(repIntro) + '<br>'; totRep += repIntro.reduce((s,r)=>s+r.qty,0); }
+
+    equiposOrden.forEach(eq => {
+      const data = porEquipo[eq.code];
+      if (!data) return;
+      if (data.faltan.length) {
+        faltanHTML += '<b>' + eq.code + ':</b> ' + fmtFalt(data.faltan) + '<br>';
+        totFaltan += data.faltan.length;
+      }
+      if (data.rep.length) {
+        repHTML += '<b>' + eq.code + ':</b> ' + fmtRep(data.rep) + '<br>';
+        totRep += data.rep.reduce((s,r)=>s+r.qty,0);
+      }
+    });
+
+    if (faltanHist.length) { faltanHTML += '<b>History:</b> ' + fmtFalt(faltanHist) + '<br>'; totFaltan += faltanHist.length; }
+    if (repHist.length) { repHTML += '<b>History:</b> ' + fmtRep(repHist) + '<br>'; totRep += repHist.reduce((s,r)=>s+r.qty,0); }
+
+    if (!faltanHTML) faltanHTML = '<span style="color: var(--text-3);">—</span>';
+    if (!repHTML) repHTML = '<span style="color: var(--text-3);">—</span>';
+
+    // Lista plana de repetidas (todos los IDs completos, una por unidad)
+    const repFlat = getRepetidasFlat();
+    const repCompacta = getRepetidasCompacta();
+
+    // Texto plano para copiar (agrupado por equipo)
+    const textoFaltan = faltanHTML.replace(/<br>/g, '\n').replace(/<b>/g, '').replace(/<\/b>/g, '').replace(/<span[^>]*>—<\/span>/g, '—');
+    const textoRep = repHTML.replace(/<br>/g, '\n').replace(/<b>/g, '').replace(/<\/b>/g, '').replace(/<span[^>]*>—<\/span>/g, '—');
+
+    return '<div class="intercambio-grid">' +
+      '<div class="intercambio-col">' +
+        '<div class="intercambio-titulo">' +
+          '<span>Me faltan <span style="color: var(--text-2); font-weight: 400;">(' + totFaltan + ')</span></span>' +
+          '<button class="btn-copy" data-copy-text="' + encodeURIComponent(textoFaltan) + '">Copiar</button>' +
+        '</div>' +
+        '<div class="intercambio-list">' + faltanHTML + '</div>' +
+      '</div>' +
+      '<div class="intercambio-col">' +
+        '<div class="intercambio-titulo">' +
+          '<span>Tengo repetidas <span style="color: var(--text-2); font-weight: 400;">(' + totRep + ')</span></span>' +
+          '<button class="btn-copy" data-copy-text="' + encodeURIComponent(textoRep) + '">Copiar</button>' +
+        '</div>' +
+        '<div class="intercambio-list">' + repHTML + '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div style="margin-top: 1.5rem; background: var(--bg-2); border-radius: var(--radius-lg); padding: 14px;">' +
+      '<div class="intercambio-titulo">' +
+        '<span>Lista plana de repetidas <span style="color: var(--text-2); font-weight: 400;">(' + repFlat.length + ' unidades)</span></span>' +
+        '<div style="display: flex; gap: 6px;">' +
+          '<button class="btn-copy" data-copy-text="' + encodeURIComponent(repCompacta.join(', ')) + '">Compacta</button>' +
+          '<button class="btn-copy" data-copy-text="' + encodeURIComponent(repFlat.join(', ')) + '">Expandida</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="intercambio-list" style="max-height: 200px;">' +
+        (repFlat.length ?
+          '<div style="margin-bottom: 8px;"><b>Compacta:</b> ' + repCompacta.join(', ') + '</div>' +
+          '<div><b>Expandida:</b> ' + repFlat.join(', ') + '</div>'
+          : '<span style="color: var(--text-3);">No tiene repetidas todavía</span>') +
+      '</div>' +
+      '<div class="hint" style="margin-top: 8px;">' +
+        '<b>Compacta</b>: <code>COL-13(×2)</code> = tengo 2 repetidas de COL-13. ' +
+        '<b>Expandida</b>: <code>COL-13, COL-13</code> (cada repetida es un ítem separado).' +
+      '</div>' +
+    '</div>' +
+    '<div class="hint" style="margin-top: 12px;">Por equipo: <code>COL: 7, 13, 19</code> = monas 7, 13, 19 de Colombia.</div>';
+  }
+
+  function renderConsulta(query) {
+    query = query || '';
+    let resultadoHTML = '';
+
+    if (query.trim()) {
+      const found = findItem(query);
+      if (found) {
+        const v = getEstado(found.item.id);
+        const eq = found.seccion.equipo;
+        let estadoStr, icono, color;
+        if (v === 0) {
+          estadoStr = 'ME FALTA';
+          icono = '✗';
+          color = 'var(--danger)';
+        } else if (v === 1) {
+          estadoStr = 'YA LA PEGUÉ';
+          icono = '✓';
+          color = 'var(--green)';
+        } else {
+          estadoStr = 'REPETIDA (×' + (v-1) + ')';
+          icono = '↺';
+          color = 'var(--amber)';
+        }
+
+        const eqInfo = eq ?
+          ('Equipo: <b>' + eq.name + '</b>' + (eq.grupo ? ' · Grupo ' + eq.grupo : '')) :
+          ('Sección: <b>' + found.seccion.titulo + '</b>');
+
+        resultadoHTML =
+          '<div class="consulta-resultado" style="border-color: ' + color + ';">' +
+            '<span class="resultado-icono" style="background: ' + color + '; color: var(--bg);">' + icono + '</span>' +
+            '<span class="resultado-titulo" style="color: ' + color + ';">' + estadoStr + '</span>' +
+            '<div class="resultado-detalle">' +
+              '<b>' + found.item.id + '</b> · ' + found.item.label + '<br>' +
+              eqInfo +
+            '</div>' +
+            '<div class="resultado-acciones">' +
+              (v === 0 ?
+                '<button class="primary" data-consulta-act="inc" data-consulta-id="' + found.item.id + '">Marcar como pegada (+)</button>' :
+                '<button data-consulta-act="inc" data-consulta-id="' + found.item.id + '">Sumar repetida (+)</button>') +
+              (v >= 1 ? '<button data-consulta-act="dec" data-consulta-id="' + found.item.id + '">Restar (−)</button>' : '') +
+            '</div>' +
+          '</div>';
+      } else {
+        resultadoHTML =
+          '<div class="consulta-resultado">' +
+            '<span class="resultado-icono" style="background: var(--bg-3); color: var(--text-2);">?</span>' +
+            '<span class="resultado-titulo" style="color: var(--text-2);">No encontrada</span>' +
+            '<div class="resultado-detalle">' +
+              'No existe una mona con código <code>' + query + '</code>.<br>' +
+              'Pruebe con: <code>COL-13</code>, <code>BRA-7</code>, <code>00</code>, <code>FWC9</code>, etc.' +
+            '</div>' +
+          '</div>';
+      }
+    } else {
+      resultadoHTML =
+        '<div class="consulta-resultado" style="border-style: dashed; color: var(--text-3);">' +
+          'Escriba un código arriba para consultar el estado de una mona.<br>' +
+          '<small style="margin-top: 8px; display: block;">Ejemplos: <code>COL-13</code>, <code>BRA-7</code>, <code>00</code>, <code>FWC9</code></small>' +
+        '</div>';
+    }
+
+    return '<div class="consulta-box">' +
+      '<div class="consulta-input-row">' +
+        '<input type="text" id="consulta-input" placeholder="Ej: COL-13, BRA-7, 00, FWC9..." autocomplete="off" value="' + query.replace(/"/g, '&quot;') + '">' +
+        '<button id="btn-consulta-clear" style="background: var(--bg-3); color: var(--text-2); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 0 14px; cursor: pointer; font-family: inherit;">Limpiar</button>' +
+      '</div>' +
+      resultadoHTML +
+    '</div>';
+  }
+
+  function renderOrden() {
+    return '<div class="info-box">Arrastre o use ▲▼ para ajustar. Click en el nombre para editarlo.</div>' +
+      '<div class="reorder-list" id="reorder-list">' +
+        equiposOrden.map((eq, idx) =>
+          '<div class="reorder-item" draggable="true" data-idx="' + idx + '">' +
+            '<span class="pos">' + (idx+1) + '. ' + (eq.grupo||'') + '</span>' +
+            '<span class="nombre" data-idx="' + idx + '">' + eq.name + '</span>' +
+            '<span class="arrows">' +
+              '<button data-action="up" data-idx="' + idx + '"' + (idx===0?' disabled':'') + '>▲</button>' +
+              '<button data-action="down" data-idx="' + idx + '"' + (idx===equiposOrden.length-1?' disabled':'') + '>▼</button>' +
+            '</span>' +
+          '</div>'
+        ).join('') +
+      '</div>';
+  }
+
+  function bindOrden() {
+    const list = document.getElementById('reorder-list');
+    if (!list) return;
+    let dragSrc = null;
+
+    list.querySelectorAll('.reorder-item').forEach(item => {
+      item.addEventListener('dragstart', (e) => {
+        if (e.target.tagName === 'INPUT') { e.preventDefault(); return; }
+        dragSrc = item;
+        item.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      item.addEventListener('dragend', () => {
+        item.classList.remove('dragging');
+        list.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+      });
+      item.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        if (item !== dragSrc) item.classList.add('drag-over');
+      });
+      item.addEventListener('dragleave', () => item.classList.remove('drag-over'));
+      item.addEventListener('drop', (e) => {
+        e.preventDefault();
+        if (dragSrc && item !== dragSrc) {
+          const fromIdx = parseInt(dragSrc.dataset.idx);
+          const toIdx = parseInt(item.dataset.idx);
+          const moved = equiposOrden.splice(fromIdx, 1)[0];
+          equiposOrden.splice(toIdx, 0, moved);
+          saveOrden();
+          secciones = buildSections();
+          renderContenido();
+          renderStats();
+        }
+      });
+    });
+
+    list.querySelectorAll('button[data-action]').forEach(btn => {
+      btn.onclick = () => {
+        const idx = parseInt(btn.dataset.idx);
+        const action = btn.dataset.action;
+        if (action === 'up' && idx > 0) {
+          [equiposOrden[idx-1], equiposOrden[idx]] = [equiposOrden[idx], equiposOrden[idx-1]];
+        } else if (action === 'down' && idx < equiposOrden.length - 1) {
+          [equiposOrden[idx+1], equiposOrden[idx]] = [equiposOrden[idx], equiposOrden[idx+1]];
+        }
+        saveOrden();
+        secciones = buildSections();
+        renderContenido();
+        renderStats();
+      };
+    });
+
+    list.querySelectorAll('.nombre').forEach(span => {
+      span.style.cursor = 'pointer';
+      span.onclick = () => {
+        const idx = parseInt(span.dataset.idx);
+        const inp = document.createElement('input');
+        inp.type = 'text';
+        inp.className = 'edit-name';
+        inp.value = equiposOrden[idx].name;
+        const finish = (saveIt) => {
+          if (saveIt && inp.value.trim()) {
+            equiposOrden[idx].name = inp.value.trim();
+            saveOrden();
+            secciones = buildSections();
+          }
+          renderContenido();
+        };
+        inp.onblur = () => finish(true);
+        inp.onkeydown = (e) => { if (e.key === 'Enter') finish(true); if (e.key === 'Escape') finish(false); };
+        span.replaceWith(inp);
+        inp.focus();
+        inp.select();
+      };
+    });
+  }
+
+  let consultaQuery = '';
+
+  function renderContenido() {
+    const cont = document.getElementById('contenido');
+    const ctrls = document.getElementById('controls-row');
+
+    if (tabActiva === 'orden') {
+      ctrls.style.display = 'none';
+      cont.innerHTML = renderOrden();
+      bindOrden();
+      return;
+    }
+
+    if (tabActiva === 'consulta') {
+      ctrls.style.display = 'none';
+      cont.innerHTML = renderConsulta(consultaQuery);
+      bindConsulta();
+      return;
+    }
+
+    ctrls.style.display = '';
+
+    if (tabActiva === 'intercambio') {
+      cont.innerHTML = renderIntercambio();
+      bindCopy();
+      return;
+    }
+
+    let secsToShow = secciones;
+    if (tabActiva === 'intro') secsToShow = secciones.filter(s => s.id === 'intro');
+    else if (tabActiva === 'history') secsToShow = secciones.filter(s => s.id === 'history');
+    else if (tabActiva.length === 1 && tabActiva >= 'A' && tabActiva <= 'L') {
+      secsToShow = secciones.filter(s => s.equipo && s.equipo.grupo === tabActiva);
+    }
+
+    cont.innerHTML = secsToShow.map(renderSeccion).join('');
+    aplicarBusqueda();
+
+    cont.querySelectorAll('.sticker').forEach(el => {
+      const id = el.dataset.id;
+      el.onclick = (e) => {
+        if (e.shiftKey) setEstado(id, 0);
+        else setEstado(id, getEstado(id) + 1);
+        renderStats();
+        actualizarSticker(id);
+      };
+      el.oncontextmenu = (e) => {
+        e.preventDefault();
+        setEstado(id, Math.max(0, getEstado(id) - 1));
+        renderStats();
+        actualizarSticker(id);
+      };
+    });
+
+    cont.querySelectorAll('.sticker-controls button').forEach(btn => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        const id = btn.dataset.id;
+        const act = btn.dataset.act;
+        if (act === 'inc') setEstado(id, getEstado(id) + 1);
+        else setEstado(id, Math.max(0, getEstado(id) - 1));
+        renderStats();
+        actualizarSticker(id);
+      };
+    });
+  }
+
+  function bindConsulta() {
+    const inp = document.getElementById('consulta-input');
+    if (!inp) return;
+    inp.focus();
+    inp.oninput = (e) => {
+      consultaQuery = e.target.value;
+      // Actualizar solo el resultado, no reconstruir todo
+      const cont = document.getElementById('contenido');
+      cont.innerHTML = renderConsulta(consultaQuery);
+      bindConsulta();
+    };
+
+    const clear = document.getElementById('btn-consulta-clear');
+    if (clear) clear.onclick = () => { consultaQuery = ''; renderContenido(); };
+
+    document.querySelectorAll('button[data-consulta-act]').forEach(btn => {
+      btn.onclick = () => {
+        const id = btn.dataset.consultaId;
+        const act = btn.dataset.consultaAct;
+        if (act === 'inc') setEstado(id, getEstado(id) + 1);
+        else setEstado(id, Math.max(0, getEstado(id) - 1));
+        renderStats();
+        renderContenido();
+      };
+    });
+  }
+
+  function bindCopy() {
+    document.querySelectorAll('.btn-copy').forEach(btn => {
+      btn.onclick = () => {
+        const txt = decodeURIComponent(btn.dataset.copyText || '');
+        copyToClipboard(txt, btn);
+      };
+    });
+  }
+
+  function actualizarSticker(id) {
+    const el = document.querySelector('.sticker[data-id="' + id + '"]');
+    if (!el) return;
+    const v = getEstado(id);
+    el.classList.remove('pegada', 'repetida');
+    if (v >= 2) el.classList.add('repetida');
+    else if (v === 1) el.classList.add('pegada');
+    const oldQty = el.querySelector('.qty');
+    if (oldQty) oldQty.remove();
+    if (v >= 2) {
+      const q = document.createElement('span');
+      q.className = 'qty';
+      q.textContent = '+' + (v-1);
+      el.appendChild(q);
+    }
+    const secEl = el.closest('.seccion');
+    if (secEl) {
+      const secId = secEl.dataset.sec;
+      const sec = secciones.find(s => s.id === secId);
+      let p = 0, r = 0;
+      sec.items.forEach(it => {
+        const vv = getEstado(it.id);
+        if (vv >= 1) p++;
+        if (vv >= 2) r += (vv-1);
+      });
+      secEl.querySelector('.seccion-stats').textContent = p + '/' + sec.items.length + ' · ' + r + ' rep';
+    }
+  }
+
+  function aplicarBusqueda() {
+    const inp = document.getElementById('buscar');
+    if (!inp) return;
+    const q = inp.value.trim().toLowerCase();
+    if (!q) {
+      document.querySelectorAll('.sticker-wrap').forEach(s => s.style.display = '');
+      return;
+    }
+    document.querySelectorAll('.sticker-wrap').forEach(wrap => {
+      const sticker = wrap.querySelector('.sticker');
+      const id = sticker.dataset.id.toLowerCase();
+      const label = sticker.querySelector('.name').textContent.toLowerCase();
+      const match = id.includes(q) || label.includes(q);
+      wrap.style.display = match ? '' : 'none';
+    });
+  }
+
+  // Init
+  document.addEventListener('DOMContentLoaded', init);
+  if (document.readyState !== 'loading') init();
+  let initialized = false;
+  function init() {
+    if (initialized) return;
+    initialized = true;
+
+    document.getElementById('buscar').addEventListener('input', aplicarBusqueda);
+
+    document.getElementById('btn-reset').onclick = () => {
+      if (confirm('¿Borrar todo el progreso? El orden de equipos se mantiene.')) {
+        estado = {};
+        save();
+        renderStats();
+        renderContenido();
+      }
+    };
+
+    document.getElementById('btn-export').onclick = () => {
+      const data = { estado, orden: equiposOrden, exportedAt: new Date().toISOString() };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'panini_2026_' + new Date().toISOString().slice(0,10) + '.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+
+    document.getElementById('btn-import').onclick = () => document.getElementById('file-input').click();
+    document.getElementById('file-input').onchange = (e) => {
+      const f = e.target.files[0];
+      if (!f) return;
+      const r = new FileReader();
+      r.onload = (ev) => {
+        try {
+          const data = JSON.parse(ev.target.result);
+          if (data.estado) { estado = data.estado; save(); }
+          if (data.orden && Array.isArray(data.orden)) {
+            equiposOrden = data.orden;
+            saveOrden();
+            secciones = buildSections();
+          }
+          renderStats();
+          renderContenido();
+          alert('Importado correctamente');
+        } catch(err) { alert('Archivo inválido'); }
+      };
+      r.readAsText(f);
+    };
+
+    renderTabs();
+    renderStats();
+    renderContenido();
+  }
+})();
+</script>
+
+</body>
+</html>
