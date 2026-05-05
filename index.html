@@ -156,8 +156,10 @@
     const isiOS = /iPad|iPhone|iPod/.test(ua) ||
                   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     if (isiOS) {
-      // 22vh para la warning-banner-bar de Google + 30px para warning-bar normal
-      cover.style.height = 'calc(22vh + 30px)';
+      // Google's .warning-banner-bar tiene max-height: 20vh exacto.
+      // Usamos eso como height del overlay para taparlo completo, sin
+      // pasarnos al contenido de la app (título + subtítulo).
+      cover.style.height = '20vh';
     } else {
       cover.style.height = '60px';
     }
@@ -190,16 +192,10 @@
       e.stopPropagation();
       cover.style.height = '50px';
       btn.style.display = 'none';
-      try { localStorage.setItem('panini_overlay_reduced', '1'); } catch(_){}
     };
     cover.appendChild(btn);
-    // Si antes el usuario lo redujo, recordar
-    try {
-      if (localStorage.getItem('panini_overlay_reduced') === '1') {
-        cover.style.height = '50px';
-        btn.style.display = 'none';
-      }
-    } catch(_){}
+    // Limpiar preferencia vieja de la versión anterior
+    try { localStorage.removeItem('panini_overlay_reduced'); } catch(_){}
   })();
 </script>
 </body>
