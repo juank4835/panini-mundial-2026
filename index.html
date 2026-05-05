@@ -2,12 +2,20 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<!-- viewport-fit=cover hace que la página se extienda DEBAJO del status bar
+     y la home indicator. Combinado con apple-mobile-web-app-status-bar-style
+     black-translucent, el status bar se vuelve overlay sobre el bg negro. -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<!-- theme-color: color de la URL bar de Safari + del status bar en Android -->
 <meta name="theme-color" content="#1a1a18">
+<!-- PWA: cuando se agrega al Home Screen, abre fullscreen sin URL bar -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
+<!-- black-translucent: status bar transparente sobre el bg de la página
+     (que es negro). Solo aplica en modo Home Screen / PWA. -->
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Panini 2026">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAgMTgwIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzFhMWExOCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTUlIiBmb250LWZhbWlseT0iLWFwcGxlLXN5c3RlbSwgQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iNTAiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiNFRjlGMjciIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPlA8L3RleHQ+PC9zdmc+">
 <title>Álbum Panini Mundial 2026</title>
 <meta name="description" content="Tracker colaborativo del álbum Panini del Mundial 2026">
 <style>
@@ -22,13 +30,19 @@
     color: #f0eee6;
     -webkit-tap-highlight-color: transparent;
   }
-  /* Padding via env(); luego el JS de abajo aplica fallback si está en 0 */
-  body {
-    padding-top: env(safe-area-inset-top, 0px);
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-    padding-left: env(safe-area-inset-left, 0px);
-    padding-right: env(safe-area-inset-right, 0px);
+  /* La página ocupa todo el viewport, INCLUYENDO el área debajo del status
+     bar. Como el bg de body es negro (#1a1a18), el status bar (en modo PWA
+     con black-translucent) se ve negro con texto blanco. */
+  iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: #1a1a18;
+    /* Padding-top solo si NO está en modo Home Screen (Safari muestra
+       status bar real con altura). En PWA el iframe va a 100% — el status
+       bar overlay ya tiene su transparente. */
   }
+  /* Loader breve mientras carga el iframe */
   .loader {
     position: fixed;
     inset: 0;
@@ -37,9 +51,12 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    gap: 18px;
+    gap: 16px;
     z-index: 10;
     transition: opacity 0.3s ease;
+    /* respeta safe-area en el centrado */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
   }
   .loader.hide { opacity: 0; pointer-events: none; }
   .loader-title { font-size: 14px; color: #888780; }
@@ -47,64 +64,26 @@
   .spinner {
     width: 36px;
     height: 36px;
-    border: 2px solid rgba(255,140,26,0.15);
-    border-top-color: #FF8C1A;
+    border: 2px solid rgba(239,159,39,0.15);
+    border-top-color: #EF9F27;
     border-radius: 50%;
     animation: spin 0.7s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
-  /* Wrapper relative dentro del body padded */
-  .frame-wrap {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    background: #1a1a18;
-    overflow: hidden;
-  }
-  /* iframe de tamaño completo del wrapper. La barra blanca de Google
-     queda detrás de un overlay negro (ver .banner-cover). Antes intentaba
-     correr el iframe hacia arriba con un negative top, pero en iOS dentro
-     de iframes con position: fixed eso causa que el bottom nav del Apps
-     Script flote en el medio. Con overlay todo queda en orden. */
-  iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: 0;
-    background: #1a1a18;
-  }
-  /* Overlay negro que tapa la barra "Denunciar abuso" de Google, sin
-     mover el iframe. Altura ajustada por JS según el dispositivo. */
-  .banner-cover {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 60px;
-    background: #1a1a18;
-    z-index: 5;
-    pointer-events: none;
-  }
 </style>
 </head>
 <body>
-<div class="frame-wrap">
-  <div class="loader" id="loader">
-    <div class="spinner"></div>
-    <div class="loader-title">Álbum Panini Mundial 2026</div>
-    <div class="loader-sub">Cargando…</div>
-  </div>
-  <iframe
-    id="app"
-    src="https://script.google.com/macros/s/AKfycbxb6U2M25Ah4ZyWu_C8PCQQGzpFzFs6a2VOsmDhTgehVi8V1tUm66LxYKntDFCx9H-6eg/exec"
-    allow="clipboard-read; clipboard-write; web-share"
-    allowfullscreen
-    title="Álbum Panini Mundial 2026">
-  </iframe>
-  <div class="banner-cover"></div>
+<div class="loader" id="loader">
+  <div class="spinner"></div>
+  <div class="loader-title">Álbum Panini Mundial 2026</div>
+  <div class="loader-sub">Cargando…</div>
 </div>
+<iframe
+  id="app"
+  src="https://script.google.com/macros/s/AKfycbxb6U2M25Ah4ZyWu_C8PCQQGzpFzFs6a2VOsmDhTgehVi8V1tUm66LxYKntDFCx9H-6eg/exec"
+  allow="clipboard-read; clipboard-write; web-share"
+  allowfullscreen
+  title="Álbum Panini Mundial 2026"></iframe>
 <script>
   // Esconde el loader cuando el iframe termina de cargar
   document.getElementById('app').addEventListener('load', () => {
@@ -112,91 +91,10 @@
       document.getElementById('loader').classList.add('hide');
     }, 200);
   });
+  // Failsafe: si por algún motivo el load no dispara, ocultar tras 6s
   setTimeout(() => {
     document.getElementById('loader').classList.add('hide');
   }, 6000);
-
-  // Fallback iOS: si env(safe-area-inset-top) no se aplicó (algunos
-  // contextos de Safari iOS lo retornan 0), aplicamos padding manual
-  // basado en el dispositivo.
-  (function applySafeAreaFallback() {
-    const cs = getComputedStyle(document.body);
-    const padTop = parseInt(cs.paddingTop, 10) || 0;
-    const padBottom = parseInt(cs.paddingBottom, 10) || 0;
-
-    const ua = navigator.userAgent || '';
-    const isiOS = /iPad|iPhone|iPod/.test(ua) ||
-                  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-
-    if (!isiOS) return;
-
-    // Si el padding es 0 o muy chico, lo aplicamos manualmente.
-    // Detectar si tiene notch / Dynamic Island por la altura de pantalla.
-    const screenH = window.screen.height;
-    const hasNotch = screenH >= 812; // iPhone X y posteriores
-    const hasDynamicIsland = screenH >= 852; // iPhone 14 Pro+
-
-    if (padTop < 20) {
-      const topPad = hasDynamicIsland ? 59 : (hasNotch ? 47 : 20);
-      document.body.style.paddingTop = topPad + 'px';
-    }
-    if (padBottom < 10 && hasNotch) {
-      // home indicator
-      document.body.style.paddingBottom = '34px';
-    }
-  })();
-
-  // Ajusta la altura del banner-cover según el dispositivo.
-  // iOS Safari muestra una `.warning-banner-bar` enorme (max-height: 20vh)
-  // cuando se embeben Apps Scripts en iframes externos. Tenemos que taparla.
-  (function adjustBannerCover() {
-    const cover = document.querySelector('.banner-cover');
-    if (!cover) return;
-    const ua = navigator.userAgent || '';
-    const isiOS = /iPad|iPhone|iPod/.test(ua) ||
-                  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    if (isiOS) {
-      // Google's .warning-banner-bar tiene max-height: 20vh exacto.
-      // Usamos eso como height del overlay para taparlo completo, sin
-      // pasarnos al contenido de la app (título + subtítulo).
-      cover.style.height = '20vh';
-    } else {
-      cover.style.height = '60px';
-    }
-  })();
-
-  // Botón para cerrar el overlay si el usuario considera que tapa demasiado
-  // (porque Google decidió no mostrar la warning-banner-bar grande).
-  (function addCloseButtonToOverlay() {
-    const cover = document.querySelector('.banner-cover');
-    if (!cover) return;
-    const btn = document.createElement('button');
-    btn.textContent = '✕ Reducir';
-    btn.setAttribute('aria-label', 'Reducir overlay si tapa demasiado');
-    Object.assign(btn.style, {
-      position: 'absolute',
-      bottom: '4px',
-      right: '8px',
-      background: 'rgba(255,255,255,0.08)',
-      color: '#888780',
-      border: '0.5px solid rgba(255,255,255,0.15)',
-      borderRadius: '4px',
-      padding: '3px 8px',
-      fontSize: '10px',
-      fontFamily: 'inherit',
-      cursor: 'pointer',
-      pointerEvents: 'auto',
-      zIndex: '6'
-    });
-    btn.onclick = (e) => {
-      e.stopPropagation();
-      cover.style.height = '50px';
-      btn.style.display = 'none';
-    };
-    cover.appendChild(btn);
-    // Limpiar preferencia vieja de la versión anterior
-    try { localStorage.removeItem('panini_overlay_reduced'); } catch(_){}
-  })();
 </script>
 </body>
 </html>
