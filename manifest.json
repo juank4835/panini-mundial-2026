@@ -6,8 +6,8 @@
   "scope": "/panini-mundial-2026/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#1a1a18",
-  "theme_color": "#1a1a18",
+  "background_color": "#000000",
+  "theme_color": "#000000",
   "icons": [
     {
       "src": "icon-192.png",
