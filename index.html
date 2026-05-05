@@ -56,17 +56,20 @@
     animation: spin 0.7s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
-  /* Wrapper del iframe — fondo negro y oculta scrollbars/banners de Google */
+  /* Wrapper del iframe — respeta el notch / Dynamic Island / home indicator */
   .frame-wrap {
     position: fixed;
-    inset: 0;
+    top: env(safe-area-inset-top, 0);
+    bottom: env(safe-area-inset-bottom, 0);
+    left: env(safe-area-inset-left, 0);
+    right: env(safe-area-inset-right, 0);
     background: #1a1a18;
     overflow: hidden;
   }
-  /* Truco: corremos el iframe 52px hacia arriba para esconder la barra
-     blanca de Google ("Un usuario de Google Apps Script creó esta aplicación
-     · Denunciar abuso · Más información"). Le damos 52px extra de altura
-     para compensar y no cortar contenido. */
+  /* Truco: corremos el iframe 52px hacia arriba dentro del wrapper para
+     esconder la barra blanca de Google ("Un usuario de Google Apps Script
+     creó esta aplicación · Denunciar abuso"). El wrapper ya está debajo del
+     notch, así que el contenido de la app queda perfectamente visible. */
   iframe {
     position: absolute;
     top: -52px;
