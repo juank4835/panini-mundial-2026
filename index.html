@@ -146,15 +146,60 @@
     }
   })();
 
-  // Ajusta la altura del banner-cover según el ancho del dispositivo.
-  // En pantallas chicas la barra de Google es relativamente más alta.
+  // Ajusta la altura del banner-cover según el dispositivo.
+  // iOS Safari muestra una `.warning-banner-bar` enorme (max-height: 20vh)
+  // cuando se embeben Apps Scripts en iframes externos. Tenemos que taparla.
   (function adjustBannerCover() {
     const cover = document.querySelector('.banner-cover');
     if (!cover) return;
-    const w = window.innerWidth;
-    if (w < 360) cover.style.height = '70px';
-    else if (w < 420) cover.style.height = '64px';
-    else cover.style.height = '60px';
+    const ua = navigator.userAgent || '';
+    const isiOS = /iPad|iPhone|iPod/.test(ua) ||
+                  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    if (isiOS) {
+      // 22vh para la warning-banner-bar de Google + 30px para warning-bar normal
+      cover.style.height = 'calc(22vh + 30px)';
+    } else {
+      cover.style.height = '60px';
+    }
+  })();
+
+  // Botón para cerrar el overlay si el usuario considera que tapa demasiado
+  // (porque Google decidió no mostrar la warning-banner-bar grande).
+  (function addCloseButtonToOverlay() {
+    const cover = document.querySelector('.banner-cover');
+    if (!cover) return;
+    const btn = document.createElement('button');
+    btn.textContent = '✕ Reducir';
+    btn.setAttribute('aria-label', 'Reducir overlay si tapa demasiado');
+    Object.assign(btn.style, {
+      position: 'absolute',
+      bottom: '4px',
+      right: '8px',
+      background: 'rgba(255,255,255,0.08)',
+      color: '#888780',
+      border: '0.5px solid rgba(255,255,255,0.15)',
+      borderRadius: '4px',
+      padding: '3px 8px',
+      fontSize: '10px',
+      fontFamily: 'inherit',
+      cursor: 'pointer',
+      pointerEvents: 'auto',
+      zIndex: '6'
+    });
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      cover.style.height = '50px';
+      btn.style.display = 'none';
+      try { localStorage.setItem('panini_overlay_reduced', '1'); } catch(_){}
+    };
+    cover.appendChild(btn);
+    // Si antes el usuario lo redujo, recordar
+    try {
+      if (localStorage.getItem('panini_overlay_reduced') === '1') {
+        cover.style.height = '50px';
+        btn.style.display = 'none';
+      }
+    } catch(_){}
   })();
 </script>
 </body>
