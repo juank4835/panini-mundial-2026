@@ -36,13 +36,14 @@
     color: #f0eee6;
     -webkit-tap-highlight-color: transparent;
   }
-  /* Body con safe-area-inset → el iframe queda por DEBAJO del status bar
-     (overlay negro translucent en PWA) y por ENCIMA de la home indicator.
-     Sin esto, en modo Home Screen el contenido de Apps Script se mete bajo
-     el status bar y "se sube" tapado con la hora/batería. */
+  /* Body con safe-area-inset SOLO en top y laterales — el iframe queda
+     por debajo del status bar y, en landscape, esquiva el notch.
+     NO ponemos padding-bottom porque la bottom nav del Apps Script ya
+     tiene su propio `padding-bottom: env(safe-area-inset-bottom)` para
+     respetar el área de la home indicator. Si el wrapper también lo
+     pone, queda un hueco vacío negro entre la nav y el borde. */
   body {
     padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
   }
