@@ -7065,6 +7065,7 @@
     let albumQty = 0, totalAlbumInv = 0;
     let cajasQty = 0, totalCajas = 0;
     let sobresQty = 0, totalSobresInv = 0;
+    let laminasCompQty = 0, totalLaminasInv = 0;
     let cajaPrecioUlt = 520000; // último precio visto, fallback default
     let ventaLaminas = 0, ventaTotal = 0;
     finanzasState.movimientos.forEach(m => {
@@ -7073,6 +7074,7 @@
         if (m.subtipo === 'album') { albumQty += m.qty; totalAlbumInv += monto; }
         else if (m.subtipo === 'caja') { cajasQty += m.qty; totalCajas += monto; cajaPrecioUlt = m.precio; }
         else if (m.subtipo === 'sobre') { sobresQty += m.qty; totalSobresInv += monto; }
+        else if (m.subtipo === 'lamina') { laminasCompQty += m.qty; totalLaminasInv += monto; }
       } else if (m.tipo === 'venta') {
         ventaLaminas += m.qty;
         ventaTotal += monto;
@@ -7104,8 +7106,8 @@
     const pctAlbum = totalAlbum > 0 ? (pegadas / totalAlbum * 100) : 0;
 
     // Inversión derivada
-    // totalAlbumInv, totalCajas, totalSobresInv ya derivados arriba al iterar movimientos.
-    const totalInvertido = totalAlbumInv + totalCajas + totalSobresInv;
+    // Totales derivados arriba al iterar movimientos.
+    const totalInvertido = totalAlbumInv + totalCajas + totalSobresInv + totalLaminasInv;
     const sobresTot = FIN_INVERSION.cajasQty * SOBRES_POR_CAJA + FIN_INVERSION.sobresQty;
     const laminasBrutas = sobresTot * LAMINAS_POR_SOBRE;
     const costoPromCaja = FIN_INVERSION.cajasQty > 0 ? totalCajas / FIN_INVERSION.cajasQty : 0;
@@ -7123,12 +7125,17 @@
     };
     const valorEstimado = valorCat.jugador + valorCat.escudo + valorCat.equipo + valorCat.fwc + valorCat.estrella + valorCat.cero;
 
-    // Rendimiento (eficiencia financiera): cuánto te acercás al óptimo
+    // Rendimiento: cuánto te acercás al óptimo después de descontar ventas.
+    // Cuanto más vendés, más baja el "costo neto" y mayor el rendimiento.
+    // Si net <= 0 ya recuperaste todo lo invertido (rendimiento ≥ 100%).
     const sobresOptimos = Math.ceil(totalAlbum / LAMINAS_POR_SOBRE);
     const costoPorSobre = FIN_INVERSION.cajasPrecio / SOBRES_POR_CAJA;
     const costoOptimo = sobresOptimos * costoPorSobre + totalAlbumInv;
-    const rendimiento = totalInvertido > 0 ? Math.round(costoOptimo / totalInvertido * 100) : 0;
-    const sobrecosto = totalInvertido - costoOptimo;
+    const totalNeto = totalInvertido - ventaTotal;
+    const rendimiento = totalNeto > 0
+      ? Math.min(999, Math.round(costoOptimo / totalNeto * 100))
+      : 999;
+    const sobrecosto = totalNeto - costoOptimo;
 
     // Recuperación
     const laminasVendidas = FIN_VENTAS.laminas;
@@ -7159,33 +7166,59 @@
           '<div class="fin-ring-pct">' + rendimiento + '%' +
             '<span class="fin-ring-title">Rendimiento</span>' +
             '<span class="fin-ring-amounts">' +
-              '<span class="ra">' + _finFmt(totalInvertido) + '</span>' +
+              '<span class="ra">' + _finFmt(totalNeto) + '</span>' +
               '<span class="div">÷</span>' +
               '<span class="rg">' + _finFmt(costoOptimo) + '</span>' +
             '</span>' +
-            '<span class="fin-ring-sobrecosto">Sobrecosto <b>' + _finFmt(sobrecosto) + '</b></span>' +
+            (sobrecosto >= 0
+              ? '<span class="fin-ring-sobrecosto">Sobrecosto <b>' + _finFmt(sobrecosto) + '</b></span>'
+              : '<span class="fin-ring-sobrecosto">Ahorro <b style="color:var(--green);">' + _finFmt(Math.abs(sobrecosto)) + '</b></span>') +
           '</div>' +
         '</div>' +
       '</div>' +
     '</div>';
 
-    // ▼ Inversión
+    // ▼ Inversión — resumen flexible según los subtipos registrados
+    const invParts = [];
+    if (cajasQty > 0) invParts.push(cajasQty + (cajasQty === 1 ? ' caja' : ' cajas'));
+    if (albumQty > 0) invParts.push(albumQty === 1 ? 'álbum' : albumQty + ' álbumes');
+    if (sobresQty > 0) invParts.push(sobresQty + (sobresQty === 1 ? ' sobre' : ' sobres'));
+    if (laminasCompQty > 0) invParts.push(laminasCompQty + (laminasCompQty === 1 ? ' lámina' : ' láminas'));
+    const invSummary = invParts.length > 0 ? invParts.join(' + ') : 'sin compras';
+    const subSummary = sobresTot > 0
+      ? sobresTot + ' sobres · ' + laminasBrutas + ' láminas'
+      : (laminasCompQty > 0 ? laminasCompQty + (laminasCompQty === 1 ? ' lámina suelta' : ' láminas sueltas') : '—');
+
+    let invRows = '';
+    if (albumQty > 0) {
+      invRows += '<div class="fin-price-row"><span class="cat">Álbum</span><span class="qty">' + albumQty + ' × ' + _finFmt(FIN_INVERSION.albumPrecio) + '</span><span class="amt">' + _finFmt(totalAlbumInv) + '</span></div>';
+    }
+    if (cajasQty > 0) {
+      invRows += '<div class="fin-price-row"><span class="cat">Cajas</span><span class="qty">' + cajasQty + ' × ' + _finFmt(FIN_INVERSION.cajasPrecio) + '</span><span class="amt">' + _finFmt(totalCajas) + '</span></div>';
+    }
+    if (sobresQty > 0) {
+      invRows += '<div class="fin-price-row"><span class="cat">Sobres sueltos</span><span class="qty">' + sobresQty + ' × ' + _finFmt(FIN_INVERSION.sobresPrecio) + '</span><span class="amt">' + _finFmt(totalSobresInv) + '</span></div>';
+    }
+    if (laminasCompQty > 0) {
+      const lamPrecioProm = totalLaminasInv / laminasCompQty;
+      invRows += '<div class="fin-price-row"><span class="cat">Láminas sueltas</span><span class="qty">' + laminasCompQty + ' × ' + _finFmt(lamPrecioProm) + '</span><span class="amt">' + _finFmt(totalLaminasInv) + '</span></div>';
+    }
+
     html += '<div class="fin-panel out">' +
       '<div class="fin-panel-title out"><span>▼ Inversión</span></div>' +
       '<div class="fin-panel-grid">' +
         '<div class="fin-panel-stat"><div class="v fin-red-glow">' + _finFmt(totalInvertido) + '</div><div class="l">Total invertido</div></div>' +
-        '<div class="fin-panel-stat"><div class="v">' + FIN_INVERSION.cajasQty + ' cajas + álbum</div><div class="l">' + sobresTot + ' sobres · ' + laminasBrutas + ' láminas</div></div>' +
-        '<div class="fin-panel-stat"><div class="v">' + _finFmt(costoPromCaja) + '</div><div class="l">Costo prom. caja</div></div>' +
-        '<div class="fin-panel-stat"><div class="v">' + _finFmt(costoLamBruta) + '</div><div class="l">Costo / lámina (bruta)</div></div>' +
+        '<div class="fin-panel-stat"><div class="v">' + invSummary + '</div><div class="l">' + subSummary + '</div></div>' +
+        '<div class="fin-panel-stat"><div class="v">' + (cajasQty > 0 ? _finFmt(costoPromCaja) : '—') + '</div><div class="l">Costo prom. caja</div></div>' +
+        '<div class="fin-panel-stat"><div class="v">' + (laminasBrutas > 0 ? _finFmt(costoLamBruta) : '—') + '</div><div class="l">Costo / lámina (bruta)</div></div>' +
       '</div>' +
-      '<div class="fin-price-rows" style="margin-top:12px;">' +
-        '<div class="fin-price-row"><span class="cat">Álbum</span><span class="qty">' + FIN_INVERSION.albumQty + ' × ' + _finFmt(FIN_INVERSION.albumPrecio) + '</span><span class="amt">' + _finFmt(totalAlbumInv) + '</span></div>' +
-        '<div class="fin-price-row"><span class="cat">Cajas</span><span class="qty">' + FIN_INVERSION.cajasQty + ' × ' + _finFmt(FIN_INVERSION.cajasPrecio) + '</span><span class="amt">' + _finFmt(totalCajas) + '</span></div>' +
-      '</div>' +
-      '<div class="fin-panel-foot">' +
-        '<div>Costo / lámina única conseguida: <b style="color:var(--text);">' + _finFmt(costoLamUnica) + '</b></div>' +
-        '<div class="formula">= ' + _finFmt(totalCajas) + ' (cajas) ÷ ' + totalUnicas + ' (únicas) = ' + _finFmt(costoLamUnica) + '</div>' +
-      '</div>' +
+      (invRows ? '<div class="fin-price-rows" style="margin-top:12px;">' + invRows + '</div>' : '') +
+      (totalCajas > 0 && totalUnicas > 0
+        ? '<div class="fin-panel-foot">' +
+            '<div>Costo / lámina única conseguida: <b style="color:var(--text);">' + _finFmt(costoLamUnica) + '</b></div>' +
+            '<div class="formula">= ' + _finFmt(totalCajas) + ' (cajas) ÷ ' + totalUnicas + ' (únicas) = ' + _finFmt(costoLamUnica) + '</div>' +
+          '</div>'
+        : '') +
     '</div>';
 
     // ▲ Recuperación
