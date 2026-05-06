@@ -6829,26 +6829,55 @@
   }
   // Wire-up del índice: scroll suave al click + auto-highlight del chip
   // de la sección visible vía IntersectionObserver.
+  // - Se desconecta el observer anterior antes de crear uno nuevo (evita
+  //   que renders sucesivos acumulen observers compitiendo).
+  // - Durante un scroll programático (click en chip) se suspende el
+  //   observer para que no "secuestre" el chip activo elegido por el
+  //   usuario. Se usa token para que múltiples clicks rápidos no se
+  //   pisen entre sí.
+  const _albumIdxState = {};
+  let _albumIdxScrollToken = 0;
   function _bindAlbumIndex(idPrefix) {
     const nav = document.querySelector('.album-idx[data-album-idx="' + idPrefix + '"]');
     if (!nav) return;
+
+    // Disconnect previous observer (sino se acumulan en re-renders)
+    if (_albumIdxState[idPrefix] && _albumIdxState[idPrefix].observer) {
+      _albumIdxState[idPrefix].observer.disconnect();
+    }
+    _albumIdxState[idPrefix] = { observer: null, suppressUntilToken: 0 };
+
+    const chipsByGrp = {};
+    nav.querySelectorAll('.album-idx-chip').forEach(c => { chipsByGrp[c.dataset.grp] = c; });
+
     nav.querySelectorAll('.album-idx-chip').forEach(chip => {
       chip.onclick = (e) => {
         e.preventDefault();
         if (chip.classList.contains('empty')) return;
         const grp = chip.dataset.grp;
         const target = document.getElementById(idPrefix + '-' + grp);
-        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (!target) return;
+        // Suspender el observer durante este scroll programático
+        const myToken = ++_albumIdxScrollToken;
+        _albumIdxState[idPrefix].suppressUntilToken = myToken;
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         nav.querySelectorAll('.album-idx-chip').forEach(c => c.classList.remove('active'));
         chip.classList.add('active');
+        // Liberar el supress solo si ningún tap más nuevo lo reseteó
+        setTimeout(() => {
+          if (_albumIdxState[idPrefix] &&
+              _albumIdxState[idPrefix].suppressUntilToken === myToken) {
+            _albumIdxState[idPrefix].suppressUntilToken = 0;
+          }
+        }, 750);
       };
     });
-    // Auto-highlight: cuando un anchor entra al viewport, marca su chip.
-    const chipsByGrp = {};
-    nav.querySelectorAll('.album-idx-chip').forEach(c => { chipsByGrp[c.dataset.grp] = c; });
+
     const anchors = document.querySelectorAll('.album-idx-anchor[id^="' + idPrefix + '-"]');
     if (!anchors.length || typeof IntersectionObserver === 'undefined') return;
     const obs = new IntersectionObserver((entries) => {
+      // Si hay un scroll programático en curso, no overridear el active
+      if (_albumIdxState[idPrefix] && _albumIdxState[idPrefix].suppressUntilToken !== 0) return;
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           const grp = entry.target.id.replace(idPrefix + '-', '');
@@ -6862,6 +6891,7 @@
       });
     }, { rootMargin: '-30% 0px -60% 0px', threshold: 0 });
     anchors.forEach(a => obs.observe(a));
+    _albumIdxState[idPrefix].observer = obs;
   }
 
   function renderRepetidas() {
