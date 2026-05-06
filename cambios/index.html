@@ -87,17 +87,49 @@
 
   .legend {
     display: flex;
-    gap: 14px;
+    gap: 8px;
     justify-content: center;
     flex-wrap: wrap;
-    font-size: 11px;
-    color: var(--text-2);
     margin-bottom: 14px;
   }
-  .legend-item { display: flex; align-items: center; gap: 6px; }
-  .legend-cell { width: 14px; height: 14px; border-radius: 3px; }
+  /* Legend = botones toggle. Active muestra el color, off lo apaga. */
+  .legend-item {
+    background: var(--bg-2);
+    border: 0.5px solid var(--border);
+    color: var(--text-2);
+    font-size: 11px;
+    font-family: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 100px;
+    transition: opacity 0.2s ease, background 0.2s ease;
+  }
+  .legend-item:hover { background: var(--bg-3); }
+  .legend-item.off {
+    opacity: 0.4;
+  }
+  .legend-item.off .legend-cell { background: var(--bg-3); }
+  .legend-cell { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
   .legend-cell.falta { background: var(--danger); }
   .legend-cell.rep   { background: var(--amber); }
+
+  /* Cuando un toggle está apagado, las celdas de ese tipo se "apagan"
+     (gris apagado) — siguen visibles pero pierden el color para que el ojo
+     pueda enfocarse en lo que sí está activo. */
+  body.hide-falta .cell.falta {
+    background: var(--bg-2);
+    color: var(--text-3);
+    opacity: 0.45;
+  }
+  body.hide-rep .cell.rep {
+    background: var(--bg-2);
+    color: var(--text-3);
+    opacity: 0.45;
+  }
+  body.hide-rep .cell.rep .x { display: none; }
 
   /* Tabla checklist */
   .table-grid {
@@ -144,20 +176,28 @@
     justify-content: center;
     font-weight: 700;
     font-size: 9px;
-    border-radius: 3px;
+    border-radius: 50%;
     position: relative;
   }
   .cell.tengo { background: var(--bg-2); color: var(--text-3); opacity: 0.45; }
   .cell.falta { background: var(--danger); color: #fff; }
-  .cell.rep   { background: var(--amber); color: var(--amber-text); }
+  .cell.rep {
+    background: var(--amber);
+    color: #fff;
+    /* Apilamos verticalmente el número arriba y el contador "×N" abajo,
+       ambos centrados dentro del círculo. */
+    flex-direction: column;
+    line-height: 1;
+    gap: 1px;
+  }
   .cell.rep .x {
-    position: absolute;
-    bottom: -1px;
-    right: 1px;
-    font-size: 7px;
+    font-size: 6px;
     font-weight: 700;
     line-height: 1;
+    color: #fff;
+    opacity: 0.85;
   }
+  .cell.rep .x::before { content: '×'; opacity: 0.7; }
 
   /* Loading & error */
   .loading, .errstate {
@@ -335,8 +375,8 @@
       '<div class="share-hint">Copia un mensaje listo para pegar en WhatsApp / Telegram / Mail con lo que te falta y lo que tenés repetido.</div>';
 
     html += '<div class="legend">' +
-      '<span class="legend-item"><span class="legend-cell falta"></span> Me falta</span>' +
-      '<span class="legend-item"><span class="legend-cell rep"></span> Tengo repetida (×N copias)</span>' +
+      '<button class="legend-item" data-toggle="falta"><span class="legend-cell falta"></span> Me falta</button>' +
+      '<button class="legend-item" data-toggle="rep"><span class="legend-cell rep"></span> Tengo repetida (×N copias)</button>' +
     '</div>';
 
     // Tabla
@@ -424,6 +464,16 @@
       copyToClipboard(buildShareMessage(state, equipos), e.currentTarget);
     };
     document.getElementById('btn-refresh').onclick = () => init();
+
+    // Toggles del legend (Me falta / Tengo repetida): apagan/encienden
+    // el color de las celdas correspondientes en toda la tabla.
+    document.querySelectorAll('.legend-item[data-toggle]').forEach(btn => {
+      btn.onclick = () => {
+        const what = btn.dataset.toggle; // 'falta' | 'rep'
+        btn.classList.toggle('off');
+        document.body.classList.toggle('hide-' + what);
+      };
+    });
   }
 
   // === Mensaje de compartir (mismo formato que la app real) ===
