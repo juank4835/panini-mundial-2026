@@ -2731,6 +2731,156 @@
     border: 0.5px solid var(--border);
     margin-top: 8px;
   }
+
+  /* Bottom sheet + form para los modales de Finanzas (precios + movs) */
+  .fin-sheet-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 100;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .fin-sheet-backdrop.open { display: flex; }
+  .fin-sheet {
+    background: #0a0a0a;
+    border-radius: 18px 18px 0 0;
+    border-top: 0.5px solid var(--border);
+    border-left: 0.5px solid var(--border);
+    border-right: 0.5px solid var(--border);
+    width: 100%;
+    max-width: 460px;
+    max-height: 88vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.6);
+  }
+  .fin-sheet-handle {
+    width: 36px;
+    height: 4px;
+    background: var(--bg-3);
+    border-radius: 2px;
+    margin: 10px auto 0;
+    flex-shrink: 0;
+  }
+  .fin-sheet-header {
+    padding: 14px 18px 12px;
+    border-bottom: 0.5px solid var(--border);
+    flex-shrink: 0;
+  }
+  .fin-sheet-header h2 { margin: 0; font-size: 16px; font-weight: 700; }
+  .fin-sheet-header p { margin: 4px 0 0; font-size: 12px; color: var(--text-3); }
+  .fin-sheet-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 4px 18px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .fin-sheet-footer {
+    padding: 12px 18px calc(env(safe-area-inset-bottom, 12px) + 12px);
+    border-top: 0.5px solid var(--border);
+    flex-shrink: 0;
+    background: #0a0a0a;
+  }
+  .fin-pr-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .fin-pr-row:last-child { border-bottom: 0; }
+  .fin-pr-info { min-width: 0; }
+  .fin-pr-cat { font-size: 13px; font-weight: 600; color: var(--text); }
+  .fin-pr-qty {
+    font-size: 11px;
+    color: var(--text-3);
+    margin-top: 2px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .fin-pr-subtotal {
+    font-size: 11px;
+    color: var(--green);
+    margin-top: 2px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-weight: 700;
+  }
+  .fin-pr-input-wrap {
+    position: relative;
+    width: 110px;
+  }
+  .fin-pr-input-wrap::before {
+    content: "$";
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-3);
+    font-size: 13px;
+    pointer-events: none;
+  }
+  .fin-pr-input {
+    width: 100%;
+    padding: 9px 10px 9px 22px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: right;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .fin-pr-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(255,140,26,0.15);
+  }
+  .fin-pr-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+  }
+  .fin-pr-total-label {
+    font-size: 11px;
+    color: var(--text-2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .fin-pr-total-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--amber);
+    font-family: "JetBrains Mono", Menlo, monospace;
+    text-shadow: 0 0 8px rgba(239,159,39,0.4);
+  }
+  .fin-btn-save {
+    width: 100%;
+    padding: 12px;
+    background: var(--accent);
+    color: #000;
+    border: 0;
+    border-radius: var(--radius);
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .fin-btn-cancel {
+    width: 100%;
+    padding: 9px;
+    margin-top: 6px;
+    background: transparent;
+    color: var(--text-2);
+    border: 0;
+    font-size: 12px;
+    cursor: pointer;
+  }
 </style>
 </head>
 <body>
@@ -2846,6 +2996,26 @@
   </div>
 </div>
 
+<!-- Modal de precios de venta (Finanzas) -->
+<div class="fin-sheet-backdrop" id="fin-precios-backdrop">
+  <div class="fin-sheet">
+    <div class="fin-sheet-handle"></div>
+    <div class="fin-sheet-header">
+      <h2>⚙ Precios de venta</h2>
+      <p>Ajustá según cómo se esté vendiendo en el mercado hoy</p>
+    </div>
+    <div class="fin-sheet-body" id="fin-precios-body"></div>
+    <div class="fin-sheet-footer">
+      <div class="fin-pr-total">
+        <span class="fin-pr-total-label">Valor estimado total</span>
+        <span class="fin-pr-total-value" id="fin-precios-total">$0</span>
+      </div>
+      <button class="fin-btn-save" id="fin-precios-save">Guardar precios</button>
+      <button class="fin-btn-cancel" id="fin-precios-cancel">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <!-- Popover de acción rápida (long-press en stat cards del home) -->
 <div class="card-action-backdrop" id="card-action-backdrop"></div>
 <div class="card-action-menu" id="card-action-menu">
@@ -2958,13 +3128,6 @@
     schedulePush();
   }
 
-  const jugadoresCOL = [
-    'Camilo Vargas', 'David Ospina', 'Davinson Sánchez', 'Yerry Mina', 'Daniel Muñoz',
-    'Johan Mojica', 'Jhon Lucumí', 'Santiago Arias', 'Jefferson Lerma', 'Escudo COL',
-    'Kevin Castaño', 'Richard Ríos', 'James Rodríguez', 'Juan F. Quintero', 'Jorge Carrascal',
-    'Jhon Arias', 'Jhon Córdoba', 'Luis Suárez', 'Luis Díaz', 'Equipo COL'
-  ];
-
   function buildSections() {
     const secs = [];
     secs.push({
@@ -2975,15 +3138,12 @@
 
     equiposOrden.forEach((eq, idx) => {
       const items = [];
+      // Convención Panini Mundial 2026: 1 = Escudo, 13 = Equipo, resto = jugadores
       for (let i = 1; i <= 20; i++) {
-        let label = '';
-        if (eq.code === 'COL') {
-          label = jugadoresCOL[i-1] || ('Jugador ' + i);
-        } else {
-          if (i === 10) label = 'Escudo';
-          else if (i === 20) label = 'Equipo';
-          else label = 'Jugador ' + i;
-        }
+        let label;
+        if (i === 1) label = 'Escudo';
+        else if (i === 13) label = 'Equipo';
+        else label = 'Jugador ' + i;
         const id = eq.code + '-' + i;
         items.push({ id: id, label: label, displayNum: String(i) });
       }
@@ -6682,17 +6842,19 @@
   }
   let finanzasState = _finLoad();
 
-  // Categorización por id: 00 → cero · FWC* → fwc · TEAM-10 → escudo ·
-  // TEAM-20 → equipo · resto → jugador. "Estrella" queda en 0 hasta Fase 4
-  // (cuando se decida cómo marcar jugadores destacados).
+  // Categorización por id: 00 → cero · FWC* → fwc · TEAM-1 → escudo ·
+  // TEAM-13 → equipo (foto grupal) · resto (2-12, 14-20) → jugador.
+  // Convención real del álbum Panini Mundial 2026.
+  // "Estrella" queda en 0 hasta Fase 4 (cuando se decida cómo marcar
+  // jugadores destacados).
   function _finCategoryOf(id) {
     if (id === '00') return 'cero';
     if (/^FWC/.test(id)) return 'fwc';
     const m = id.match(/^[A-Z]{3}-(\d+)$/);
     if (!m) return 'jugador';
     const n = parseInt(m[1], 10);
-    if (n === 10) return 'escudo';
-    if (n === 20) return 'equipo';
+    if (n === 1) return 'escudo';
+    if (n === 13) return 'equipo';
     return 'jugador';
   }
   function _finFmt(n) {
@@ -6884,12 +7046,112 @@
   }
 
   function bindFinanzas() {
-    const soonMsg = 'Próximamente (Fase 2): editar precios y registrar movimientos.';
     const movBtn = document.getElementById('fin-add-mov');
-    if (movBtn) movBtn.onclick = () => alert(soonMsg);
+    if (movBtn) movBtn.onclick = () => alert('Próximamente (Fase 2C): registrar movimientos.');
     document.querySelectorAll('.fin-config-link').forEach(el => {
-      el.onclick = () => alert(soonMsg);
+      el.onclick = () => _finPreciosOpen();
     });
+  }
+
+  // === Modal de precios (Fase 2B) =================================
+  const FIN_CAT_LABELS = {
+    jugador: 'Jugadores comunes',
+    escudo: 'Escudos',
+    equipo: 'Equipos (foto grupal)',
+    fwc: 'Intro / Historia (FWC)',
+    estrella: 'Estrellas (Mbappé, Haaland…)',
+    cero: 'Lámina 00 (Logo Panini)',
+  };
+  function _finComputeRepCats() {
+    const rep = { jugador: 0, escudo: 0, equipo: 0, fwc: 0, estrella: 0, cero: 0 };
+    secciones.forEach(sec => sec.items.forEach(it => {
+      const total = getPegada(it.id) + getSueltas(it.id);
+      if (total >= 2) rep[_finCategoryOf(it.id)] += (total - 1);
+    }));
+    return rep;
+  }
+  // Acepta "1500", "1.500", "1,500", " 1500 " — quita todo lo no-dígito.
+  function _finParseAmount(s) {
+    const cleaned = String(s == null ? '' : s).replace(/[^0-9]/g, '');
+    const n = parseInt(cleaned, 10);
+    return isNaN(n) ? 0 : n;
+  }
+  function _finPreciosOpen() {
+    const bd = document.getElementById('fin-precios-backdrop');
+    if (!bd) return;
+    _finPreciosRender();
+    bd.classList.add('open');
+  }
+  function _finPreciosClose() {
+    const bd = document.getElementById('fin-precios-backdrop');
+    if (bd) bd.classList.remove('open');
+  }
+  function _finPreciosRender() {
+    const body = document.getElementById('fin-precios-body');
+    if (!body) return;
+    const rep = _finComputeRepCats();
+    const cats = ['jugador','escudo','equipo','fwc','estrella','cero'];
+    body.innerHTML = cats.map(cat => {
+      const qty = rep[cat];
+      const precio = finanzasState.precios[cat] || 0;
+      const subtotal = qty * precio;
+      // Mostrar precio sin el "$" para no confundir el input.
+      const precioStr = precio.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+      return '<div class="fin-pr-row" data-cat="' + cat + '">' +
+        '<div class="fin-pr-info">' +
+          '<div class="fin-pr-cat">' + FIN_CAT_LABELS[cat] + '</div>' +
+          '<div class="fin-pr-qty">' + qty + (qty === 1 ? ' repetida' : ' repetidas') + '</div>' +
+          '<div class="fin-pr-subtotal" data-sub>= ' + _finFmt(subtotal) + '</div>' +
+        '</div>' +
+        '<div class="fin-pr-input-wrap">' +
+          '<input type="text" class="fin-pr-input" data-precio data-cat="' + cat + '" inputmode="decimal" value="' + precioStr + '">' +
+        '</div>' +
+      '</div>';
+    }).join('');
+    _finPreciosUpdateTotal();
+  }
+  function _finPreciosUpdateTotal() {
+    const rep = _finComputeRepCats();
+    let total = 0;
+    document.querySelectorAll('#fin-precios-body .fin-pr-row').forEach(row => {
+      const cat = row.dataset.cat;
+      const input = row.querySelector('input[data-precio]');
+      const precio = _finParseAmount(input ? input.value : '0');
+      const sub = (rep[cat] || 0) * precio;
+      total += sub;
+      const subEl = row.querySelector('[data-sub]');
+      if (subEl) subEl.textContent = '= ' + _finFmt(sub);
+    });
+    const totalEl = document.getElementById('fin-precios-total');
+    if (totalEl) totalEl.textContent = _finFmt(total);
+  }
+  function _finPreciosBind() {
+    const bd = document.getElementById('fin-precios-backdrop');
+    if (!bd) return;
+    bd.onclick = (e) => { if (e.target === bd) _finPreciosClose(); };
+    bd.addEventListener('input', (e) => {
+      if (e.target && e.target.matches && e.target.matches('input[data-precio]')) _finPreciosUpdateTotal();
+    });
+    const save = document.getElementById('fin-precios-save');
+    if (save) save.onclick = () => {
+      const cats = ['jugador','escudo','equipo','fwc','estrella','cero'];
+      cats.forEach(cat => {
+        const input = document.querySelector('input[data-precio][data-cat="' + cat + '"]');
+        if (input) finanzasState.precios[cat] = _finParseAmount(input.value);
+      });
+      _finSave();
+      _finPreciosClose();
+      // Refrescar la vista Finanzas si está activa
+      if (tabActiva === 'finanzas') {
+        const cont = document.getElementById('contenido');
+        if (cont) {
+          cont.innerHTML = renderFinanzas();
+          bindFinanzas();
+        }
+      }
+    };
+    const cancel = document.getElementById('fin-precios-cancel');
+    if (cancel) cancel.onclick = () => _finPreciosClose();
   }
 
   // displayNum helper (para items que vinieron de classifyCodes sin el campo)
@@ -7054,6 +7316,7 @@
     bindBottomNav();
     bindMoreSheet();
     bindGroupSelector();
+    _finPreciosBind();
     updateBottomNavActive();
     updateGroupSelectorVisibility();
   }
