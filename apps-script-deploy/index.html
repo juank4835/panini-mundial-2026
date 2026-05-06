@@ -1138,6 +1138,12 @@
     border-color: var(--amber);
     color: #fff;
   }
+  /* En Registrar (faltgrp) el chip activo va en rojo para combinar con
+     las cards rojas de la vista. */
+  .album-idx[data-album-idx="faltgrp"] .album-idx-chip.active {
+    background: var(--danger);
+    border-color: var(--danger);
+  }
   .album-idx-chip.empty {
     opacity: 0.35;
     pointer-events: none;
