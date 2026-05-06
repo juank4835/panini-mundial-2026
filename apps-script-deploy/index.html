@@ -2860,6 +2860,7 @@
   const STORAGE_KEY = 'panini_mundial_2026_v5';
   const ORDER_KEY = 'panini_mundial_2026_v5_order';
   const SYNC_LAST_KEY = 'panini_sync_last_v1';
+  const STORAGE_FIN_KEY = 'panini_mundial_2026_v5_finanzas';
   // Modelo: estado COMPARTIDO. Todos editan el mismo estado. Las operaciones
   // van al backend de Apps Script que las serializa con LockService —
   // cualquiera puede sumar o restar, sin race conditions.
@@ -6640,9 +6641,47 @@
     }
   }
 
-  // === Vista Finanzas (Fase 1) ====================================
-  // Datos hardcodeados de inversión y precios. La cantidad de repetidas por
-  // categoría sale en vivo del estado del álbum.
+  // === Vista Finanzas (Fase 2A: persistencia local) ================
+  // Estado financiero serializado a localStorage. Cuando no existe, se
+  // siembra con la inversión inicial real del dueño (1 álbum + 2 cajas)
+  // para que el dashboard tenga datos desde el primer load.
+  // Schema: { v, precios, movimientos[] }. Cada movimiento es
+  // { id, tipo: 'compra'|'venta', subtipo, qty, precio, fecha, nota }.
+  function _finDefaults() {
+    return {
+      v: 1,
+      precios: {
+        jugador: 1500, escudo: 5000, equipo: 5000,
+        fwc: 8000, estrella: 30000, cero: 120000,
+      },
+      movimientos: [
+        { id: 'm_seed_album', tipo: 'compra', subtipo: 'album', qty: 1, precio: 50000, fecha: '2026-04-15', nota: 'Compra inicial' },
+        { id: 'm_seed_cajas', tipo: 'compra', subtipo: 'caja', qty: 2, precio: 520000, fecha: '2026-04-20', nota: 'Compra inicial' },
+      ],
+    };
+  }
+  function _finLoad() {
+    try {
+      const saved = localStorage.getItem(STORAGE_FIN_KEY);
+      if (!saved) return _finDefaults();
+      const parsed = JSON.parse(saved);
+      if (!parsed || typeof parsed !== 'object') return _finDefaults();
+      // Merge seguro: si faltan piezas usar defaults
+      const def = _finDefaults();
+      return {
+        v: parsed.v || 1,
+        precios: Object.assign({}, def.precios, parsed.precios || {}),
+        movimientos: Array.isArray(parsed.movimientos) ? parsed.movimientos : def.movimientos,
+      };
+    } catch (e) {
+      return _finDefaults();
+    }
+  }
+  function _finSave() {
+    try { localStorage.setItem(STORAGE_FIN_KEY, JSON.stringify(finanzasState)); } catch(e) {}
+  }
+  let finanzasState = _finLoad();
+
   // Categorización por id: 00 → cero · FWC* → fwc · TEAM-10 → escudo ·
   // TEAM-20 → equipo · resto → jugador. "Estrella" queda en 0 hasta Fase 4
   // (cuando se decida cómo marcar jugadores destacados).
@@ -6669,19 +6708,37 @@
   }
 
   function renderFinanzas() {
-    // Hardcoded Fase 1 — el dueño compró 1 álbum + 2 cajas
-    const FIN_INVERSION = {
-      albumQty: 1, albumPrecio: 50000,
-      cajasQty: 2, cajasPrecio: 520000,
-      sobresQty: 0, sobresPrecio: 5000,
-    };
-    const FIN_PRECIOS = {
-      jugador: 1500, escudo: 5000, equipo: 5000,
-      fwc: 8000, estrella: 30000, cero: 120000,
-    };
-    const FIN_VENTAS = { totalGastado: 0, laminas: 0 };
+    // Fase 2A: leer desde finanzasState (persistido en localStorage).
+    const FIN_PRECIOS = finanzasState.precios;
     const SOBRES_POR_CAJA = 104;
     const LAMINAS_POR_SOBRE = 7;
+
+    // Derivar inversión y ventas del array de movimientos
+    let albumQty = 0, totalAlbumInv = 0;
+    let cajasQty = 0, totalCajas = 0;
+    let sobresQty = 0, totalSobresInv = 0;
+    let cajaPrecioUlt = 520000; // último precio visto, fallback default
+    let ventaLaminas = 0, ventaTotal = 0;
+    finanzasState.movimientos.forEach(m => {
+      const monto = (m.qty || 0) * (m.precio || 0);
+      if (m.tipo === 'compra') {
+        if (m.subtipo === 'album') { albumQty += m.qty; totalAlbumInv += monto; }
+        else if (m.subtipo === 'caja') { cajasQty += m.qty; totalCajas += monto; cajaPrecioUlt = m.precio; }
+        else if (m.subtipo === 'sobre') { sobresQty += m.qty; totalSobresInv += monto; }
+      } else if (m.tipo === 'venta') {
+        ventaLaminas += m.qty;
+        ventaTotal += monto;
+      }
+    });
+    const FIN_INVERSION = {
+      albumQty: albumQty,
+      albumPrecio: albumQty > 0 ? totalAlbumInv / albumQty : 50000,
+      cajasQty: cajasQty,
+      cajasPrecio: cajasQty > 0 ? totalCajas / cajasQty : cajaPrecioUlt,
+      sobresQty: sobresQty,
+      sobresPrecio: sobresQty > 0 ? totalSobresInv / sobresQty : 5000,
+    };
+    const FIN_VENTAS = { totalGastado: ventaTotal, laminas: ventaLaminas };
 
     // Stats reales del álbum
     let pegadas = 0, totalUnicas = 0, totalAlbum = 0;
@@ -6699,9 +6756,8 @@
     const pctAlbum = totalAlbum > 0 ? (pegadas / totalAlbum * 100) : 0;
 
     // Inversión derivada
-    const totalAlbumInv = FIN_INVERSION.albumQty * FIN_INVERSION.albumPrecio;
-    const totalCajas = FIN_INVERSION.cajasQty * FIN_INVERSION.cajasPrecio;
-    const totalInvertido = totalAlbumInv + totalCajas + FIN_INVERSION.sobresQty * FIN_INVERSION.sobresPrecio;
+    // totalAlbumInv, totalCajas, totalSobresInv ya derivados arriba al iterar movimientos.
+    const totalInvertido = totalAlbumInv + totalCajas + totalSobresInv;
     const sobresTot = FIN_INVERSION.cajasQty * SOBRES_POR_CAJA + FIN_INVERSION.sobresQty;
     const laminasBrutas = sobresTot * LAMINAS_POR_SOBRE;
     const costoPromCaja = FIN_INVERSION.cajasQty > 0 ? totalCajas / FIN_INVERSION.cajasQty : 0;
