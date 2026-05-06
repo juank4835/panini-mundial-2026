@@ -4701,13 +4701,16 @@
     const textoFaltan = faltanHTML.replace(/<br>/g, '\n').replace(/<b>/g, '').replace(/<\/b>/g, '').replace(/<span[^>]*>—<\/span>/g, '—');
     const textoRep = repHTML.replace(/<br>/g, '\n').replace(/<b>/g, '').replace(/<\/b>/g, '').replace(/<span[^>]*>—<\/span>/g, '—');
 
-    // Panel grande de "Compartir" arriba — usa Web Share API en móvil
-    // (abre WhatsApp/Telegram/Mail/etc. nativos) o copia al portapapeles en PC.
+    // Panel grande con dos opciones: compartir el link de la página pública
+    // (vía Web Share API → WhatsApp/Telegram/etc) o copiar el mensaje completo
+    // con faltantes + repetidas al portapapeles.
     const sharePanel =
       '<div class="share-panel">' +
-        '<button class="btn-share-main" data-share-action="full">➤ Compartir faltantes + repetidas</button>' +
+        '<button class="btn-share-main" data-share-action="page">📲 Compartir página</button>' +
+        '<button class="btn-share-main" data-share-action="full" style="margin-top:8px;">📋 Copiar faltantes + repetidas</button>' +
         '<div class="hint" style="margin-top:8px; text-align:center;">' +
-          'Manda por WhatsApp, Telegram, Mail, etc. — incluye lo que te falta, lo que tienes repetido y el link de la app.' +
+          '<b>Compartir página</b>: el link a tu tabla pública. ' +
+          '<b>Copiar f+r</b>: el texto largo con todo para pegar en chat.' +
         '</div>' +
       '</div>';
 
@@ -6007,9 +6010,18 @@
     });
 
     // Botón grande "Compartir mi álbum" — usa Web Share API en móvil
+    // Copiar el mensaje completo (faltantes + repetidas) al portapapeles
     document.querySelectorAll('button[data-share-action="full"]').forEach(btn => {
       btn.onclick = () => {
         const msg = buildShareMessage();
+        copyToClipboard(msg, btn);
+      };
+    });
+    // Compartir el link de la página pública vía Web Share API (o copiar)
+    document.querySelectorAll('button[data-share-action="page"]').forEach(btn => {
+      btn.onclick = () => {
+        const url = 'https://juank4835.github.io/panini-mundial-2026/cambios/';
+        const msg = '📒 Mirá mi álbum del Mundial 2026:\n\n' + url;
         shareOrCopy(msg, btn, 'Mi álbum Panini Mundial 2026');
       };
     });
