@@ -2881,6 +2881,176 @@
     font-size: 12px;
     cursor: pointer;
   }
+
+  /* Modal de movimientos (Fase 2C) */
+  .fin-mov-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    background: var(--bg-2);
+    border-radius: var(--radius);
+    padding: 3px;
+    margin-bottom: 14px;
+  }
+  .fin-mov-tab {
+    background: transparent;
+    border: 0;
+    padding: 8px;
+    color: var(--text-3);
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .fin-mov-tab.active { background: var(--bg-3); color: var(--text); }
+  .fin-mov-tab.active.compra { color: var(--danger); }
+  .fin-mov-tab.active.venta { color: var(--green); }
+  .fin-mov-subs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .fin-mov-sub {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    padding: 10px 6px;
+    color: var(--text-2);
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-family: inherit;
+    text-align: center;
+  }
+  .fin-mov-sub.active {
+    background: var(--bg-3);
+    border-color: var(--accent);
+    color: var(--text);
+  }
+  .fin-mov-form { display: flex; flex-direction: column; gap: 12px; }
+  .fin-mov-row { display: flex; flex-direction: column; gap: 4px; }
+  .fin-mov-row > .label {
+    font-size: 11px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .fin-mov-input {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    color: var(--text);
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    width: 100%;
+  }
+  .fin-mov-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(255,140,26,0.15);
+  }
+  .fin-mov-input.with-prefix { padding-left: 24px; }
+  .fin-mov-input-wrap { position: relative; }
+  .fin-mov-input-wrap.dollar::before {
+    content: "$";
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-3);
+    font-size: 13px;
+    pointer-events: none;
+  }
+  .fin-mov-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 10px; }
+  .fin-mov-total {
+    background: var(--bg-2);
+    border-radius: var(--radius);
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-top: 4px;
+  }
+  .fin-mov-total .label {
+    font-size: 11px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .fin-mov-total .value {
+    font-size: 18px;
+    font-weight: 700;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .fin-mov-total.compra .value { color: var(--danger); }
+  .fin-mov-total.venta .value { color: var(--green); }
+  .fin-mov-list-section {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 0.5px solid var(--border);
+  }
+  .fin-mov-list-title {
+    font-size: 11px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+  .fin-mov-list-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    gap: 10px;
+    align-items: center;
+    padding: 9px 0;
+    border-bottom: 0.5px dashed var(--border);
+    font-size: 12px;
+  }
+  .fin-mov-list-row:last-child { border-bottom: 0; }
+  .fin-mov-list-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+  .fin-mov-list-icon.compra { background: rgba(226,75,74,0.18); color: var(--danger); }
+  .fin-mov-list-icon.venta { background: rgba(0,214,133,0.18); color: var(--green); }
+  .fin-mov-list-info { min-width: 0; }
+  .fin-mov-list-info b { display: block; font-weight: 600; color: var(--text); }
+  .fin-mov-list-info span { color: var(--text-3); font-size: 11px; }
+  .fin-mov-list-amt {
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-weight: 700;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  .fin-mov-list-amt.compra { color: var(--danger); }
+  .fin-mov-list-amt.venta { color: var(--green); }
+  .fin-mov-list-del {
+    background: transparent;
+    border: 0;
+    color: var(--text-3);
+    font-size: 16px;
+    cursor: pointer;
+    padding: 4px 6px;
+    line-height: 1;
+    font-family: inherit;
+  }
+  .fin-mov-list-del:hover { color: var(--danger); }
+  .fin-mov-list-empty {
+    text-align: center;
+    color: var(--text-3);
+    font-size: 12px;
+    padding: 18px 0;
+  }
 </style>
 </head>
 <body>
@@ -3012,6 +3182,22 @@
       </div>
       <button class="fin-btn-save" id="fin-precios-save">Guardar precios</button>
       <button class="fin-btn-cancel" id="fin-precios-cancel">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de movimientos (Finanzas) -->
+<div class="fin-sheet-backdrop" id="fin-mov-backdrop">
+  <div class="fin-sheet">
+    <div class="fin-sheet-handle"></div>
+    <div class="fin-sheet-header">
+      <h2>+ Registrar movimiento</h2>
+      <p>Compras y ventas que afectan tu inversión</p>
+    </div>
+    <div class="fin-sheet-body" id="fin-mov-body"></div>
+    <div class="fin-sheet-footer">
+      <button class="fin-btn-save" id="fin-mov-save">Guardar movimiento</button>
+      <button class="fin-btn-cancel" id="fin-mov-cancel">Cancelar</button>
     </div>
   </div>
 </div>
@@ -7047,7 +7233,7 @@
 
   function bindFinanzas() {
     const movBtn = document.getElementById('fin-add-mov');
-    if (movBtn) movBtn.onclick = () => alert('Próximamente (Fase 2C): registrar movimientos.');
+    if (movBtn) movBtn.onclick = () => _finMovOpen('compra');
     document.querySelectorAll('.fin-config-link').forEach(el => {
       el.onclick = () => _finPreciosOpen();
     });
@@ -7152,6 +7338,214 @@
     };
     const cancel = document.getElementById('fin-precios-cancel');
     if (cancel) cancel.onclick = () => _finPreciosClose();
+  }
+
+  // === Modal de movimientos (Fase 2C) =============================
+  let _finMovTab = 'compra';
+  let _finMovSub = 'caja';
+
+  const FIN_SUB_LABELS = {
+    album: 'Álbum',
+    caja: 'Caja',
+    sobre: 'Sobre',
+    lamina: 'Láminas',
+  };
+  const FIN_SUB_DEFAULTS = {
+    album: { qty: 1, precio: 50000 },
+    caja: { qty: 1, precio: 520000 },
+    sobre: { qty: 1, precio: 5000 },
+    lamina: { qty: 1, precio: 1500 },
+  };
+
+  function _finMovTodayISO() {
+    const d = new Date();
+    return d.getFullYear() + '-' +
+      String(d.getMonth() + 1).padStart(2, '0') + '-' +
+      String(d.getDate()).padStart(2, '0');
+  }
+
+  function _finMovDescPlural(subtipo, qty) {
+    const labels = {
+      album: qty === 1 ? 'álbum' : 'álbumes',
+      caja: qty === 1 ? 'caja' : 'cajas',
+      sobre: qty === 1 ? 'sobre' : 'sobres',
+      lamina: qty === 1 ? 'lámina' : 'láminas',
+    };
+    return qty + ' ' + (labels[subtipo] || subtipo);
+  }
+
+  function _finMovOpen(initialTab) {
+    if (initialTab) _finMovTab = initialTab;
+    if (_finMovTab === 'venta') _finMovSub = 'lamina';
+    else if (_finMovSub === 'lamina') _finMovSub = 'caja';
+    const bd = document.getElementById('fin-mov-backdrop');
+    if (!bd) return;
+    _finMovRender();
+    bd.classList.add('open');
+  }
+  function _finMovClose() {
+    const bd = document.getElementById('fin-mov-backdrop');
+    if (bd) bd.classList.remove('open');
+  }
+
+  function _finMovRender() {
+    const body = document.getElementById('fin-mov-body');
+    if (!body) return;
+    const isCompra = _finMovTab === 'compra';
+    const def = FIN_SUB_DEFAULTS[_finMovSub] || FIN_SUB_DEFAULTS.caja;
+
+    let html = '';
+    // Tabs Compra/Venta
+    html += '<div class="fin-mov-tabs">' +
+      '<button class="fin-mov-tab compra ' + (isCompra ? 'active' : '') + '" data-mov-tab="compra">▼ Compra</button>' +
+      '<button class="fin-mov-tab venta ' + (!isCompra ? 'active' : '') + '" data-mov-tab="venta">▲ Venta</button>' +
+    '</div>';
+
+    // Subtipo (solo en compra: álbum / caja / sobre)
+    if (isCompra) {
+      html += '<div class="fin-mov-subs">';
+      ['album','caja','sobre'].forEach(sub => {
+        html += '<button class="fin-mov-sub ' + (_finMovSub === sub ? 'active' : '') + '" data-mov-sub="' + sub + '">' + FIN_SUB_LABELS[sub] + '</button>';
+      });
+      html += '</div>';
+    }
+
+    // Form
+    html += '<div class="fin-mov-form">' +
+      '<div class="fin-mov-grid">' +
+        '<div class="fin-mov-row">' +
+          '<span class="label">Cantidad</span>' +
+          '<input type="text" class="fin-mov-input" id="fin-mov-qty" inputmode="numeric" value="' + def.qty + '">' +
+        '</div>' +
+        '<div class="fin-mov-row">' +
+          '<span class="label">' + (isCompra ? 'Precio unitario' : 'Precio prom. de venta') + '</span>' +
+          '<div class="fin-mov-input-wrap dollar">' +
+            '<input type="text" class="fin-mov-input with-prefix" id="fin-mov-precio" inputmode="decimal" value="' + def.precio + '">' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="fin-mov-row">' +
+        '<span class="label">Fecha</span>' +
+        '<input type="date" class="fin-mov-input" id="fin-mov-fecha" value="' + _finMovTodayISO() + '">' +
+      '</div>' +
+      '<div class="fin-mov-row">' +
+        '<span class="label">Nota (opcional)</span>' +
+        '<input type="text" class="fin-mov-input" id="fin-mov-nota" placeholder="Ej: vendí a Mauricio">' +
+      '</div>' +
+      '<div class="fin-mov-total ' + (isCompra ? 'compra' : 'venta') + '">' +
+        '<span class="label">' + (isCompra ? 'Total a invertir' : 'Total a recuperar') + '</span>' +
+        '<span class="value" id="fin-mov-total">' + _finFmt(def.qty * def.precio) + '</span>' +
+      '</div>' +
+    '</div>';
+
+    // Lista de movimientos previos
+    html += '<div class="fin-mov-list-section">' +
+      '<div class="fin-mov-list-title">Movimientos registrados (' + finanzasState.movimientos.length + ')</div>';
+    if (finanzasState.movimientos.length === 0) {
+      html += '<div class="fin-mov-list-empty">Aún no registraste ningún movimiento.</div>';
+    } else {
+      const sorted = finanzasState.movimientos.slice().sort((a, b) => (b.fecha || '').localeCompare(a.fecha || ''));
+      sorted.forEach(m => {
+        const isC = m.tipo === 'compra';
+        const total = (m.qty || 0) * (m.precio || 0);
+        const desc = _finMovDescPlural(m.subtipo, m.qty || 0);
+        html += '<div class="fin-mov-list-row">' +
+          '<div class="fin-mov-list-icon ' + (isC ? 'compra' : 'venta') + '">' + (isC ? '▼' : '▲') + '</div>' +
+          '<div class="fin-mov-list-info">' +
+            '<b>' + desc + '</b>' +
+            '<span>' + (m.fecha || 'sin fecha') + (m.nota ? ' · ' + m.nota : '') + '</span>' +
+          '</div>' +
+          '<div class="fin-mov-list-amt ' + (isC ? 'compra' : 'venta') + '">' +
+            (isC ? '−' : '+') + _finFmt(total) +
+          '</div>' +
+          '<button class="fin-mov-list-del" data-mov-del="' + m.id + '" title="Borrar">×</button>' +
+        '</div>';
+      });
+    }
+    html += '</div>';
+
+    body.innerHTML = html;
+    _finMovUpdateTotal();
+  }
+
+  function _finMovUpdateTotal() {
+    const qtyEl = document.getElementById('fin-mov-qty');
+    const precioEl = document.getElementById('fin-mov-precio');
+    const qty = _finParseAmount(qtyEl ? qtyEl.value : '0');
+    const precio = _finParseAmount(precioEl ? precioEl.value : '0');
+    const totalEl = document.getElementById('fin-mov-total');
+    if (totalEl) totalEl.textContent = _finFmt(qty * precio);
+  }
+
+  function _finRefreshDashboard() {
+    if (tabActiva !== 'finanzas') return;
+    const cont = document.getElementById('contenido');
+    if (!cont) return;
+    cont.innerHTML = renderFinanzas();
+    bindFinanzas();
+  }
+
+  function _finMovBind() {
+    const bd = document.getElementById('fin-mov-backdrop');
+    if (!bd) return;
+    bd.addEventListener('click', (e) => {
+      if (e.target === bd) { _finMovClose(); return; }
+      const tab = e.target.closest && e.target.closest('[data-mov-tab]');
+      if (tab) {
+        _finMovTab = tab.dataset.movTab;
+        if (_finMovTab === 'venta') _finMovSub = 'lamina';
+        else if (_finMovSub === 'lamina') _finMovSub = 'caja';
+        _finMovRender();
+        return;
+      }
+      const sub = e.target.closest && e.target.closest('[data-mov-sub]');
+      if (sub) {
+        _finMovSub = sub.dataset.movSub;
+        // Refrescar defaults de cantidad/precio al cambiar subtipo
+        const def = FIN_SUB_DEFAULTS[_finMovSub];
+        const qtyEl = document.getElementById('fin-mov-qty');
+        const precioEl = document.getElementById('fin-mov-precio');
+        if (qtyEl) qtyEl.value = def.qty;
+        if (precioEl) precioEl.value = def.precio;
+        _finMovRender();
+        return;
+      }
+      const del = e.target.closest && e.target.closest('[data-mov-del]');
+      if (del) {
+        const id = del.dataset.movDel;
+        if (!confirm('¿Borrar este movimiento? No se puede deshacer.')) return;
+        finanzasState.movimientos = finanzasState.movimientos.filter(m => m.id !== id);
+        _finSave();
+        _finMovRender();
+        _finRefreshDashboard();
+        return;
+      }
+    });
+    bd.addEventListener('input', (e) => {
+      if (e.target && (e.target.id === 'fin-mov-qty' || e.target.id === 'fin-mov-precio')) {
+        _finMovUpdateTotal();
+      }
+    });
+    const save = document.getElementById('fin-mov-save');
+    if (save) save.onclick = () => {
+      const qty = _finParseAmount(document.getElementById('fin-mov-qty').value);
+      const precio = _finParseAmount(document.getElementById('fin-mov-precio').value);
+      const fecha = document.getElementById('fin-mov-fecha').value || _finMovTodayISO();
+      const nota = (document.getElementById('fin-mov-nota').value || '').trim();
+      if (qty <= 0) { alert('La cantidad debe ser mayor a 0.'); return; }
+      if (precio < 0) { alert('El precio no puede ser negativo.'); return; }
+      const subtipo = _finMovTab === 'venta' ? 'lamina' : _finMovSub;
+      const id = 'm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+      finanzasState.movimientos.push({
+        id: id, tipo: _finMovTab, subtipo: subtipo,
+        qty: qty, precio: precio, fecha: fecha, nota: nota,
+      });
+      _finSave();
+      _finMovClose();
+      _finRefreshDashboard();
+    };
+    const cancel = document.getElementById('fin-mov-cancel');
+    if (cancel) cancel.onclick = () => _finMovClose();
   }
 
   // displayNum helper (para items que vinieron de classifyCodes sin el campo)
@@ -7317,6 +7711,7 @@
     bindMoreSheet();
     bindGroupSelector();
     _finPreciosBind();
+    _finMovBind();
     updateBottomNavActive();
     updateGroupSelectorVisibility();
   }
