@@ -1053,6 +1053,51 @@
     -webkit-appearance: none;
   }
   .btn-sell-one:hover { background: var(--amber-dark); color: #fff; }
+
+  /* Repetidas: grid de cards (tap = sacar 1). Reemplaza la lista vertical. */
+  .rep-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+    gap: 8px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+  .rep-card {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 6px 10px;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.1s ease, opacity 0.18s ease, border-color 0.15s ease, background 0.15s ease;
+  }
+  .rep-card:active {
+    transform: scale(0.92);
+    background: var(--bg-3);
+    border-color: var(--amber);
+  }
+  .rep-card.fading {
+    opacity: 0.25;
+    pointer-events: none;
+  }
+  .rep-card-num {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--amber);
+    line-height: 1;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    text-shadow: 0 0 4px rgba(239,159,39,0.3);
+  }
+  .rep-card-x {
+    font-size: 11px;
+    color: var(--text-2);
+    margin-top: 6px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-weight: 600;
+  }
   /* Faltantes: chip rojo + botón "+1" — mismo formato exacto que las filas
      de Repetidas pero en rojo (--danger). Reusa .sueltas-row / .sueltas-info. */
   .falt-num {
@@ -6699,29 +6744,26 @@
     html += '<div class="sueltas-list" id="rep-list">';
     for (const k in bySec) {
       const grp = bySec[k];
-      // search-blob: texto que el filtro va a comparar — código (incluye prefijo equipo),
-      // número de display (e.g. "ECU 1"), nombre del jugador y nombre del equipo
+      // search-blob: texto que el filtro compara — código + número + label + sección
       const secBlob = (grp.sec.titulo || '').toLowerCase();
       html += '<div class="sueltas-section" data-rep-sec="' + grp.sec.id + '" data-rep-sec-blob="' + secBlob.replace(/"/g, '&quot;') + '">' +
-        '<div class="sueltas-section-title">' + grp.sec.titulo + '</div>';
+        '<div class="sueltas-section-title">' + grp.sec.titulo + '</div>' +
+        '<div class="rep-grid">';
       grp.items.forEach(it => {
         const blob = (it.id + ' ' + it.displayNum + ' ' + it.label + ' ' + (grp.sec.titulo || '')).toLowerCase();
         const safeLabel = (it.label || '').replace(/"/g, '&quot;');
         const safeNum = (it.displayNum || '').replace(/"/g, '&quot;');
-        html += '<div class="sueltas-row" data-id="' + it.id + '"' +
+        html += '<div class="rep-card" data-id="' + it.id + '"' +
           ' data-rep-blob="' + blob.replace(/"/g, '&quot;') + '"' +
           ' data-rep-num="' + safeNum + '"' +
           ' data-rep-label="' + safeLabel + '"' +
-          ' data-rep-copies="' + it.extras + '">' +
-          '<div class="sueltas-num rep-num">' + it.displayNum + '<span class="rep-num-x">×' + it.extras + '</span></div>' +
-          '<div class="sueltas-info">' +
-            '<b>' + it.id + '</b>' +
-            '<span>' + it.label + '</span>' +
-          '</div>' +
-          '<button class="btn-sell-one" data-sell-id="' + it.id + '" title="Resta 1 copia (vendiste o cambiaste)">−1</button>' +
+          ' data-rep-copies="' + it.extras + '"' +
+          ' title="' + it.id + (safeLabel ? ' · ' + safeLabel : '') + ' · toca para sacar 1">' +
+          '<div class="rep-card-num">' + it.displayNum + '</div>' +
+          '<div class="rep-card-x">×' + it.extras + '</div>' +
         '</div>';
       });
-      html += '</div>';
+      html += '</div></div>';
     }
     html += '</div>';
     html += '<div id="rep-search-empty" class="rep-search-empty" style="display:none;">' +
@@ -6745,7 +6787,7 @@
     let lastVisibleRow = null;
     list.querySelectorAll('.sueltas-section').forEach(secEl => {
       let secVisible = 0;
-      secEl.querySelectorAll('.sueltas-row').forEach(row => {
+      secEl.querySelectorAll('.rep-card').forEach(row => {
         const blob = row.dataset.repBlob || '';
         const match = terms.length === 0 || terms.every(t => blob.indexOf(t) !== -1);
         row.style.display = match ? '' : 'none';
@@ -6812,27 +6854,26 @@
   }
 
   function bindRepetidas() {
-    document.querySelectorAll('button[data-sell-id]').forEach(btn => {
-      btn.onclick = () => {
-        const id = btn.dataset.sellId;
+    // Tap en una card de repetida → resta 1. Si era la última copia,
+    // la card desaparece de la lista al re-renderizar.
+    document.querySelectorAll('.rep-card[data-id]').forEach(card => {
+      card.onclick = () => {
+        if (card.classList.contains('fading')) return;
+        const id = card.dataset.id;
         applyDelta(id, -1);
-        // Visual feedback: fade out the row briefly
-        const row = btn.closest('.sueltas-row');
-        if (row) row.style.opacity = '0.4';
+        card.classList.add('fading');
         setTimeout(() => {
           if (tabActiva === 'repetidas') {
             const cont = document.getElementById('contenido');
             cont.innerHTML = renderRepetidas();
             bindRepetidas();
           }
-        }, 350);
+        }, 280);
       };
     });
 
     const btnShare = document.getElementById('btn-share-repetidas');
     if (btnShare) btnShare.onclick = () => shareRepetidasList(btnShare);
-
-    // (Quitamos los handlers del buscador con lupa — el bulk panel cubre el caso.)
 
     // Bulk-input: textarea + verificar + sacar varias en bloque
     bindRepetidasBulk();
