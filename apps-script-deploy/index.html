@@ -2908,7 +2908,7 @@
   .fin-mov-tab.active.venta { color: var(--green); }
   .fin-mov-subs {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 6px;
     margin-bottom: 14px;
   }
@@ -7388,7 +7388,6 @@
   function _finMovOpen(initialTab) {
     if (initialTab) _finMovTab = initialTab;
     if (_finMovTab === 'venta') _finMovSub = 'lamina';
-    else if (_finMovSub === 'lamina') _finMovSub = 'caja';
     const bd = document.getElementById('fin-mov-backdrop');
     if (!bd) return;
     _finMovRender();
@@ -7412,11 +7411,12 @@
       '<button class="fin-mov-tab venta ' + (!isCompra ? 'active' : '') + '" data-mov-tab="venta">▲ Venta</button>' +
     '</div>';
 
-    // Subtipo (solo en compra: álbum / caja / sobre)
+    // Subtipo (solo en compra: álbum / caja / sobre / lámina suelta)
     if (isCompra) {
       html += '<div class="fin-mov-subs">';
-      ['album','caja','sobre'].forEach(sub => {
-        html += '<button class="fin-mov-sub ' + (_finMovSub === sub ? 'active' : '') + '" data-mov-sub="' + sub + '">' + FIN_SUB_LABELS[sub] + '</button>';
+      ['album','caja','sobre','lamina'].forEach(sub => {
+        const label = sub === 'lamina' ? 'Lámina' : FIN_SUB_LABELS[sub];
+        html += '<button class="fin-mov-sub ' + (_finMovSub === sub ? 'active' : '') + '" data-mov-sub="' + sub + '">' + label + '</button>';
       });
       html += '</div>';
     }
