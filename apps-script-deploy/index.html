@@ -7226,6 +7226,7 @@
     '</div>';
 
     html += '<button class="fin-fab" id="fin-add-mov">+ Registrar movimiento</button>';
+    html += _finRenderMovList();
     html += '</div>';
 
     return html;
@@ -7236,6 +7237,16 @@
     if (movBtn) movBtn.onclick = () => _finMovOpen('compra');
     document.querySelectorAll('.fin-config-link').forEach(el => {
       el.onclick = () => _finPreciosOpen();
+    });
+    // Borrar movimiento desde la lista del dashboard
+    document.querySelectorAll('[data-mov-del]').forEach(btn => {
+      btn.onclick = () => {
+        const id = btn.dataset.movDel;
+        if (!confirm('¿Borrar este movimiento? No se puede deshacer.')) return;
+        finanzasState.movimientos = finanzasState.movimientos.filter(m => m.id !== id);
+        _finSave();
+        _finRefreshDashboard();
+      };
     });
   }
 
@@ -7438,11 +7449,17 @@
       '</div>' +
     '</div>';
 
-    // Lista de movimientos previos
-    html += '<div class="fin-mov-list-section">' +
+    body.innerHTML = html;
+    _finMovUpdateTotal();
+  }
+
+  // Helper compartido: renderiza la lista de movimientos. Se usa en el
+  // dashboard de Finanzas (Fase 2C: la lista vive ahí, no en el modal).
+  function _finRenderMovList() {
+    let html = '<div class="fin-mov-list-section">' +
       '<div class="fin-mov-list-title">Movimientos registrados (' + finanzasState.movimientos.length + ')</div>';
     if (finanzasState.movimientos.length === 0) {
-      html += '<div class="fin-mov-list-empty">Aún no registraste ningún movimiento.</div>';
+      html += '<div class="fin-mov-list-empty">Aún no registraste ningún movimiento. Tap en <b>+ Registrar movimiento</b> para empezar.</div>';
     } else {
       const sorted = finanzasState.movimientos.slice().sort((a, b) => (b.fecha || '').localeCompare(a.fecha || ''));
       sorted.forEach(m => {
@@ -7463,9 +7480,7 @@
       });
     }
     html += '</div>';
-
-    body.innerHTML = html;
-    _finMovUpdateTotal();
+    return html;
   }
 
   function _finMovUpdateTotal() {
@@ -7508,16 +7523,6 @@
         if (qtyEl) qtyEl.value = def.qty;
         if (precioEl) precioEl.value = def.precio;
         _finMovRender();
-        return;
-      }
-      const del = e.target.closest && e.target.closest('[data-mov-del]');
-      if (del) {
-        const id = del.dataset.movDel;
-        if (!confirm('¿Borrar este movimiento? No se puede deshacer.')) return;
-        finanzasState.movimientos = finanzasState.movimientos.filter(m => m.id !== id);
-        _finSave();
-        _finMovRender();
-        _finRefreshDashboard();
         return;
       }
     });
