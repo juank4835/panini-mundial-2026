@@ -1063,8 +1063,8 @@
     margin-bottom: 8px;
   }
   .rep-card {
-    background: var(--bg-2);
-    border: 1px solid var(--border);
+    background: var(--amber);
+    border: 1px solid var(--amber);
     border-radius: var(--radius);
     padding: 12px 6px 10px;
     text-align: center;
@@ -1072,12 +1072,12 @@
     user-select: none;
     -webkit-user-select: none;
     -webkit-tap-highlight-color: transparent;
-    transition: transform 0.1s ease, opacity 0.18s ease, border-color 0.15s ease, background 0.15s ease;
+    transition: transform 0.1s ease, opacity 0.18s ease, background 0.15s ease, border-color 0.15s ease;
   }
   .rep-card:active {
     transform: scale(0.92);
-    background: var(--bg-3);
-    border-color: var(--amber);
+    background: var(--amber-dark);
+    border-color: var(--amber-dark);
   }
   .rep-card.fading {
     opacity: 0.25;
@@ -1086,17 +1086,17 @@
   .rep-card-num {
     font-size: 18px;
     font-weight: 700;
-    color: var(--amber);
+    color: #fff;
     line-height: 1;
     font-family: "JetBrains Mono", Menlo, monospace;
-    text-shadow: 0 0 4px rgba(239,159,39,0.3);
   }
   .rep-card-x {
     font-size: 11px;
-    color: var(--text-2);
+    color: #fff;
     margin-top: 6px;
     font-family: "JetBrains Mono", Menlo, monospace;
     font-weight: 600;
+    opacity: 0.85;
   }
   /* Faltantes: chip rojo + botón "+1" — mismo formato exacto que las filas
      de Repetidas pero en rojo (--danger). Reusa .sueltas-row / .sueltas-info. */
