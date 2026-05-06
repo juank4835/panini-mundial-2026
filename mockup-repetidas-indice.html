@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup · Repetidas con índice</title>
+<style>
+  :root {
+    --bg: #000000;
+    --bg-2: #1a1a1a;
+    --bg-3: #2a2a2a;
+    --border: #3a3a37;
+    --text: #f0eee6;
+    --text-2: #b8b6ae;
+    --text-3: #888780;
+    --green: #00D685;
+    --amber: #EF9F27;
+    --amber-text: #412402;
+    --amber-dark: #BA7517;
+    --danger: #E24B4A;
+    --blue: #4A9EFF;
+    --accent: #FF8C1A;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .page {
+    max-width: 460px;
+    margin: 0 auto;
+    padding: 16px 14px 24px;
+  }
+
+  /* Banner superior */
+  .info-box {
+    background: var(--bg-2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    font-size: 12px;
+    color: var(--text-2);
+    line-height: 1.4;
+  }
+  .info-box b { color: var(--text); }
+  .btn-share {
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--amber);
+    color: var(--amber-text);
+    border: 0;
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 12px;
+  }
+
+  /* === Índice sticky === */
+  .rep-index {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--bg);
+    padding: 8px 0;
+    margin: 0 -14px 12px;
+    padding-left: 14px;
+    padding-right: 14px;
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .rep-index::-webkit-scrollbar { display: none; }
+  .rep-index-chip {
+    flex-shrink: 0;
+    padding: 6px 12px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    color: var(--text-2);
+    font-size: 12px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+    text-decoration: none;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  }
+  .rep-index-chip:hover, .rep-index-chip.active {
+    background: var(--amber);
+    border-color: var(--amber);
+    color: #fff;
+  }
+  .rep-index-chip .badge {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 1px 5px;
+    background: rgba(0,0,0,0.25);
+    border-radius: 8px;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  /* === Secciones === */
+  .sec {
+    background: var(--bg-2);
+    border-radius: var(--radius-lg);
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    scroll-margin-top: 56px; /* offset para que la nav sticky no tape el title */
+  }
+  .sec-title {
+    font-size: 12px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0 0 8px;
+    padding-bottom: 6px;
+    border-bottom: 0.5px solid var(--border);
+  }
+
+  /* === Cards de repetida === */
+  .rep-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+    gap: 8px;
+  }
+  .rep-card {
+    background: var(--amber);
+    border: 1px solid var(--amber);
+    border-radius: var(--radius);
+    padding: 12px 6px 10px;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.1s ease, background 0.15s ease;
+  }
+  .rep-card:active {
+    transform: scale(0.92);
+    background: var(--amber-dark);
+    border-color: var(--amber-dark);
+  }
+  .rep-card-num {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .rep-card-x {
+    font-size: 11px;
+    color: #fff;
+    margin-top: 6px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-weight: 600;
+    opacity: 0.85;
+  }
+
+  /* "Volver arriba" flotante (opcional) */
+  .back-top {
+    position: fixed;
+    bottom: 18px;
+    right: 18px;
+    width: 40px;
+    height: 40px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    color: var(--text-2);
+    cursor: pointer;
+    font-size: 18px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="info-box">
+    Tenés <b style="color:var(--amber);">8 láminas</b> con copias extras (<b>14</b> en total). Listas para <b>vender o cambiar</b>.
+  </div>
+
+  <button class="btn-share">➤ Compartir lista de repetidas</button>
+
+  <!-- ÍNDICE STICKY -->
+  <nav class="rep-index" id="rep-index">
+    <a class="rep-index-chip" href="#sec-intro">Intro <span class="badge">2</span></a>
+    <a class="rep-index-chip active" href="#sec-A">A <span class="badge">1</span></a>
+    <a class="rep-index-chip" href="#sec-B">B</a>
+    <a class="rep-index-chip" href="#sec-C">C <span class="badge">2</span></a>
+    <a class="rep-index-chip" href="#sec-D">D</a>
+    <a class="rep-index-chip" href="#sec-E">E <span class="badge">1</span></a>
+    <a class="rep-index-chip" href="#sec-F">F</a>
+    <a class="rep-index-chip" href="#sec-G">G</a>
+    <a class="rep-index-chip" href="#sec-H">H</a>
+    <a class="rep-index-chip" href="#sec-I">I</a>
+    <a class="rep-index-chip" href="#sec-J">J <span class="badge">1</span></a>
+    <a class="rep-index-chip" href="#sec-K">K <span class="badge">1</span></a>
+    <a class="rep-index-chip" href="#sec-L">L</a>
+    <a class="rep-index-chip" href="#sec-history">Hist</a>
+  </nav>
+
+  <!-- SECCIONES -->
+  <section class="sec" id="sec-intro">
+    <div class="sec-title">Intro · Logo, mascotas y anfitriones</div>
+    <div class="rep-grid">
+      <div class="rep-card"><div class="rep-card-num">00</div><div class="rep-card-x">×1</div></div>
+      <div class="rep-card"><div class="rep-card-num">FWC4</div><div class="rep-card-x">×2</div></div>
+    </div>
+  </section>
+
+  <section class="sec" id="sec-A">
+    <div class="sec-title">1. México · Grupo A</div>
+    <div class="rep-grid">
+      <div class="rep-card"><div class="rep-card-num">5</div><div class="rep-card-x">×1</div></div>
+    </div>
+  </section>
+
+  <section class="sec" id="sec-B">
+    <div class="sec-title">5. Canadá · Grupo B</div>
+    <div class="rep-grid" style="opacity:0.4;">
+      <div style="grid-column:1/-1; padding:10px; text-align:center; color:var(--text-3); font-size:11px;">Sin repetidas</div>
+    </div>
+  </section>
+
+  <section class="sec" id="sec-C">
+    <div class="sec-title">9. Brasil · Grupo C</div>
+    <div class="rep-grid">
+      <div class="rep-card"><div class="rep-card-num">3</div><div class="rep-card-x">×2</div></div>
+      <div class="rep-card"><div class="rep-card-num">11</div><div class="rep-card-x">×1</div></div>
+    </div>
+  </section>
+
+  <section class="sec" id="sec-D">
+    <div class="sec-title">13. Estados Unidos · Grupo D</div>
+    <div class="rep-grid" style="opacity:0.4;">
+      <div style="grid-column:1/-1; padding:10px; text-align:center; color:var(--text-3); font-size:11px;">Sin repetidas</div>
+    </div>
+  </section>
+
+  <section class="sec" id="sec-E">
+    <div class="sec-title">17. Alemania · Grupo E</div>
+    <div class="rep-grid">
+      <div class="rep-card"><div class="rep-card-num">7</div><div class="rep-card-x">×1</div></div>
+    </div>
+  </section>
+
+  <section class="sec" id="sec-F">
+    <div class="sec-title">21. Países Bajos · Grupo F</div>
+    <div class="rep-grid" style="opacity:0.4;">
+      <div style="grid-column:1/-1; padding:10px; text-align:center; color:var(--text-3); font-size:11px;">Sin repetidas</div>
+    </div>
+  </section>
+
+  <section class="sec" id="sec-G">
+    <div class="sec-title">25. Bélgica · Grupo G</div>
+    <div class="rep-grid" style="opacity:0.4;">
+      <div style="grid-column:1/-1; padding:10px; text-align:center; color:var(--text-3); font-size:11px;">Sin repetidas</div>
+    </div>
+  </section>
+
+  <section class="sec" id="sec-H">
+    <div class="sec-title">29. España · Grupo H</div>
+    <div class="rep-grid" style="opacity:0.4;">
+      <div style="grid-column:1/-1; padding:10px; text-align:center; color:var(--text-3); font-size:11px;">Sin repetidas</div>
+    </div>
+  </section>
+
+  <section class="sec" id="sec-I">
+    <div class="sec-title">33. Francia · Grupo I</div>
+    <div class="rep-grid" style="opacity:0.4;">
+      <div style="grid-column:1/-1; padding:10px; text-align:center; color:var(--text-3); font-size:11px;">Sin repetidas</div>
+    </div>
+  </section>
+
+  <section class="sec" id="sec-J">
+    <div class="sec-title">37. Argentina · Grupo J</div>
+    <div class="rep-grid">
+      <div class="rep-card"><div class="rep-card-num">9</div><div class="rep-card-x">×3</div></div>
+    </div>
+  </section>
+
+  <section class="sec" id="sec-K">
+    <div class="sec-title">44. Colombia · Grupo K</div>
+    <div class="rep-grid">
+      <div class="rep-card"><div class="rep-card-num">15</div><div class="rep-card-x">×2</div></div>
+    </div>
+  </section>
+
+  <section class="sec" id="sec-L">
+    <div class="sec-title">45. Inglaterra · Grupo L</div>
+    <div class="rep-grid" style="opacity:0.4;">
+      <div style="grid-column:1/-1; padding:10px; text-align:center; color:var(--text-3); font-size:11px;">Sin repetidas</div>
+    </div>
+  </section>
+
+  <section class="sec" id="sec-history">
+    <div class="sec-title">History · Campeones de mundiales</div>
+    <div class="rep-grid" style="opacity:0.4;">
+      <div style="grid-column:1/-1; padding:10px; text-align:center; color:var(--text-3); font-size:11px;">Sin repetidas</div>
+    </div>
+  </section>
+
+</div>
+
+<button class="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Volver arriba">↑</button>
+
+<script>
+  // Scroll suave al tap en un chip + actualización del estado activo
+  document.querySelectorAll('.rep-index-chip').forEach(chip => {
+    chip.addEventListener('click', (e) => {
+      e.preventDefault();
+      const id = chip.getAttribute('href').slice(1);
+      const target = document.getElementById(id);
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.querySelectorAll('.rep-index-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+    });
+  });
+
+  // Highlight automático del chip de la sección visible (IntersectionObserver)
+  const sections = document.querySelectorAll('.sec[id]');
+  const chipsByHref = {};
+  document.querySelectorAll('.rep-index-chip').forEach(c => {
+    chipsByHref[c.getAttribute('href')] = c;
+  });
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const chip = chipsByHref['#' + entry.target.id];
+        if (chip) {
+          document.querySelectorAll('.rep-index-chip').forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          // Auto-scroll horizontal del chip activo a la vista (si está fuera)
+          chip.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+      }
+    });
+  }, { rootMargin: '-50% 0px -45% 0px', threshold: 0 });
+  sections.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>

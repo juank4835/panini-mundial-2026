@@ -1098,6 +1098,65 @@
     font-weight: 600;
     opacity: 0.85;
   }
+
+  /* Índice sticky compartido por las vistas Repetidas y Registrar.
+     14 chips: Intro · A · B · ... · L · Hist. Tap → scroll a la sección.
+     Auto-highlight del chip de la sección visible vía IntersectionObserver. */
+  .album-idx {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--bg);
+    padding: 8px 0;
+    margin: 0 0 12px;
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .album-idx::-webkit-scrollbar { display: none; }
+  .album-idx-chip {
+    flex-shrink: 0;
+    padding: 6px 12px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    color: var(--text-2);
+    font-size: 12px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+    text-decoration: none;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  }
+  .album-idx-chip.active {
+    background: var(--amber);
+    border-color: var(--amber);
+    color: #fff;
+  }
+  .album-idx-chip.empty {
+    opacity: 0.35;
+    pointer-events: none;
+  }
+  .album-idx-chip .badge {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 1px 5px;
+    background: rgba(0,0,0,0.25);
+    border-radius: 8px;
+    font-size: 10px;
+    font-weight: 700;
+  }
+  .album-idx-anchor {
+    /* Marca invisible que el chip usa como destino del scroll. */
+    display: block;
+    height: 0;
+    scroll-margin-top: 56px;
+  }
   /* Faltantes: chip rojo + botón "+1" — mismo formato exacto que las filas
      de Repetidas pero en rojo (--danger). Reusa .sueltas-row / .sueltas-info. */
   .falt-num {
@@ -4904,19 +4963,38 @@
       '</div>';
     };
 
-    let html = '<div class="sueltas-list" id="falt-list">';
+    // Conteo por grupo para los badges del índice
+    const groupCounts = {};
+    if (intro.length) groupCounts.intro = intro.length;
+    if (hist.length) groupCounts.history = hist.length;
+    equiposOrden.forEach(eq => {
+      const t = byTeam[eq.code];
+      if (!t || !t.items.length) return;
+      const g = eq.grupo;
+      if (g) groupCounts[g] = (groupCounts[g] || 0) + t.items.length;
+    });
+
+    let html = _renderAlbumIndex(groupCounts, 'faltgrp');
+    html += '<div class="sueltas-list" id="falt-list">';
 
     if (intro.length) {
       const secLbl = 'Intro · Logo, mascotas y anfitriones';
-      html += '<div class="sueltas-section" data-falt-sec="intro">' +
+      html += '<div class="album-idx-anchor" id="faltgrp-intro"></div>' +
+        '<div class="sueltas-section" data-falt-sec="intro">' +
         '<div class="sueltas-section-title">' + secLbl + '</div>' +
         '<div class="falt-grid">' +
         intro.map(it => renderCard(it, secLbl)).join('') +
         '</div></div>';
     }
+    let lastGroup = null;
     equiposOrden.forEach((eq, idx) => {
       const t = byTeam[eq.code];
       if (!t || !t.items.length) return;
+      // Anchor al cambiar de grupo
+      if (eq.grupo && eq.grupo !== lastGroup) {
+        html += '<div class="album-idx-anchor" id="faltgrp-' + eq.grupo + '"></div>';
+        lastGroup = eq.grupo;
+      }
       const secLbl = (idx+1) + '. ' + formatEquipoName(eq) + (eq.grupo ? ' · Grupo ' + eq.grupo : '');
       html += '<div class="sueltas-section" data-falt-sec="' + eq.code + '">' +
         '<div class="sueltas-section-title">' + secLbl + '</div>' +
@@ -4926,7 +5004,8 @@
     });
     if (hist.length) {
       const secLbl = 'History · Campeones de mundiales';
-      html += '<div class="sueltas-section" data-falt-sec="history">' +
+      html += '<div class="album-idx-anchor" id="faltgrp-history"></div>' +
+        '<div class="sueltas-section" data-falt-sec="history">' +
         '<div class="sueltas-section-title">' + secLbl + '</div>' +
         '<div class="falt-grid">' +
         hist.map(it => renderCard(it, secLbl)).join('') +
@@ -5619,6 +5698,9 @@
         refreshConsultaResult();
       };
     });
+
+    // Índice sticky de faltantes (mismo formato que Repetidas)
+    _bindAlbumIndex('faltgrp');
 
     // Tap en una card de faltante → +1 (pasa a sueltas, azul). Si era la
     // última, desaparece de la lista al re-renderizar.
@@ -6708,6 +6790,74 @@
   // Pestaña 🟡 Repetidas: lista TODAS las láminas con copias extras
   // (p+s >= 2) — incluye pegadas con extras Y sueltas con duplicados.
   // Es la definición "colaborativa" — todo lo que tenés para cambiar.
+  // Lista de grupos del álbum, en orden de display. Compartido por las
+  // vistas Repetidas y Registrar para el índice sticky.
+  const ALBUM_GROUPS = [
+    { key: 'intro', label: 'Intro' },
+    { key: 'A', label: 'A' }, { key: 'B', label: 'B' }, { key: 'C', label: 'C' },
+    { key: 'D', label: 'D' }, { key: 'E', label: 'E' }, { key: 'F', label: 'F' },
+    { key: 'G', label: 'G' }, { key: 'H', label: 'H' }, { key: 'I', label: 'I' },
+    { key: 'J', label: 'J' }, { key: 'K', label: 'K' }, { key: 'L', label: 'L' },
+    { key: 'history', label: 'Hist' },
+  ];
+  function _albumGroupOf(sec) {
+    if (!sec) return null;
+    if (sec.id === 'intro') return 'intro';
+    if (sec.id === 'history') return 'history';
+    if (sec.equipo && sec.equipo.grupo) return sec.equipo.grupo;
+    return null;
+  }
+  // Construye el HTML del índice sticky con conteos por grupo.
+  // `idPrefix` es 'repgrp' o 'faltgrp' según la vista.
+  function _renderAlbumIndex(groupCounts, idPrefix) {
+    let html = '<nav class="album-idx" data-album-idx="' + idPrefix + '">';
+    ALBUM_GROUPS.forEach(g => {
+      const count = groupCounts[g.key] || 0;
+      const cls = 'album-idx-chip' + (count === 0 ? ' empty' : '');
+      html += '<a class="' + cls + '" href="#' + idPrefix + '-' + g.key + '" data-grp="' + g.key + '">' +
+        g.label + (count > 0 ? ' <span class="badge">' + count + '</span>' : '') +
+      '</a>';
+    });
+    html += '</nav>';
+    return html;
+  }
+  // Wire-up del índice: scroll suave al click + auto-highlight del chip
+  // de la sección visible vía IntersectionObserver.
+  function _bindAlbumIndex(idPrefix) {
+    const nav = document.querySelector('.album-idx[data-album-idx="' + idPrefix + '"]');
+    if (!nav) return;
+    nav.querySelectorAll('.album-idx-chip').forEach(chip => {
+      chip.onclick = (e) => {
+        e.preventDefault();
+        if (chip.classList.contains('empty')) return;
+        const grp = chip.dataset.grp;
+        const target = document.getElementById(idPrefix + '-' + grp);
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        nav.querySelectorAll('.album-idx-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+      };
+    });
+    // Auto-highlight: cuando un anchor entra al viewport, marca su chip.
+    const chipsByGrp = {};
+    nav.querySelectorAll('.album-idx-chip').forEach(c => { chipsByGrp[c.dataset.grp] = c; });
+    const anchors = document.querySelectorAll('.album-idx-anchor[id^="' + idPrefix + '-"]');
+    if (!anchors.length || typeof IntersectionObserver === 'undefined') return;
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const grp = entry.target.id.replace(idPrefix + '-', '');
+          const chip = chipsByGrp[grp];
+          if (chip) {
+            nav.querySelectorAll('.album-idx-chip').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            chip.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+          }
+        }
+      });
+    }, { rootMargin: '-30% 0px -60% 0px', threshold: 0 });
+    anchors.forEach(a => obs.observe(a));
+  }
+
   function renderRepetidas() {
     const items = [];
     secciones.forEach(sec => {
@@ -6730,6 +6880,13 @@
           });
         }
       });
+    });
+
+    // Conteo por grupo para los badges del índice
+    const groupCounts = {};
+    items.forEach(it => {
+      const g = _albumGroupOf(it.sec);
+      if (g) groupCounts[g] = (groupCounts[g] || 0) + 1;
     });
 
     const totalExtras = items.reduce((acc, it) => acc + it.extras, 0);
@@ -6781,9 +6938,19 @@
       bySec[k].items.push(it);
     });
 
+    // Índice sticky con chips de los 14 grupos del álbum
+    if (hasItems) html += _renderAlbumIndex(groupCounts, 'repgrp');
+
     html += '<div class="sueltas-list" id="rep-list">';
+    let lastGroup = null;
     for (const k in bySec) {
       const grp = bySec[k];
+      const groupKey = _albumGroupOf(grp.sec);
+      // Anchor invisible al cambiar de grupo — destino del scroll del chip
+      if (groupKey && groupKey !== lastGroup) {
+        html += '<div class="album-idx-anchor" id="repgrp-' + groupKey + '"></div>';
+        lastGroup = groupKey;
+      }
       // search-blob: texto que el filtro compara — código + número + label + sección
       const secBlob = (grp.sec.titulo || '').toLowerCase();
       html += '<div class="sueltas-section" data-rep-sec="' + grp.sec.id + '" data-rep-sec-blob="' + secBlob.replace(/"/g, '&quot;') + '">' +
@@ -6894,6 +7061,8 @@
   }
 
   function bindRepetidas() {
+    // Índice sticky: scroll suave al click + auto-highlight
+    _bindAlbumIndex('repgrp');
     // Tap en una card de repetida → resta 1. Si era la última copia,
     // la card desaparece de la lista al re-renderizar.
     document.querySelectorAll('.rep-card[data-id]').forEach(card => {
