@@ -6238,6 +6238,7 @@
   // ===== Sync con backend de Apps Script (estado compartido + atómico) =====
   let syncStatus = { state: 'idle', message: 'Conectando…' };
   let lastSeenVersion = 0;
+  let lastFinVersion = 0; // versión separada de finanzas (Fase 3)
   let inflightOps = 0; // contador de operaciones pendientes al server
 
   function setSyncStatus(s, m) {
@@ -6434,6 +6435,11 @@
     try {
       const r = await gsRun('pullState', lastSeenVersion);
       if (!r) return;
+      // Las finanzas tienen su propia versión separada — pulleamos
+      // independientemente del estado del álbum.
+      if (r.finVersion != null && r.finVersion > lastFinVersion) {
+        _finPullFromBackend();
+      }
       if (r.unchanged) return;
       if (r.version != null) lastSeenVersion = r.version;
 
@@ -7028,6 +7034,56 @@
   }
   let finanzasState = _finLoad();
 
+  // === Sync finanzas con el backend (Fase 3) ====================
+  // Estrategia: optimistic local update primero, luego push al server.
+  // En el pull periódico (pullSync) si finVersion del servidor cambió,
+  // pulleamos finanzas y reemplazamos el state local con el del server.
+  // Last-write-wins por categoría de precios; movimientos serializados
+  // por LockService en el backend (ids únicos garantizan no-duplicación).
+  async function _finPullFromBackend() {
+    try {
+      const r = await gsRun('pullFinanzas', lastFinVersion);
+      if (!r) return;
+      if (r.unchanged) {
+        if (r.finVersion != null) lastFinVersion = r.finVersion;
+        return;
+      }
+      if (r.finVersion != null) lastFinVersion = r.finVersion;
+      // Si el server tiene null (primera vez), no pisamos lo local.
+      if (r.value && typeof r.value === 'object') {
+        const def = _finDefaults();
+        finanzasState = {
+          v: r.value.v || 1,
+          precios: Object.assign({}, def.precios, r.value.precios || {}),
+          movimientos: Array.isArray(r.value.movimientos) ? r.value.movimientos : [],
+        };
+        _finSave();
+        if (tabActiva === 'finanzas') _finRefreshDashboard();
+      }
+    } catch (e) {
+      // No bloquear UI por errores de sync de finanzas.
+      console.warn('pullFinanzas failed', e);
+    }
+  }
+  async function _finPushPrecios(precios) {
+    try {
+      const r = await gsRun('setFinPrecios', precios);
+      if (r && r.finVersion != null) lastFinVersion = r.finVersion;
+    } catch (e) { console.warn('setFinPrecios failed', e); }
+  }
+  async function _finPushAddMov(mov) {
+    try {
+      const r = await gsRun('addFinMovimiento', mov);
+      if (r && r.finVersion != null) lastFinVersion = r.finVersion;
+    } catch (e) { console.warn('addFinMovimiento failed', e); }
+  }
+  async function _finPushDeleteMov(movId) {
+    try {
+      const r = await gsRun('deleteFinMovimiento', movId);
+      if (r && r.finVersion != null) lastFinVersion = r.finVersion;
+    } catch (e) { console.warn('deleteFinMovimiento failed', e); }
+  }
+
   // Categorización por id: 00 → cero · FWC* → fwc · TEAM-1 → escudo ·
   // TEAM-13 → equipo (foto grupal) · resto (2-12, 14-20) → jugador.
   // Convención real del álbum Panini Mundial 2026.
@@ -7278,6 +7334,7 @@
         if (!confirm('¿Borrar este movimiento? No se puede deshacer.')) return;
         finanzasState.movimientos = finanzasState.movimientos.filter(m => m.id !== id);
         _finSave();
+        _finPushDeleteMov(id); // sync al backend
         _finRefreshDashboard();
       };
     });
@@ -7365,20 +7422,19 @@
     const save = document.getElementById('fin-precios-save');
     if (save) save.onclick = () => {
       const cats = ['jugador','escudo','equipo','fwc','estrella','cero'];
+      const nuevos = {};
       cats.forEach(cat => {
         const input = document.querySelector('input[data-precio][data-cat="' + cat + '"]');
-        if (input) finanzasState.precios[cat] = _finParseAmount(input.value);
+        if (input) {
+          const val = _finParseAmount(input.value);
+          finanzasState.precios[cat] = val;
+          nuevos[cat] = val;
+        }
       });
       _finSave();
+      _finPushPrecios(nuevos); // sync al backend (no bloquea UI)
       _finPreciosClose();
-      // Refrescar la vista Finanzas si está activa
-      if (tabActiva === 'finanzas') {
-        const cont = document.getElementById('contenido');
-        if (cont) {
-          cont.innerHTML = renderFinanzas();
-          bindFinanzas();
-        }
-      }
+      _finRefreshDashboard();
     };
     const cancel = document.getElementById('fin-precios-cancel');
     if (cancel) cancel.onclick = () => _finPreciosClose();
@@ -7574,11 +7630,13 @@
       if (precio < 0) { alert('El precio no puede ser negativo.'); return; }
       const subtipo = _finMovTab === 'venta' ? 'lamina' : _finMovSub;
       const id = 'm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
-      finanzasState.movimientos.push({
+      const mov = {
         id: id, tipo: _finMovTab, subtipo: subtipo,
         qty: qty, precio: precio, fecha: fecha, nota: nota,
-      });
+      };
+      finanzasState.movimientos.push(mov);
       _finSave();
+      _finPushAddMov(mov); // sync al backend
       _finMovClose();
       _finRefreshDashboard();
     };

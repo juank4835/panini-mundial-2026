@@ -27,6 +27,11 @@ const STATE_PREFIX = 's_';
 const ORDEN_KEY = '__orden';
 const VERSION_KEY = '__version';
 const LEGACY_CLIENT_PREFIX = 'client_';
+// Finanzas (Fase 3): bloque separado del estado del álbum, con su propio
+// counter de versión para que cambios financieros no triggeren re-pulls
+// del estado del álbum (que es mucho más pesado).
+const FIN_KEY = '__finanzas';
+const FIN_VERSION_KEY = '__fin_version';
 
 /** Sirve el HTML al hacer GET de la URL del Web App. */
 function doGet(e) {
@@ -389,15 +394,16 @@ function pullState(sinceVersion) {
     _migrateIfNeeded(props);
     const all = props.getProperties();
     const currentVersion = parseInt(all[VERSION_KEY] || '0', 10);
+    const finVersion = parseInt(all[FIN_VERSION_KEY] || '0', 10);
     if (sinceVersion != null && parseInt(sinceVersion, 10) >= currentVersion) {
-      return { unchanged: true, version: currentVersion };
+      return { unchanged: true, version: currentVersion, finVersion: finVersion };
     }
     const state = _readAllState(props);
     let orden = null;
     if (all[ORDEN_KEY]) {
       try { orden = JSON.parse(all[ORDEN_KEY]); } catch (e) {}
     }
-    return { unchanged: false, version: currentVersion, state: state, orden: orden };
+    return { unchanged: false, version: currentVersion, finVersion: finVersion, state: state, orden: orden };
   } finally {
     lock.releaseLock();
   }
@@ -677,6 +683,157 @@ function importState(state) {
     for (const bk in buckets) _writeBucket(props, bk, buckets[bk]);
     const ver = _bumpVersion(props);
     return { ok: true, version: ver };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// ===== Finanzas (Fase 3) =====
+
+function _readFinanzas(props) {
+  const raw = props.getProperty(FIN_KEY);
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch (e) { return null; }
+}
+function _writeFinanzas(props, data) {
+  props.setProperty(FIN_KEY, JSON.stringify(data));
+}
+function _bumpFinVersion(props) {
+  const v = parseInt(props.getProperty(FIN_VERSION_KEY) || '0', 10) + 1;
+  props.setProperty(FIN_VERSION_KEY, String(v));
+  return v;
+}
+function _emptyFinanzas() {
+  return { v: 1, precios: {}, movimientos: [] };
+}
+
+/**
+ * Devuelve el bloque de finanzas. Si `sinceFinVersion` ya es la última,
+ * devuelve {unchanged: true, finVersion} para evitar payload completo.
+ */
+function pullFinanzas(sinceFinVersion) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(5000);
+  try {
+    const props = PropertiesService.getScriptProperties();
+    const currentVersion = parseInt(props.getProperty(FIN_VERSION_KEY) || '0', 10);
+    if (sinceFinVersion != null && parseInt(sinceFinVersion, 10) >= currentVersion) {
+      return { unchanged: true, finVersion: currentVersion };
+    }
+    const value = _readFinanzas(props);
+    return { unchanged: false, finVersion: currentVersion, value: value };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/**
+ * Mergea precios sobre los existentes. Last-write-wins por categoría.
+ * No reemplaza categorías que el cliente no envió (solo las que están en
+ * el objeto entrante).
+ */
+function setFinPrecios(precios) {
+  if (!precios || typeof precios !== 'object') throw new Error('precios debe ser objeto');
+  const lock = LockService.getScriptLock();
+  lock.waitLock(5000);
+  try {
+    const props = PropertiesService.getScriptProperties();
+    const cur = _readFinanzas(props) || _emptyFinanzas();
+    if (!cur.precios || typeof cur.precios !== 'object') cur.precios = {};
+    const cleaned = {};
+    for (const k in precios) {
+      const n = parseInt(precios[k], 10);
+      if (!isNaN(n) && n >= 0) cleaned[k] = n;
+    }
+    cur.precios = Object.assign({}, cur.precios, cleaned);
+    _writeFinanzas(props, cur);
+    const v = _bumpFinVersion(props);
+    return { ok: true, finVersion: v, value: cur };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/**
+ * Agrega un movimiento al array. Idempotente por id: si el id ya existe,
+ * no duplica (útil para retries del cliente).
+ */
+function addFinMovimiento(mov) {
+  if (!mov || typeof mov !== 'object') throw new Error('mov debe ser objeto');
+  if (typeof mov.id !== 'string' || !mov.id) throw new Error('mov.id requerido');
+  if (mov.tipo !== 'compra' && mov.tipo !== 'venta') throw new Error('mov.tipo invalido');
+  const qty = parseInt(mov.qty, 10);
+  const precio = parseInt(mov.precio, 10);
+  if (isNaN(qty) || qty <= 0) throw new Error('mov.qty debe ser > 0');
+  if (isNaN(precio) || precio < 0) throw new Error('mov.precio debe ser >= 0');
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(5000);
+  try {
+    const props = PropertiesService.getScriptProperties();
+    const cur = _readFinanzas(props) || _emptyFinanzas();
+    if (!Array.isArray(cur.movimientos)) cur.movimientos = [];
+    if (cur.movimientos.some(m => m.id === mov.id)) {
+      const v = parseInt(props.getProperty(FIN_VERSION_KEY) || '0', 10);
+      return { ok: true, finVersion: v, value: cur, duplicate: true };
+    }
+    cur.movimientos.push({
+      id: mov.id,
+      tipo: mov.tipo,
+      subtipo: typeof mov.subtipo === 'string' ? mov.subtipo : '',
+      qty: qty,
+      precio: precio,
+      fecha: typeof mov.fecha === 'string' ? mov.fecha : '',
+      nota: typeof mov.nota === 'string' ? mov.nota : '',
+    });
+    _writeFinanzas(props, cur);
+    const v = _bumpFinVersion(props);
+    return { ok: true, finVersion: v, value: cur };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/** Borra un movimiento por id. Idempotente: si no existe, no falla. */
+function deleteFinMovimiento(movId) {
+  if (typeof movId !== 'string' || !movId) throw new Error('movId requerido');
+  const lock = LockService.getScriptLock();
+  lock.waitLock(5000);
+  try {
+    const props = PropertiesService.getScriptProperties();
+    const cur = _readFinanzas(props) || _emptyFinanzas();
+    if (!Array.isArray(cur.movimientos)) cur.movimientos = [];
+    const before = cur.movimientos.length;
+    cur.movimientos = cur.movimientos.filter(m => m.id !== movId);
+    if (cur.movimientos.length === before) {
+      const v = parseInt(props.getProperty(FIN_VERSION_KEY) || '0', 10);
+      return { ok: true, finVersion: v, value: cur, notFound: true };
+    }
+    _writeFinanzas(props, cur);
+    const v = _bumpFinVersion(props);
+    return { ok: true, finVersion: v, value: cur };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/** Reemplaza todo el bloque de finanzas (sync inicial / restaurar backup). */
+function importFinanzas(obj) {
+  if (!obj || typeof obj !== 'object') throw new Error('obj debe ser objeto');
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const props = PropertiesService.getScriptProperties();
+    const cleaned = {
+      v: 1,
+      precios: obj.precios && typeof obj.precios === 'object' ? obj.precios : {},
+      movimientos: Array.isArray(obj.movimientos) ? obj.movimientos.filter(m =>
+        m && typeof m.id === 'string' && (m.tipo === 'compra' || m.tipo === 'venta')
+      ) : [],
+    };
+    _writeFinanzas(props, cleaned);
+    const v = _bumpFinVersion(props);
+    return { ok: true, finVersion: v, value: cleaned };
   } finally {
     lock.releaseLock();
   }
