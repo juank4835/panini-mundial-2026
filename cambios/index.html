@@ -356,18 +356,25 @@
     });
     historyStickers.forEach(s => allItems.push(s));
 
-    let nTengo = 0, nRep = 0, nFalta = 0;
+    let nTengo = 0, nRep = 0, nFalta = 0, nRepExtras = 0;
     allItems.forEach(it => {
       const r = statusOf(state, it.id);
       if (r.st === 'falta') nFalta++;
-      else { nTengo++; if (r.st === 'rep') nRep++; }
+      else {
+        nTengo++;
+        if (r.st === 'rep') {
+          nRep++;
+          nRepExtras += (r.copies - 1); // copias extra (no incluye la 1ª que va al álbum)
+        }
+      }
     });
     const total = allItems.length;
     const pct = total > 0 ? (nTengo / total * 100) : 0;
 
-    // Construir HTML
+    // Construir HTML — muestro TOTAL DE COPIAS EXTRAS (mismo criterio que el
+    // home del tracker, así los números coinciden entre las dos vistas).
     let html = '<div class="stats-mini">' +
-      '<div class="stat-pill rep"><b>' + nRep + '</b><small>Repetidas</small></div>' +
+      '<div class="stat-pill rep"><b>' + nRepExtras + '</b><small>Repetidas</small></div>' +
       '<div class="stat-pill falta"><b>' + nFalta + '</b><small>Me faltan</small></div>' +
     '</div>';
 
