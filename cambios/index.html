@@ -92,7 +92,9 @@
     flex-wrap: wrap;
     margin-bottom: 14px;
   }
-  /* Legend = botones toggle. Active muestra el color, off lo apaga. */
+  /* Legend = botones toggle. Chip neutro con un círculo de color adentro.
+     Active = chip a opacidad completa con su circulito de color visible.
+     Off = chip dim + círculo en gris. */
   .legend-item {
     background: var(--bg-2);
     border: 0.5px solid var(--border);
@@ -108,9 +110,7 @@
     transition: opacity 0.2s ease, background 0.2s ease;
   }
   .legend-item:hover { background: var(--bg-3); }
-  .legend-item.off {
-    opacity: 0.4;
-  }
+  .legend-item.off { opacity: 0.4; }
   .legend-item.off .legend-cell { background: var(--bg-3); }
   .legend-cell { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
   .legend-cell.falta { background: var(--danger); }
@@ -372,7 +372,8 @@
     '</div>';
 
     html += '<button class="btn-share-main" id="btn-share">📋 Copiar faltantes + repetidas</button>' +
-      '<div class="share-hint">Copia un mensaje listo para pegar en WhatsApp / Telegram / Mail con lo que te falta y lo que tenés repetido.</div>';
+      '<button class="refresh" id="btn-refresh">🔄 Actualizar datos</button>' +
+      '<div class="share-hint">El mensaje queda listo para pegar en WhatsApp / Telegram. Tocá Actualizar para traer los últimos datos del álbum.</div>';
 
     html += '<div class="legend">' +
       '<button class="legend-item" data-toggle="falta"><span class="legend-cell falta"></span> Me falta</button>' +
@@ -452,8 +453,6 @@
     html += histHtml;
 
     html += '</div>';
-
-    html += '<button class="refresh" id="btn-refresh">🔄 Actualizar</button>';
 
     document.getElementById('content').innerHTML = html;
     document.getElementById('subtitle').textContent =
