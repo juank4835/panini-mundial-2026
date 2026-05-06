@@ -41,6 +41,42 @@ function doGet(e) {
       .createTextOutput(JSON.stringify(_computeStats(), null, 2))
       .setMimeType(ContentService.MimeType.JSON);
   }
+  // Dump público para la vista compartible /album/. Devuelve state + orden
+  // en JSON. Sin autenticación: la URL del deployment ya es secreta y la
+  // página de share no permite modificar nada (read-only).
+  if (e && e.parameter && e.parameter.action === 'publica') {
+    const props = PropertiesService.getScriptProperties();
+    _migrateLegacyClientsIfNeeded(props);
+    _migrateLegacySingleStateIfNeeded(props);
+    const all = {};
+    const allKeys = props.getKeys();
+    for (const key of allKeys) {
+      if (key.indexOf(STATE_PREFIX) !== 0) continue;
+      const raw = props.getProperty(key);
+      if (!raw) continue;
+      try {
+        const parsed = JSON.parse(raw);
+        for (const id in parsed) all[id] = parsed[id];
+      } catch (_) {}
+    }
+    let orden = null;
+    const ordenRaw = props.getProperty(ORDEN_KEY);
+    if (ordenRaw) { try { orden = JSON.parse(ordenRaw); } catch (_) {} }
+    const version = parseInt(props.getProperty(VERSION_KEY) || '0', 10);
+    // Soporte JSONP para evitar problemas de CORS al consumir desde
+    // GitHub Pages. Si viene ?callback=fn, devolvemos JS; si no, JSON puro.
+    const payload = JSON.stringify({ ok: true, version: version, state: all, orden: orden });
+    if (e.parameter.callback) {
+      const cb = String(e.parameter.callback).replace(/[^a-zA-Z0-9_$]/g, '');
+      return ContentService
+        .createTextOutput(cb + '(' + payload + ');')
+        .setMimeType(ContentService.MimeType.JAVASCRIPT);
+    }
+    return ContentService
+      .createTextOutput(payload)
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
   // Dump completo del estado per-item (admin). Útil para diagnóstico y
   // recuperación precisa después de un comando equivocado.
   if (e && e.parameter && e.parameter.action === 'admin-dump') {

@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>Álbum Panini Mundial 2026 · Mi colección</title>
+<meta name="description" content="Las láminas del álbum Panini del Mundial 2026 que tengo, las repetidas y las que me faltan. Útil para intercambiar.">
+<style>
+  :root {
+    --bg: #000000;
+    --bg-2: #1a1a1a;
+    --bg-3: #2a2a2a;
+    --border: #3a3a37;
+    --text: #f0eee6;
+    --text-2: #b8b6ae;
+    --text-3: #888780;
+    --green: #00D685;
+    --green-dark: #00A065;
+    --amber: #EF9F27;
+    --amber-text: #412402;
+    --danger: #E24B4A;
+    --blue: #4A9EFF;
+    --accent: #FF8C1A;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    padding-top: env(safe-area-inset-top);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+  .page {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 14px 14px 28px;
+  }
+
+  /* Hero header */
+  .hero {
+    text-align: center;
+    margin-bottom: 14px;
+  }
+  .hero h1 {
+    margin: 0 0 4px;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .hero .subtitle {
+    color: var(--text-3);
+    font-size: 12px;
+    margin: 0;
+  }
+
+  /* Stats card */
+  .stats {
+    background: var(--bg-2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    margin-bottom: 14px;
+    text-align: center;
+  }
+  .stats .pct {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--green);
+    line-height: 1;
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    letter-spacing: -1px;
+    text-shadow:
+      0 0 8px rgba(0, 214, 133, 0.5),
+      0 0 16px rgba(0, 214, 133, 0.3);
+  }
+  .stats .frac {
+    color: var(--text-2);
+    font-size: 13px;
+    margin-top: 4px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .stats .breakdown {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .stats .breakdown > div {
+    background: var(--bg);
+    border-radius: var(--radius);
+    padding: 10px 6px;
+  }
+  .stats .breakdown b {
+    display: block;
+    font-size: 18px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    line-height: 1;
+  }
+  .stats .breakdown small {
+    display: block;
+    color: var(--text-3);
+    font-size: 10px;
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .stats .b-tengo b { color: var(--green); }
+  .stats .b-rep b { color: var(--amber); }
+  .stats .b-falta b { color: var(--danger); }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+    font-size: 11px;
+    color: var(--text-2);
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+  }
+  .legend-swatch.tengo { background: var(--green); }
+  .legend-swatch.rep   { background: var(--amber); }
+  .legend-swatch.falta { background: var(--danger); }
+
+  /* Sticky index */
+  .album-idx {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--bg);
+    padding: 8px 0;
+    margin: 0 0 12px;
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .album-idx::-webkit-scrollbar { display: none; }
+  .album-idx-chip {
+    flex-shrink: 0;
+    padding: 6px 12px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    color: var(--text-2);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    text-decoration: none;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  }
+  .album-idx-chip.active {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+  }
+  .album-idx-anchor {
+    display: block;
+    height: 0;
+    scroll-margin-top: 56px;
+  }
+
+  /* Section per team */
+  .sec {
+    background: var(--bg-2);
+    border-radius: var(--radius-lg);
+    padding: 12px 14px;
+    margin-bottom: 10px;
+  }
+  .sec-title {
+    font-size: 12px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 0.5px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .sec-progress {
+    font-size: 11px;
+    color: var(--text-3);
+    font-family: "JetBrains Mono", Menlo, monospace;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  /* Chip grid de cada equipo (20 láminas) */
+  .lam-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+    gap: 6px;
+  }
+  .lam {
+    aspect-ratio: 1;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    position: relative;
+    user-select: none;
+  }
+  .lam.tengo {
+    background: var(--green);
+    color: #003420;
+  }
+  .lam.rep {
+    background: var(--amber);
+    color: var(--amber-text);
+  }
+  .lam.falta {
+    background: var(--danger);
+    color: #fff;
+    opacity: 0.78;
+  }
+  .lam .x {
+    position: absolute;
+    bottom: 2px;
+    right: 4px;
+    font-size: 9px;
+    font-weight: 700;
+    opacity: 0.85;
+  }
+
+  /* Loading state */
+  .loading, .errstate {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-3);
+  }
+  .errstate { color: var(--danger); }
+  .spinner {
+    display: inline-block;
+    width: 36px;
+    height: 36px;
+    border: 2px solid rgba(239,159,39,0.2);
+    border-top-color: var(--amber);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin-bottom: 12px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Refresh */
+  .refresh {
+    width: 100%;
+    padding: 10px;
+    background: transparent;
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text-2);
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+  .refresh:hover { background: var(--bg-2); color: var(--text); }
+
+  footer {
+    text-align: center;
+    color: var(--text-3);
+    font-size: 11px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 0.5px solid var(--border);
+  }
+  footer a { color: var(--amber); text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="hero">
+    <h1>📒 Álbum Panini Mundial 2026</h1>
+    <p class="subtitle" id="subtitle">Cargando estado…</p>
+  </div>
+
+  <div id="content">
+    <div class="loading">
+      <div class="spinner"></div>
+      <div>Cargando colección…</div>
+    </div>
+  </div>
+
+  <footer>
+    Vista pública · Solo lectura · Datos en vivo<br>
+    <a href="../">Tracker (privado)</a>
+  </footer>
+</div>
+
+<script>
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxb6U2M25Ah4ZyWu_C8PCQQGzpFzFs6a2VOsmDhTgehVi8V1tUm66LxYKntDFCx9H-6eg/exec';
+
+  // === Catálogo (idéntico al de la app) ===
+  const introStickers = [
+    { id: '00',   label: 'Logo Panini' },
+    { id: 'FWC1', label: 'Logo Mundial · Sup' },
+    { id: 'FWC2', label: 'Logo Mundial · Inf' },
+    { id: 'FWC3', label: 'Mascotas' },
+    { id: 'FWC4', label: 'Slogan oficial' },
+    { id: 'FWC5', label: 'Balón oficial' },
+    { id: 'FWC6', label: 'Canadá · Emblema' },
+    { id: 'FWC7', label: 'México · Emblema' },
+    { id: 'FWC8', label: 'USA · Emblema' }
+  ];
+  const historyStickers = [
+    { id: 'FWC9',  label: 'Italia · 1934' },
+    { id: 'FWC10', label: 'Uruguay · 1950' },
+    { id: 'FWC11', label: 'Alemania · 1954' },
+    { id: 'FWC12', label: 'Brasil · 1962' },
+    { id: 'FWC13', label: 'Alemania · 1974' },
+    { id: 'FWC14', label: 'Argentina · 1986' },
+    { id: 'FWC15', label: 'Brasil · 1994' },
+    { id: 'FWC16', label: 'Brasil · 2002' },
+    { id: 'FWC17', label: 'Italia · 2006' },
+    { id: 'FWC18', label: 'Alemania · 2014' },
+    { id: 'FWC19', label: 'Argentina · 2022' }
+  ];
+  const equiposDefault = [
+    { code:'MEX', name:'México', grupo:'A' }, { code:'RSA', name:'Sudáfrica', grupo:'A' },
+    { code:'KOR', name:'Corea del Sur', grupo:'A' }, { code:'CZE', name:'Rep. Checa', grupo:'A' },
+    { code:'CAN', name:'Canadá', grupo:'B' }, { code:'BIH', name:'Bosnia y Herz.', grupo:'B' },
+    { code:'QAT', name:'Catar', grupo:'B' }, { code:'SUI', name:'Suiza', grupo:'B' },
+    { code:'BRA', name:'Brasil', grupo:'C' }, { code:'MAR', name:'Marruecos', grupo:'C' },
+    { code:'HAI', name:'Haití', grupo:'C' }, { code:'SCO', name:'Escocia', grupo:'C' },
+    { code:'USA', name:'Estados Unidos', grupo:'D' }, { code:'PAR', name:'Paraguay', grupo:'D' },
+    { code:'AUS', name:'Australia', grupo:'D' }, { code:'TUR', name:'Turquía', grupo:'D' },
+    { code:'GER', name:'Alemania', grupo:'E' }, { code:'CUW', name:'Curazao', grupo:'E' },
+    { code:'CIV', name:'Costa de Marfil', grupo:'E' }, { code:'ECU', name:'Ecuador', grupo:'E' },
+    { code:'NED', name:'Países Bajos', grupo:'F' }, { code:'JPN', name:'Japón', grupo:'F' },
+    { code:'SWE', name:'Suecia', grupo:'F' }, { code:'TUN', name:'Túnez', grupo:'F' },
+    { code:'BEL', name:'Bélgica', grupo:'G' }, { code:'EGY', name:'Egipto', grupo:'G' },
+    { code:'IRN', name:'Irán', grupo:'G' }, { code:'NZL', name:'Nueva Zelanda', grupo:'G' },
+    { code:'ESP', name:'España', grupo:'H' }, { code:'CPV', name:'Cabo Verde', grupo:'H' },
+    { code:'KSA', name:'Arabia Saudita', grupo:'H' }, { code:'URU', name:'Uruguay', grupo:'H' },
+    { code:'FRA', name:'Francia', grupo:'I' }, { code:'SEN', name:'Senegal', grupo:'I' },
+    { code:'IRQ', name:'Iraq', grupo:'I' }, { code:'NOR', name:'Noruega', grupo:'I' },
+    { code:'ARG', name:'Argentina', grupo:'J' }, { code:'ALG', name:'Argelia', grupo:'J' },
+    { code:'AUT', name:'Austria', grupo:'J' }, { code:'JOR', name:'Jordania', grupo:'J' },
+    { code:'POR', name:'Portugal', grupo:'K' }, { code:'COD', name:'RD Congo', grupo:'K' },
+    { code:'UZB', name:'Uzbekistán', grupo:'K' }, { code:'COL', name:'Colombia', grupo:'K' },
+    { code:'ENG', name:'Inglaterra', grupo:'L' }, { code:'CRO', name:'Croacia', grupo:'L' },
+    { code:'GHA', name:'Ghana', grupo:'L' }, { code:'PAN', name:'Panamá', grupo:'L' }
+  ];
+
+  const ALBUM_GROUPS = [
+    { key: 'intro', label: 'Intro' },
+    { key: 'A', label: 'A' }, { key: 'B', label: 'B' }, { key: 'C', label: 'C' },
+    { key: 'D', label: 'D' }, { key: 'E', label: 'E' }, { key: 'F', label: 'F' },
+    { key: 'G', label: 'G' }, { key: 'H', label: 'H' }, { key: 'I', label: 'I' },
+    { key: 'J', label: 'J' }, { key: 'K', label: 'K' }, { key: 'L', label: 'L' },
+    { key: 'history', label: 'Hist' }
+  ];
+
+  // === Fetch via JSONP (evita CORS desde GitHub Pages → Apps Script) ===
+  function loadData() {
+    return new Promise((resolve, reject) => {
+      const cbName = 'paniniCb_' + Date.now();
+      let timeout;
+      window[cbName] = (data) => {
+        clearTimeout(timeout);
+        delete window[cbName];
+        resolve(data);
+      };
+      const script = document.createElement('script');
+      script.src = APPS_SCRIPT_URL + '?action=publica&callback=' + cbName + '&_=' + Date.now();
+      script.onerror = () => {
+        clearTimeout(timeout);
+        delete window[cbName];
+        reject(new Error('No se pudo conectar al backend'));
+      };
+      document.body.appendChild(script);
+      timeout = setTimeout(() => {
+        delete window[cbName];
+        reject(new Error('Timeout (15s) al conectar'));
+      }, 15000);
+    });
+  }
+
+  function statusOf(state, id) {
+    const s = state[id];
+    if (!s) return 'falta';
+    const p = parseInt(s.p, 10) || 0;
+    const su = parseInt(s.s, 10) || 0;
+    const total = p + su;
+    if (total === 0) return 'falta';
+    if (total >= 2) return 'rep';
+    return 'tengo';
+  }
+  function copiesOf(state, id) {
+    const s = state[id];
+    if (!s) return 0;
+    return (parseInt(s.p, 10) || 0) + (parseInt(s.s, 10) || 0);
+  }
+
+  function render(state, equipos) {
+    // Stats globales
+    const allItems = [];
+    introStickers.forEach(s => allItems.push({ id: s.id, displayNum: s.id }));
+    equipos.forEach(eq => {
+      for (let i = 1; i <= 20; i++) allItems.push({ id: eq.code + '-' + i, displayNum: String(i) });
+    });
+    historyStickers.forEach(s => allItems.push({ id: s.id, displayNum: s.id }));
+
+    let nTengo = 0, nRep = 0, nFalta = 0;
+    allItems.forEach(it => {
+      const st = statusOf(state, it.id);
+      if (st === 'falta') nFalta++;
+      else { nTengo++; if (st === 'rep') nRep++; }
+    });
+    const total = allItems.length;
+    const pct = total > 0 ? (nTengo / total * 100) : 0;
+
+    // Hero stats
+    let html = '<div class="stats">' +
+      '<div class="pct">' + pct.toFixed(1) + '%</div>' +
+      '<div class="frac">' + nTengo + ' / ' + total + ' láminas únicas</div>' +
+      '<div class="breakdown">' +
+        '<div class="b-tengo"><b>' + (nTengo - nRep) + '</b><small>Tengo</small></div>' +
+        '<div class="b-rep"><b>' + nRep + '</b><small>Repetidas</small></div>' +
+        '<div class="b-falta"><b>' + nFalta + '</b><small>Me faltan</small></div>' +
+      '</div>' +
+    '</div>';
+
+    // Leyenda
+    html += '<div class="legend">' +
+      '<span class="legend-item"><span class="legend-swatch tengo"></span> Tengo</span>' +
+      '<span class="legend-item"><span class="legend-swatch rep"></span> Repetida (×N)</span>' +
+      '<span class="legend-item"><span class="legend-swatch falta"></span> Me falta</span>' +
+    '</div>';
+
+    // Conteo por grupo para los badges del índice
+    const groupCounts = {};
+    introStickers.forEach(s => {
+      if (statusOf(state, s.id) === 'falta') groupCounts.intro = (groupCounts.intro || 0) + 1;
+    });
+    historyStickers.forEach(s => {
+      if (statusOf(state, s.id) === 'falta') groupCounts.history = (groupCounts.history || 0) + 1;
+    });
+    equipos.forEach(eq => {
+      let miss = 0;
+      for (let i = 1; i <= 20; i++) {
+        if (statusOf(state, eq.code + '-' + i) === 'falta') miss++;
+      }
+      if (miss > 0) groupCounts[eq.grupo] = (groupCounts[eq.grupo] || 0) + miss;
+    });
+
+    // Índice sticky
+    html += '<nav class="album-idx">';
+    ALBUM_GROUPS.forEach(g => {
+      const count = groupCounts[g.key] || 0;
+      html += '<a class="album-idx-chip" href="#grp-' + g.key + '" data-grp="' + g.key + '">' +
+        g.label +
+        (count > 0 ? ' <span class="badge" style="margin-left:6px;padding:1px 5px;background:rgba(226,75,74,0.25);color:var(--danger);border-radius:8px;font-size:10px;font-weight:700;">' + count + '</span>' : '') +
+      '</a>';
+    });
+    html += '</nav>';
+
+    // Helper para una sección
+    function renderSec(secId, anchorKey, title, items) {
+      const tengoCount = items.filter(it => statusOf(state, it.id) !== 'falta').length;
+      let secHtml = '<div class="album-idx-anchor" id="grp-' + anchorKey + '"></div>' +
+        '<div class="sec" data-sec="' + secId + '">' +
+        '<div class="sec-title"><span>' + title + '</span><span class="sec-progress">' + tengoCount + ' / ' + items.length + '</span></div>' +
+        '<div class="lam-grid">';
+      items.forEach(it => {
+        const st = statusOf(state, it.id);
+        const copies = copiesOf(state, it.id);
+        secHtml += '<div class="lam ' + st + '" title="' + it.id + ' · ' + (it.label || '') + ' · ' + (st === 'falta' ? 'me falta' : (st === 'rep' ? '×' + copies : 'tengo')) + '">' +
+          it.displayNum;
+        if (st === 'rep' && copies > 1) secHtml += '<span class="x">×' + copies + '</span>';
+        secHtml += '</div>';
+      });
+      secHtml += '</div></div>';
+      return secHtml;
+    }
+
+    // Intro
+    html += renderSec('intro', 'intro', 'Intro · Logo, mascotas y anfitriones', introStickers);
+
+    // Equipos por grupo
+    let lastGrp = null;
+    equipos.forEach((eq, idx) => {
+      if (eq.grupo !== lastGrp) {
+        // Anchor del grupo va en la primera sección del grupo
+      }
+      const items = [];
+      for (let i = 1; i <= 20; i++) {
+        items.push({ id: eq.code + '-' + i, displayNum: String(i) });
+      }
+      const title = (idx + 1) + '. ' + eq.name + (eq.grupo ? ' · Grupo ' + eq.grupo : '');
+      // Solo el primer equipo del grupo lleva el anchor
+      const anchorKey = (eq.grupo !== lastGrp) ? eq.grupo : null;
+      lastGrp = eq.grupo;
+
+      const tengoCount = items.filter(it => statusOf(state, it.id) !== 'falta').length;
+      if (anchorKey) html += '<div class="album-idx-anchor" id="grp-' + anchorKey + '"></div>';
+      html += '<div class="sec" data-sec="' + eq.code + '">' +
+        '<div class="sec-title"><span>' + title + '</span><span class="sec-progress">' + tengoCount + ' / 20</span></div>' +
+        '<div class="lam-grid">';
+      items.forEach(it => {
+        const st = statusOf(state, it.id);
+        const copies = copiesOf(state, it.id);
+        const lbl = it.id + ' · ' + (st === 'falta' ? 'me falta' : (st === 'rep' ? '×' + copies + ' copias' : 'tengo'));
+        html += '<div class="lam ' + st + '" title="' + lbl + '">' + it.displayNum;
+        if (st === 'rep' && copies > 1) html += '<span class="x">×' + copies + '</span>';
+        html += '</div>';
+      });
+      html += '</div></div>';
+    });
+
+    // History
+    html += renderSec('history', 'history', 'History · Campeones de mundiales', historyStickers);
+
+    // Refresh button
+    html += '<button class="refresh" id="btn-refresh">🔄 Actualizar</button>';
+
+    document.getElementById('content').innerHTML = html;
+    document.getElementById('subtitle').textContent =
+      'Última actualización: ' + new Date().toLocaleTimeString();
+
+    bindIndex();
+    document.getElementById('btn-refresh').onclick = () => init();
+  }
+
+  // === Wire-up del índice (mismo patrón que la app real) ===
+  let _idxState = { observer: null, suppressUntilToken: 0 };
+  let _idxScrollToken = 0;
+  function bindIndex() {
+    const nav = document.querySelector('.album-idx');
+    if (!nav) return;
+    if (_idxState.observer) _idxState.observer.disconnect();
+    _idxState = { observer: null, suppressUntilToken: 0 };
+
+    const chipsByGrp = {};
+    nav.querySelectorAll('.album-idx-chip').forEach(c => { chipsByGrp[c.dataset.grp] = c; });
+
+    nav.querySelectorAll('.album-idx-chip').forEach(chip => {
+      chip.onclick = (e) => {
+        e.preventDefault();
+        const grp = chip.dataset.grp;
+        const target = document.getElementById('grp-' + grp);
+        if (!target) return;
+        const myToken = ++_idxScrollToken;
+        _idxState.suppressUntilToken = myToken;
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        nav.querySelectorAll('.album-idx-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        setTimeout(() => {
+          if (_idxState.suppressUntilToken === myToken) _idxState.suppressUntilToken = 0;
+        }, 750);
+      };
+    });
+
+    const anchors = document.querySelectorAll('.album-idx-anchor');
+    if (!anchors.length || typeof IntersectionObserver === 'undefined') return;
+    const obs = new IntersectionObserver((entries) => {
+      if (_idxState.suppressUntilToken !== 0) return;
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const grp = entry.target.id.replace('grp-', '');
+          const chip = chipsByGrp[grp];
+          if (chip) {
+            nav.querySelectorAll('.album-idx-chip').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            chip.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+          }
+        }
+      });
+    }, { rootMargin: '-30% 0px -60% 0px', threshold: 0 });
+    anchors.forEach(a => obs.observe(a));
+    _idxState.observer = obs;
+  }
+
+  async function init() {
+    document.getElementById('content').innerHTML =
+      '<div class="loading"><div class="spinner"></div><div>Cargando colección…</div></div>';
+    try {
+      const data = await loadData();
+      if (!data || !data.ok) throw new Error('Respuesta inválida');
+      // Si el backend tiene un orden custom (48 equipos), úsalo. Sino, default.
+      let equipos = equiposDefault;
+      if (data.orden && Array.isArray(data.orden) && data.orden.length === 48) {
+        equipos = data.orden;
+      }
+      render(data.state || {}, equipos);
+    } catch (e) {
+      document.getElementById('content').innerHTML =
+        '<div class="errstate">⚠ ' + (e.message || 'Error al cargar') +
+        '<br><br><button class="refresh" onclick="init()">Reintentar</button></div>';
+    }
+  }
+  init();
+</script>
+</body>
+</html>
