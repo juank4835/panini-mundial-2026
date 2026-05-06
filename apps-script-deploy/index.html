@@ -1144,6 +1144,52 @@
   .falt-row.applied .btn-have-one {
     background: var(--blue);
   }
+
+  /* Faltantes: grid de cards rojas (tap = +1 → pasa a sueltas).
+     Mismo patrón que .rep-card pero en rojo. */
+  .falt-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+    gap: 8px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+  .falt-card {
+    background: var(--danger);
+    border: 1px solid var(--danger);
+    border-radius: var(--radius);
+    padding: 14px 6px;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.1s ease, opacity 0.18s ease, background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .falt-card:active {
+    transform: scale(0.92);
+    background: #b13635;
+    border-color: #b13635;
+  }
+  /* Match: cuando el bulk-input identifica esta lámina, pulso suave. */
+  .falt-card.match {
+    animation: faltMatchPulse 1.4s ease-in-out infinite;
+    box-shadow: 0 0 0 2px rgba(226, 75, 74, 0.4);
+  }
+  /* Applied: pasa a azul rápido antes del re-render. */
+  .falt-card.applied {
+    background: var(--blue);
+    border-color: var(--blue);
+    opacity: 0.6;
+    pointer-events: none;
+  }
+  .falt-card-num {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
   .btn-share-repetidas {
     width: 100%;
     padding: 12px 16px;
@@ -4842,55 +4888,49 @@
       return '<div class="scanner-complete">▣ ¡Álbum completo! No te falta nada.</div>';
     }
 
-    // Filas idénticas a las de Repetidas — chip rojo + nombre + botón "+1 Tengo".
-    // Usamos las mismas clases (.sueltas-list / .sueltas-section / .sueltas-row /
-    // .sueltas-num / .sueltas-info) y agregamos la variante .falt-num para el rojo.
-    const renderRow = (it, secLbl) => {
+    // Cards rojas (mismo patrón que .rep-card pero en rojo). Tap = +1.
+    const renderCard = (it, secLbl) => {
       const matchClass = matchingIds.has(it.id) ? ' match' : '';
       const blob = (it.id + ' ' + it.displayNum + ' ' + (it.label || '') + ' ' + (secLbl || '')).toLowerCase().replace(/"/g, '&quot;');
       const safeLabel = (it.label || '').replace(/"/g, '&quot;');
       const safeNum = (it.displayNum || '').replace(/"/g, '&quot;');
-      return '<div class="sueltas-row falt-row' + matchClass + '" data-id="' + it.id + '"' +
+      return '<div class="falt-card' + matchClass + '" data-id="' + it.id + '"' +
         ' data-falt-id="' + it.id + '"' +
         ' data-falt-blob="' + blob + '"' +
         ' data-falt-num="' + safeNum + '"' +
-        ' data-falt-label="' + safeLabel + '">' +
-        '<div class="sueltas-num falt-num">' + it.displayNum + '</div>' +
-        '<div class="sueltas-info">' +
-          '<b>' + it.id + '</b>' +
-          '<span>' + it.label + '</span>' +
-        '</div>' +
-        '<button class="btn-have-one" data-have-id="' + it.id + '" title="La tengo — pasa a sueltas (azul)">+1</button>' +
+        ' data-falt-label="' + safeLabel + '"' +
+        ' title="' + it.id + (safeLabel ? ' · ' + safeLabel : '') + ' · toca si la tenés">' +
+        '<div class="falt-card-num">' + it.displayNum + '</div>' +
       '</div>';
     };
 
     let html = '<div class="sueltas-list" id="falt-list">';
 
-    // Mismo formato de títulos que Repetidas — usamos sec.titulo (incluye
-    // número prefijo del equipo) y no agregamos badge de count.
     if (intro.length) {
       const secLbl = 'Intro · Logo, mascotas y anfitriones';
       html += '<div class="sueltas-section" data-falt-sec="intro">' +
         '<div class="sueltas-section-title">' + secLbl + '</div>' +
-        intro.map(it => renderRow(it, secLbl)).join('') +
-      '</div>';
+        '<div class="falt-grid">' +
+        intro.map(it => renderCard(it, secLbl)).join('') +
+        '</div></div>';
     }
     equiposOrden.forEach((eq, idx) => {
       const t = byTeam[eq.code];
       if (!t || !t.items.length) return;
-      // Usar el mismo formato que buildSections: "1. MÉXICO (MEX) · Grupo A"
       const secLbl = (idx+1) + '. ' + formatEquipoName(eq) + (eq.grupo ? ' · Grupo ' + eq.grupo : '');
       html += '<div class="sueltas-section" data-falt-sec="' + eq.code + '">' +
         '<div class="sueltas-section-title">' + secLbl + '</div>' +
-        t.items.map(it => renderRow(it, secLbl)).join('') +
-      '</div>';
+        '<div class="falt-grid">' +
+        t.items.map(it => renderCard(it, secLbl)).join('') +
+        '</div></div>';
     });
     if (hist.length) {
       const secLbl = 'History · Campeones de mundiales';
       html += '<div class="sueltas-section" data-falt-sec="history">' +
         '<div class="sueltas-section-title">' + secLbl + '</div>' +
-        hist.map(it => renderRow(it, secLbl)).join('') +
-      '</div>';
+        '<div class="falt-grid">' +
+        hist.map(it => renderCard(it, secLbl)).join('') +
+        '</div></div>';
     }
 
     html += '</div>';
@@ -5173,7 +5213,7 @@
     let lastVisibleRow = null;
     wrap.querySelectorAll('.sueltas-section').forEach(secEl => {
       let secVisible = 0;
-      secEl.querySelectorAll('.falt-row').forEach(row => {
+      secEl.querySelectorAll('.falt-card').forEach(row => {
         const blob = row.dataset.faltBlob || '';
         const match = terms.length === 0 || terms.every(t => blob.indexOf(t) !== -1);
         row.style.display = match ? '' : 'none';
@@ -5580,21 +5620,21 @@
       };
     });
 
-    // Botón +1 Tengo en cada fila de faltante — pasa a suelta (azul)
-    document.querySelectorAll('button[data-have-id]').forEach(btn => {
-      btn.onclick = () => {
-        const id = btn.dataset.haveId;
+    // Tap en una card de faltante → +1 (pasa a sueltas, azul). Si era la
+    // última, desaparece de la lista al re-renderizar.
+    document.querySelectorAll('.falt-card[data-id]').forEach(card => {
+      card.onclick = () => {
+        if (card.classList.contains('applied')) return;
+        const id = card.dataset.id;
         if (!id) return;
         applyDelta(id, +1);
-        // Feedback visual: marcar la fila + fade-out antes de refrescar
-        const row = btn.closest('.falt-row');
-        if (row) row.classList.add('applied');
+        card.classList.add('applied');
         showScanToast('<span style="color:var(--blue);">●</span> <b>' + id + '</b> agregada como suelta. Pegala en la pestaña Sueltas.');
         setTimeout(() => {
           if (tabActiva === 'consulta') {
             refreshConsultaResult();
           }
-        }, 800);
+        }, 600);
       };
     });
 
