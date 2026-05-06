@@ -3297,6 +3297,13 @@
         <div class="item-sub">Las que tienes en la mano sin pegar al álbum</div>
       </span>
     </button>
+    <button class="item" data-more-act="sanitizar">
+      <span class="item-icon" style="color: var(--amber);">⊕</span>
+      <span class="item-text">
+        Normalizar texto
+        <div class="item-sub">Convierte una lista cruda al formato estándar del álbum</div>
+      </span>
+    </button>
     <button class="item" data-more-act="export">
       <span class="item-icon">↓</span>
       <span class="item-text">
@@ -5593,6 +5600,13 @@
       return;
     }
 
+    if (tabActiva === 'sanitizar') {
+      ctrls.style.display = 'none';
+      cont.innerHTML = renderSanitizar();
+      bindSanitizar();
+      return;
+    }
+
     if (tabActiva === 'orden') {
       ctrls.style.display = 'none';
       cont.innerHTML = renderOrden();
@@ -7136,6 +7150,80 @@
     bindRepetidasBulk();
   }
 
+  // -------- Normalizar texto: pega cualquier formato → formato estándar --------
+  function renderSanitizar() {
+    return '<div class="info-box">' +
+        'Pegá una lista en cualquier formato (mensajes de chat, banderas, "tengo:", etc.) ' +
+        'y la app la convierte al <b>formato estándar</b> del álbum. ' +
+        'Después podés copiar el resultado y pegarlo en <b>Registrar</b> o en <b>Repetidas</b>.' +
+      '</div>' +
+      '<textarea id="sanit-input" class="rep-bulk-textarea" rows="6" ' +
+        'placeholder="Ej: tengo COL 5, 12 17 · BRA 7 (×2) · MEX-13 · FWC4 y la 00. me faltan ARG 3 y la FWC7" ' +
+        'autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"></textarea>' +
+      '<div class="cross-sanitized-preview" open style="display:block;">' +
+        '<summary style="display:none;"></summary>' +
+        '<div class="sanit-label" style="font-size:11px; color:var(--text-3); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;">' +
+          'Resultado normalizado' +
+          '<span id="sanit-count" style="margin-left:8px; color:var(--text-2); text-transform:none; letter-spacing:0; font-weight:400;"></span>' +
+        '</div>' +
+        '<pre id="sanit-output">— Pegá texto arriba para ver el resultado —</pre>' +
+        '<div class="cross-sanitized-actions" style="margin-top:8px;">' +
+          '<button class="primary" id="sanit-copy">📋 Copiar resultado</button>' +
+          '<button id="sanit-clear">Limpiar</button>' +
+        '</div>' +
+      '</div>';
+  }
+
+  function bindSanitizar() {
+    const input = document.getElementById('sanit-input');
+    const output = document.getElementById('sanit-output');
+    const countEl = document.getElementById('sanit-count');
+    const btnCopy = document.getElementById('sanit-copy');
+    const btnClear = document.getElementById('sanit-clear');
+    if (!input || !output) return;
+
+    function update() {
+      const raw = input.value || '';
+      if (!raw.trim()) {
+        output.textContent = '— Pegá texto arriba para ver el resultado —';
+        if (countEl) countEl.textContent = '';
+        return;
+      }
+      const sanitized = sanitizeFriendText(raw);
+      output.textContent = sanitized || '(no se reconoció ningún código)';
+      // Conteo: cuántas láminas distintas pudo identificar
+      if (countEl) {
+        try {
+          const codes = parseBulkInput(sanitized);
+          if (codes && codes.length > 0) {
+            const total = codes.reduce((s, c) => s + (c.requested || 1), 0);
+            countEl.textContent = '· ' + codes.length + ' láminas / ' + total + ' copias';
+          } else countEl.textContent = '';
+        } catch(e) { countEl.textContent = ''; }
+      }
+    }
+
+    let timer = null;
+    input.addEventListener('input', () => {
+      clearTimeout(timer);
+      timer = setTimeout(update, 180);
+    });
+    input.addEventListener('paste', () => setTimeout(update, 0));
+
+    if (btnCopy) btnCopy.onclick = () => {
+      const text = output.textContent || '';
+      if (!text || text.startsWith('—') || text.startsWith('(')) return;
+      copyToClipboard(text, btnCopy);
+    };
+    if (btnClear) btnClear.onclick = () => {
+      input.value = '';
+      update();
+      input.focus();
+    };
+
+    setTimeout(() => input.focus(), 50);
+  }
+
   // -------- Bulk-input: pega varias y saca de un solo --------
   function bindRepetidasBulk() {
     const ta = document.getElementById('rep-bulk-input');
@@ -8332,6 +8420,12 @@
         if (act === 'close') return;
         if (act === 'finanzas') {
           tabActiva = 'finanzas';
+          renderTabs();
+          renderContenido();
+          updateBottomNavActive();
+          updateGroupSelectorVisibility();
+        } else if (act === 'sanitizar') {
+          tabActiva = 'sanitizar';
           renderTabs();
           renderContenido();
           updateBottomNavActive();
