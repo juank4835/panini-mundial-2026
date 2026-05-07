@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Mockup v2 · Cruzar listas — con estados (quiere / descarta)</title>
+<style>
+  :root {
+    --bg: #000000;
+    --bg-2: #1a1a1a;
+    --bg-3: #2a2a2a;
+    --border: #3a3a37;
+    --text: #f0eee6;
+    --text-2: #b8b6ae;
+    --text-3: #888780;
+    --green: #00D685;
+    --amber: #EF9F27;
+    --amber-text: #412402;
+    --amber-dark: #BA7517;
+    --danger: #E24B4A;
+    --blue: #4A9EFF;
+    --blue-dark: #2563EB;
+    --radius: 6px;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  .page { max-width: 460px; margin: 0 auto; padding: 14px; }
+
+  .hero { text-align: center; margin-bottom: 12px; }
+  .hero h1 { margin: 0 0 2px; font-size: 16px; font-weight: 600; }
+  .hero p { margin: 0; color: var(--text-3); font-size: 11px; }
+
+  .trato {
+    background: linear-gradient(90deg, rgba(239,159,39,0.12) 0%, rgba(74,158,255,0.12) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .trato-title { font-size: 13px; font-weight: 700; color: var(--text); }
+  .trato-detail { font-size: 11px; color: var(--text-3); font-family: "JetBrains Mono", Menlo, monospace; }
+
+  .filters {
+    display: flex;
+    gap: 5px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .filter-chip {
+    flex-shrink: 0;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    color: var(--text-2);
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .filter-chip.active {
+    background: var(--amber);
+    border-color: var(--amber);
+    color: #fff;
+  }
+
+  .cross-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .cross-col {
+    background: var(--bg-2);
+    border-radius: var(--radius);
+    padding: 8px;
+  }
+  .col-head {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .col-head .count { font-family: "JetBrains Mono", Menlo, monospace; font-weight: 400; color: var(--text-3); }
+  .cross-col.give .col-head { color: var(--amber); border-bottom-color: rgba(239,159,39,0.3); }
+  .cross-col.receive .col-head { color: var(--blue); border-bottom-color: rgba(74,158,255,0.3); }
+
+  /* Progress por columna: ✓ · × · pendientes */
+  .col-progress {
+    font-size: 9px;
+    color: var(--text-3);
+    margin-bottom: 6px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .col-progress span b { color: var(--text-2); }
+  .col-progress .ok { color: var(--green); }
+  .col-progress .no { color: var(--danger); }
+
+  /* Input para agregar/restaurar fichas */
+  .col-add {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+  .col-add input {
+    flex: 1;
+    min-width: 0;
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: 4px;
+    padding: 5px 7px;
+    color: var(--text);
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-size: 10px;
+    outline: none;
+    -webkit-appearance: none;
+  }
+  .col-add input::placeholder { color: var(--text-3); font-size: 9px; }
+  .cross-col.give .col-add input:focus { border-color: var(--amber); }
+  .cross-col.receive .col-add input:focus { border-color: var(--blue); }
+  .col-add-btn {
+    border: 0;
+    border-radius: 4px;
+    padding: 0 9px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    color: #fff;
+    line-height: 1;
+  }
+  .cross-col.give .col-add-btn { background: var(--amber); }
+  .cross-col.receive .col-add-btn { background: var(--blue); }
+
+  /* Flash al agregar / restaurar */
+  @keyframes chipFlash {
+    0% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(255,255,255,0.6); }
+    50% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(255,255,255,0.4); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+  }
+  .chip.flash { animation: chipFlash 0.6s ease; }
+
+  /* Mensaje de error inline al agregar lámina inválida */
+  .col-add-error {
+    font-size: 9px;
+    color: var(--danger);
+    margin: -2px 0 6px;
+    min-height: 12px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    transition: opacity 0.2s ease;
+  }
+
+  /* Estado APPLIED — chip al que ya se le aplicó el cambio. Verde tenue,
+     queda visible como historial visual de lo que pasó. */
+  .chip.applied {
+    background: var(--green) !important;
+    color: #003420 !important;
+    opacity: 0.55;
+    cursor: default;
+    box-shadow: none !important;
+    filter: none !important;
+  }
+  .chip.applied::before { content: ''; }
+  .chip.applied::after {
+    content: ' ✓';
+    font-size: 9px;
+    font-weight: 700;
+    margin-left: 2px;
+  }
+
+  /* Banner flotante que aparece al aplicar */
+  .apply-banner {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--green);
+    color: #003420;
+    padding: 10px 18px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    display: none;
+    z-index: 100;
+    align-items: center;
+    gap: 10px;
+  }
+  .apply-banner.show {
+    display: inline-flex;
+    animation: bannerIn 0.3s ease, bannerOut 0.4s ease 2.6s forwards;
+  }
+  @keyframes bannerIn {
+    from { transform: translate(-50%, -30px); opacity: 0; }
+    to   { transform: translate(-50%, 0); opacity: 1; }
+  }
+  @keyframes bannerOut {
+    to { transform: translate(-50%, -30px); opacity: 0; }
+  }
+  .apply-banner-detail {
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-size: 11px;
+    font-weight: 600;
+    opacity: 0.8;
+  }
+  /* Shake al input cuando falla */
+  @keyframes addShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-3px); }
+    50% { transform: translateX(3px); }
+    75% { transform: translateX(-2px); }
+  }
+  .col-add input.invalid {
+    border-color: var(--danger) !important;
+    animation: addShake 0.3s ease;
+  }
+
+  .tier {
+    font-size: 9px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 8px 0 4px;
+    padding-left: 2px;
+  }
+  .tier:first-of-type { margin-top: 0; }
+
+  .chip-grid { display: flex; flex-wrap: wrap; gap: 6px 4px; }
+
+  /* CHIP — wrapper con espacio para × botón */
+  .chip-wrap {
+    position: relative;
+    display: inline-block;
+  }
+  .chip {
+    border-radius: 4px;
+    padding: 6px 8px;
+    font-size: 10px;
+    font-weight: 700;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    line-height: 1;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.1s ease, opacity 0.15s ease, box-shadow 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    position: relative;
+  }
+  .chip:active { transform: scale(0.93); }
+  .chip.give { background: var(--amber); color: #fff; }
+  .chip.receive { background: var(--blue); color: #fff; }
+
+  /* Estado: WANT (confirmada — el otro la quiere / vos la querés recibir) */
+  .chip.want {
+    box-shadow: 0 0 0 2px #fff, 0 0 0 3px var(--bg-2);
+  }
+  .chip.want::before {
+    content: '✓';
+    font-size: 11px;
+    font-weight: 700;
+    margin-right: 1px;
+  }
+
+  /* Variants by category */
+  .chip.tier-escudo, .chip.tier-equipo {
+    box-shadow: inset 0 0 0 1.5px rgba(255,255,255,0.4);
+  }
+  .chip.want.tier-escudo, .chip.want.tier-equipo {
+    box-shadow: inset 0 0 0 1.5px rgba(255,255,255,0.4), 0 0 0 2px #fff, 0 0 0 3px var(--bg-2);
+  }
+  .chip.tier-fwc {
+    background: linear-gradient(135deg, var(--amber) 0%, #c47e15 100%);
+    box-shadow: inset 0 0 0 1.5px rgba(255,255,255,0.5);
+  }
+  .chip.receive.tier-fwc {
+    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
+  }
+  .chip.tier-estrella, .chip.tier-cero {
+    box-shadow: inset 0 0 0 2px rgba(255,255,255,0.7), 0 0 6px currentColor;
+  }
+  .chip.tier-cero { font-size: 11px; }
+
+  .chip .x { margin-left: 2px; opacity: 0.85; font-size: 9px; }
+
+  /* Botón × para descartar — visible siempre, esquina sup. derecha */
+  .chip-discard {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--bg-3);
+    border: 1px solid var(--border);
+    color: var(--text-3);
+    font-size: 11px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .chip-discard:hover, .chip-discard:active {
+    background: var(--danger);
+    color: #fff;
+    border-color: var(--danger);
+  }
+
+  .col-empty {
+    color: var(--text-3);
+    font-size: 10px;
+    font-style: italic;
+    padding: 6px 2px;
+  }
+
+  /* === Sección de Descartadas === */
+  .descartadas {
+    background: var(--bg-2);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    margin-top: 12px;
+    border: 0.5px dashed var(--border);
+  }
+  .desc-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+  .desc-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .desc-restore-all {
+    background: transparent;
+    border: 0.5px solid var(--border);
+    color: var(--text-2);
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .desc-restore-all:hover { background: var(--bg-3); color: var(--text); }
+  .desc-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip.discarded {
+    opacity: 0.5;
+    text-decoration: line-through;
+    cursor: default;
+  }
+  .chip.discarded:active { transform: none; }
+  .chip-restore {
+    margin-left: 4px;
+    background: transparent;
+    border: 0;
+    color: inherit;
+    font-size: 11px;
+    cursor: pointer;
+    padding: 0 2px;
+    text-decoration: none;
+    opacity: 0.85;
+  }
+  .chip-restore:hover { opacity: 1; }
+
+  /* === Footer de acción === */
+  .actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    flex: 1;
+    min-width: 100px;
+    padding: 11px;
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    border: 0;
+    transition: filter 0.15s ease;
+  }
+  .btn:hover { filter: brightness(1.08); }
+  .btn.primary { background: var(--amber); color: #fff; }
+  .btn.primary[disabled] {
+    background: var(--bg-3);
+    color: var(--text-3);
+    cursor: not-allowed;
+    filter: none;
+  }
+  .btn.primary.ready { animation: ready-pulse 1.6s ease-in-out infinite; }
+  @keyframes ready-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239,159,39,0.5); }
+    50% { box-shadow: 0 0 0 6px rgba(239,159,39,0); }
+  }
+  .btn.secondary {
+    background: transparent;
+    color: var(--text-2);
+    border: 0.5px solid var(--border);
+  }
+  .btn.danger {
+    background: transparent;
+    color: var(--danger);
+    border: 0.5px solid rgba(226,75,74,0.3);
+  }
+
+  .legend {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    font-size: 10px;
+    color: var(--text-3);
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 0.5px solid var(--border);
+  }
+  .legend b { color: var(--text-2); font-weight: 700; }
+
+  footer {
+    text-align: center;
+    color: var(--text-3);
+    font-size: 11px;
+    margin-top: 18px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Banner flotante de éxito al aplicar el cambio -->
+<div class="apply-banner" id="apply-banner">
+  <span>Cambio aplicado</span>
+  <span class="apply-banner-detail" id="apply-banner-detail"></span>
+</div>
+
+<div class="page">
+
+  <div class="hero">
+    <h1>Cruzar con Pacho</h1>
+    <p>Tap chip = la quiere · Tap × = descarta</p>
+  </div>
+
+  <div class="trato">
+    <span class="trato-title">Trato 11 ↔ 8</span>
+    <span class="trato-detail">peso 16 → 35</span>
+  </div>
+
+  <div class="filters">
+    <button class="filter-chip active">Todas</button>
+    <button class="filter-chip">Estrellas</button>
+    <button class="filter-chip">Escudos / Equipos</button>
+    <button class="filter-chip">FWC</button>
+    <button class="filter-chip">Comunes</button>
+  </div>
+
+  <div class="cross-cols">
+
+    <!-- LE DOY -->
+    <div class="cross-col give">
+      <div class="col-head"><span>Le doy</span><span class="count" data-count="give">11</span></div>
+      <div class="col-progress">
+        <span><b class="ok" data-want="give">0</b> ✓</span>
+        <span><b class="no" data-disc="give">0</b> ×</span>
+        <span data-pend="give">11 pendientes</span>
+      </div>
+      <div class="col-add">
+        <input type="text" data-add-side="give" placeholder="Agregar (ej: COL-13)" autocomplete="off" autocapitalize="characters" spellcheck="false">
+        <button class="col-add-btn" data-add-btn="give">+</button>
+      </div>
+      <div class="col-add-error" id="add-err-give"></div>
+
+      <div class="tier">Escudos / equipos</div>
+      <div class="chip-grid" data-side="give">
+        <div class="chip-wrap"><div class="chip give tier-escudo" data-side="give">COL-1<span class="x">×2</span></div><button class="chip-discard">×</button></div>
+        <div class="chip-wrap"><div class="chip give tier-equipo" data-side="give">ARG-13<span class="x">×2</span></div><button class="chip-discard">×</button></div>
+      </div>
+
+      <div class="tier">Comunes</div>
+      <div class="chip-grid" data-side="give">
+        <div class="chip-wrap"><div class="chip give" data-side="give">BRA-3<span class="x">×5</span></div><button class="chip-discard">×</button></div>
+        <div class="chip-wrap"><div class="chip give" data-side="give">ARG-8<span class="x">×3</span></div><button class="chip-discard">×</button></div>
+        <div class="chip-wrap"><div class="chip give" data-side="give">COL-3<span class="x">×2</span></div><button class="chip-discard">×</button></div>
+        <div class="chip-wrap"><div class="chip give" data-side="give">COL-7</div><button class="chip-discard">×</button></div>
+        <div class="chip-wrap"><div class="chip give" data-side="give">COL-15</div><button class="chip-discard">×</button></div>
+        <div class="chip-wrap"><div class="chip give" data-side="give">BRA-11</div><button class="chip-discard">×</button></div>
+        <div class="chip-wrap"><div class="chip give" data-side="give">ARG-14</div><button class="chip-discard">×</button></div>
+      </div>
+    </div>
+
+    <!-- ME DA -->
+    <div class="cross-col receive">
+      <div class="col-head"><span>Me da</span><span class="count" data-count="receive">8</span></div>
+      <div class="col-progress">
+        <span><b class="ok" data-want="receive">0</b> ✓</span>
+        <span><b class="no" data-disc="receive">0</b> ×</span>
+        <span data-pend="receive">8 pendientes</span>
+      </div>
+      <div class="col-add">
+        <input type="text" data-add-side="receive" placeholder="Agregar (ej: BRA-15)" autocomplete="off" autocapitalize="characters" spellcheck="false">
+        <button class="col-add-btn" data-add-btn="receive">+</button>
+      </div>
+      <div class="col-add-error" id="add-err-receive"></div>
+
+      <div class="tier">Estrella / 00</div>
+      <div class="chip-grid" data-side="receive">
+        <div class="chip-wrap"><div class="chip receive tier-cero" data-side="receive">00</div><button class="chip-discard">×</button></div>
+      </div>
+
+      <div class="tier">FWC</div>
+      <div class="chip-grid" data-side="receive">
+        <div class="chip-wrap"><div class="chip receive tier-fwc" data-side="receive">FWC4</div><button class="chip-discard">×</button></div>
+        <div class="chip-wrap"><div class="chip receive tier-fwc" data-side="receive">FWC15</div><button class="chip-discard">×</button></div>
+      </div>
+
+      <div class="tier">Escudos / equipos</div>
+      <div class="chip-grid" data-side="receive">
+        <div class="chip-wrap"><div class="chip receive tier-escudo" data-side="receive">BRA-1</div><button class="chip-discard">×</button></div>
+        <div class="chip-wrap"><div class="chip receive tier-equipo" data-side="receive">MEX-13</div><button class="chip-discard">×</button></div>
+      </div>
+
+      <div class="tier">Comunes</div>
+      <div class="chip-grid" data-side="receive">
+        <div class="chip-wrap"><div class="chip receive" data-side="receive">BRA-17</div><button class="chip-discard">×</button></div>
+        <div class="chip-wrap"><div class="chip receive" data-side="receive">COL-5</div><button class="chip-discard">×</button></div>
+        <div class="chip-wrap"><div class="chip receive" data-side="receive">COL-8</div><button class="chip-discard">×</button></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Descartadas (oculto si no hay) -->
+  <div class="descartadas" id="descartadas-section" style="display:none;">
+    <div class="desc-head">
+      <span class="desc-title">Descartadas (<span id="desc-count">0</span>)</span>
+      <button class="desc-restore-all" id="restore-all">↻ Restaurar todas</button>
+    </div>
+    <div class="desc-grid" id="desc-grid"></div>
+  </div>
+
+  <div class="legend">
+    <b>Tap chip</b> = la quiere (✓) · <b>Tap ×</b> = descarta
+  </div>
+
+  <div class="actions">
+    <button class="btn secondary" id="btn-reset">Reset</button>
+    <button class="btn primary" id="btn-confirm" disabled>Confirmar cambio (0 ↔ 0)</button>
+  </div>
+
+  <footer>
+    Mockup v2.1 · estados quiere / descarta / pendiente
+  </footer>
+</div>
+
+<script>
+(function() {
+  const descSection = document.getElementById('descartadas-section');
+  const descGrid = document.getElementById('desc-grid');
+  const descCountEl = document.getElementById('desc-count');
+  const btnConfirm = document.getElementById('btn-confirm');
+  const btnReset = document.getElementById('btn-reset');
+  const btnRestoreAll = document.getElementById('restore-all');
+
+  function chipCode(chip) {
+    // Devuelve solo el código (ej: COL-3) sin la parte del × o el ↩
+    let txt = '';
+    chip.childNodes.forEach(n => { if (n.nodeType === 3) txt += n.textContent; });
+    return txt.trim().toUpperCase();
+  }
+
+  function bindChip(chip) {
+    chip.onclick = () => {
+      if (chip.classList.contains('discarded')) return;
+      chip.classList.toggle('want');
+      updateCounts();
+    };
+  }
+  function bindDiscardBtn(btn) {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const wrap = btn.parentElement;
+      discardChip(wrap);
+    };
+  }
+  function discardChip(wrap) {
+    const chip = wrap.querySelector('.chip');
+    const xBtn = wrap.querySelector('.chip-discard');
+    chip.classList.remove('want');
+    chip.classList.add('discarded');
+    const restoreBtn = document.createElement('button');
+    restoreBtn.className = 'chip-restore';
+    restoreBtn.textContent = '↩';
+    restoreBtn.onclick = () => restoreChip(wrap);
+    if (xBtn) xBtn.style.display = 'none';
+    chip.appendChild(restoreBtn);
+    wrap._originalGrid = wrap.parentElement;
+    descGrid.appendChild(wrap);
+    updateDesc();
+    updateCounts();
+  }
+  function restoreChip(wrap) {
+    const chip = wrap.querySelector('.chip');
+    chip.classList.remove('discarded');
+    const restoreBtn = chip.querySelector('.chip-restore');
+    if (restoreBtn) restoreBtn.remove();
+    const xBtn = wrap.querySelector('.chip-discard');
+    if (xBtn) xBtn.style.display = '';
+    if (wrap._originalGrid) wrap._originalGrid.appendChild(wrap);
+    flashChip(chip);
+    updateDesc();
+    updateCounts();
+  }
+  function flashChip(chip) {
+    chip.classList.remove('flash');
+    void chip.offsetWidth; // restart animation
+    chip.classList.add('flash');
+    setTimeout(() => chip.classList.remove('flash'), 700);
+  }
+
+  // Bind inicial de los chips ya en el DOM
+  document.querySelectorAll('.chip[data-side]').forEach(bindChip);
+  document.querySelectorAll('.chip-discard').forEach(bindDiscardBtn);
+
+  btnRestoreAll.onclick = () => {
+    Array.from(descGrid.querySelectorAll('.chip-wrap')).forEach(wrap => restoreChip(wrap));
+  };
+
+  btnReset.onclick = () => {
+    document.querySelectorAll('.chip.want').forEach(c => c.classList.remove('want'));
+    Array.from(descGrid.querySelectorAll('.chip-wrap')).forEach(wrap => restoreChip(wrap));
+    // En el mockup, reset también deshace los applied (para volver a probar).
+    // En producción esto NO sucedería — los applied ya tocaron el backend.
+    document.querySelectorAll('.chip.applied').forEach(c => {
+      c.classList.remove('applied');
+      const wrap = c.parentElement;
+      const xBtn = wrap.querySelector('.chip-discard');
+      if (xBtn) xBtn.style.display = '';
+    });
+    updateCounts();
+  };
+
+  // Confirmar cambio: aplicar a las marcadas como ✓ (want)
+  btnConfirm.onclick = () => {
+    if (btnConfirm.hasAttribute('disabled')) return;
+    const wantsGive = Array.from(document.querySelectorAll('.chip.want[data-side="give"]'));
+    const wantsReceive = Array.from(document.querySelectorAll('.chip.want[data-side="receive"]'));
+    if (wantsGive.length === 0 || wantsReceive.length === 0) return;
+
+    // Marcar como aplicadas (en producción aquí iría applyManyOps al backend)
+    [...wantsGive, ...wantsReceive].forEach(c => {
+      c.classList.remove('want');
+      c.classList.add('applied');
+      const wrap = c.parentElement;
+      const xBtn = wrap.querySelector('.chip-discard');
+      if (xBtn) xBtn.style.display = 'none';
+    });
+
+    // Banner de éxito
+    const banner = document.getElementById('apply-banner');
+    const detail = document.getElementById('apply-banner-detail');
+    detail.textContent = '−' + wantsGive.length + ' repetidas · +' + wantsReceive.length + ' sueltas';
+    banner.classList.remove('show');
+    void banner.offsetWidth;
+    banner.classList.add('show');
+    setTimeout(() => banner.classList.remove('show'), 3200);
+
+    updateCounts();
+  };
+
+  // === Álbum mock — en producción esto sale de localStorage / backend ===
+  // Map de id → cantidad total (p+s). Lo no listado se asume "falta" (count=0).
+  const MY_ALBUM = {
+    // Repetidas que ya están en "Le doy" del cruce
+    'COL-1': 3, 'ARG-13': 3, 'BRA-3': 6, 'ARG-8': 4, 'COL-3': 3,
+    'COL-7': 2, 'COL-15': 2, 'BRA-11': 2, 'ARG-14': 2,
+    // Repetidas extras que NO están en el cruce (pruébalas en "Le doy"):
+    // MEX-7, ECU-3, BRA-13, JOR-9
+    'MEX-7': 2, 'ECU-3': 3, 'BRA-13': 2, 'JOR-9': 2,
+    // Pegadas/sueltas únicas (NO se pueden dar — solo 1 copia):
+    // POR-7, GHA-15, KOR-10, JPN-13
+    'POR-7': 1, 'GHA-15': 1, 'KOR-10': 1, 'JPN-13': 1,
+    // Las del cruce "Me da" se asumen faltantes (no listadas).
+    // Pruébalas también en "Me da": ya las tengo, debería rechazar
+    // (las del cruce ya marcadas no porque ya pasaron validación inicial).
+  };
+
+  function validateAdd(side, code) {
+    const count = MY_ALBUM[code] || 0;
+    if (side === 'give') {
+      if (count === 0) return { ok: false, msg: 'No tienes esta lámina' };
+      if (count === 1) return { ok: false, msg: 'Solo tienes 1 (no es repetida)' };
+      return { ok: true };
+    }
+    // receive
+    if (count >= 1) return { ok: false, msg: 'Ya la tienes (no te falta)' };
+    return { ok: true };
+  }
+
+  function showAddError(side, msg, inputEl) {
+    const errEl = document.getElementById('add-err-' + side);
+    if (errEl) {
+      errEl.textContent = msg;
+      clearTimeout(errEl._timer);
+      errEl._timer = setTimeout(() => { errEl.textContent = ''; }, 2800);
+    }
+    if (inputEl) {
+      inputEl.classList.remove('invalid');
+      void inputEl.offsetWidth;
+      inputEl.classList.add('invalid');
+      setTimeout(() => inputEl.classList.remove('invalid'), 400);
+    }
+  }
+  function clearAddError(side) {
+    const errEl = document.getElementById('add-err-' + side);
+    if (errEl) errEl.textContent = '';
+  }
+
+  // === Buscador / agregar ficha ===
+  function addOrRestore(side, rawCode, inputEl) {
+    const code = (rawCode || '').trim().toUpperCase().replace(/\s+/g, '-').replace(/^-/, '').replace(/-$/, '');
+    if (!code) return false;
+    // Si ya está en la lista (activa o descartada), no requiere validación —
+    // ya pasó el filtro inicial del cruce.
+    const all = Array.from(document.querySelectorAll('.chip[data-side="' + side + '"]'));
+    const found = all.find(c => chipCode(c) === code);
+    if (found) {
+      const wrap = found.parentElement;
+      if (found.classList.contains('discarded')) {
+        restoreChip(wrap);
+      } else {
+        flashChip(found);
+      }
+      clearAddError(side);
+      return true;
+    }
+    // No existe → validar contra el álbum
+    const v = validateAdd(side, code);
+    if (!v.ok) {
+      showAddError(side, v.msg, inputEl);
+      return false;
+    }
+    // OK: crear el chip
+    const colSel = side === 'give' ? '.cross-col.give' : '.cross-col.receive';
+    const col = document.querySelector(colSel);
+    let otrasGrid = col.querySelector('.chip-grid.otras');
+    if (!otrasGrid) {
+      const tier = document.createElement('div');
+      tier.className = 'tier';
+      tier.textContent = 'Agregadas';
+      col.appendChild(tier);
+      otrasGrid = document.createElement('div');
+      otrasGrid.className = 'chip-grid otras';
+      otrasGrid.dataset.side = side;
+      col.appendChild(otrasGrid);
+    }
+    const wrap = document.createElement('div');
+    wrap.className = 'chip-wrap';
+    const chip = document.createElement('div');
+    chip.className = 'chip ' + side;
+    chip.dataset.side = side;
+    // Para "Le doy", agregar el ×N si tiene más de 2
+    let txt = code;
+    if (side === 'give') {
+      const total = MY_ALBUM[code];
+      const extras = total - 1;
+      if (extras > 1) {
+        chip.textContent = code;
+        const xN = document.createElement('span');
+        xN.className = 'x';
+        xN.textContent = '×' + extras;
+        chip.appendChild(xN);
+      } else {
+        chip.textContent = code;
+      }
+    } else {
+      chip.textContent = code;
+    }
+    const xBtn = document.createElement('button');
+    xBtn.className = 'chip-discard';
+    xBtn.textContent = '×';
+    wrap.appendChild(chip);
+    wrap.appendChild(xBtn);
+    otrasGrid.appendChild(wrap);
+    bindChip(chip);
+    bindDiscardBtn(xBtn);
+    flashChip(chip);
+    clearAddError(side);
+    updateCounts();
+    return true;
+  }
+
+  document.querySelectorAll('input[data-add-side]').forEach(input => {
+    const side = input.dataset.addSide;
+    const btn = document.querySelector('button[data-add-btn="' + side + '"]');
+    const submit = () => {
+      const success = addOrRestore(side, input.value, input);
+      if (success) {
+        input.value = '';
+      }
+      input.focus();
+    };
+    if (btn) btn.onclick = submit;
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); submit(); }
+    });
+  });
+
+  function updateDesc() {
+    const n = descGrid.children.length;
+    descCountEl.textContent = n;
+    descSection.style.display = n > 0 ? '' : 'none';
+  }
+
+  function updateCounts() {
+    ['give', 'receive'].forEach(side => {
+      const allChips = document.querySelectorAll('.chip[data-side="' + side + '"]');
+      let want = 0, disc = 0, applied = 0, total = 0;
+      allChips.forEach(c => {
+        total++;
+        if (c.classList.contains('applied')) applied++;
+        else if (c.classList.contains('discarded')) disc++;
+        else if (c.classList.contains('want')) want++;
+      });
+      const pend = total - want - disc - applied;
+      const elWant = document.querySelector('[data-want="' + side + '"]');
+      const elDisc = document.querySelector('[data-disc="' + side + '"]');
+      const elPend = document.querySelector('[data-pend="' + side + '"]');
+      const elCount = document.querySelector('[data-count="' + side + '"]');
+      if (elWant) elWant.textContent = want;
+      if (elDisc) elDisc.textContent = disc;
+      if (elPend) {
+        // Mostrar también las aplicadas si hay
+        elPend.textContent = applied > 0
+          ? pend + ' pendientes · ' + applied + ' aplicadas'
+          : pend + ' pendientes';
+      }
+      if (elCount) elCount.textContent = total - disc - applied;
+    });
+    const wantGive = document.querySelectorAll('.chip.want[data-side="give"]').length;
+    const wantReceive = document.querySelectorAll('.chip.want[data-side="receive"]').length;
+    btnConfirm.textContent = 'Confirmar cambio (' + wantGive + ' ↔ ' + wantReceive + ')';
+    if (wantGive > 0 && wantReceive > 0) {
+      btnConfirm.removeAttribute('disabled');
+      btnConfirm.classList.add('ready');
+    } else {
+      btnConfirm.setAttribute('disabled', 'disabled');
+      btnConfirm.classList.remove('ready');
+    }
+  }
+
+  updateCounts();
+})();
+</script>
+</body>
+</html>
