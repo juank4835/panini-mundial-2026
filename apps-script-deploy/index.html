@@ -3207,6 +3207,116 @@
     font-size: 12px;
     padding: 18px 0;
   }
+
+  /* === Cruzar lista (Más → Cruzar lista con un amigo) === */
+  .cruz-input {
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--bg);
+    color: var(--text);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-size: 13px;
+    line-height: 1.4;
+    resize: vertical;
+    min-height: 100px;
+    max-height: 280px;
+    -webkit-appearance: none;
+    margin-bottom: 12px;
+  }
+  .cruz-input:focus { outline: none; border-color: var(--amber); }
+  .cruz-empty {
+    background: var(--bg-2);
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+    color: var(--text-3);
+    font-size: 12px;
+  }
+  .cruz-balance {
+    background: var(--bg-2);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    font-size: 12px;
+    color: var(--text-2);
+    text-align: center;
+    line-height: 1.5;
+  }
+  .cruz-balance b { color: var(--text); font-family: "JetBrains Mono", Menlo, monospace; }
+  .cruz-balance.warn { background: rgba(226,75,74,0.1); color: var(--danger); }
+  .cruz-balance.warn b { color: var(--danger); }
+  .cruz-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  @media (max-width: 600px) { .cruz-cols { grid-template-columns: 1fr; } }
+  .cruz-col {
+    background: var(--bg-2);
+    border-radius: var(--radius);
+    padding: 12px;
+    border-left: 3px solid;
+  }
+  .cruz-col.in { border-left-color: var(--green); }
+  .cruz-col.out { border-left-color: var(--accent); }
+  .cruz-col-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .cruz-col.in .cruz-col-title { color: var(--green); }
+  .cruz-col.out .cruz-col-title { color: var(--accent); }
+  .cruz-col-count {
+    color: var(--text-3);
+    font-weight: 400;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-size: 11px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .cruz-team-row {
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-size: 12px;
+    padding: 3px 0;
+    color: var(--text-2);
+    line-height: 1.5;
+    word-break: break-word;
+  }
+  .cruz-team-row b {
+    color: var(--text);
+    display: inline-block;
+    min-width: 38px;
+  }
+  .cruz-col-empty {
+    color: var(--text-3);
+    font-size: 11px;
+    font-style: italic;
+    padding: 4px 0;
+  }
+  .cruz-actions { display: flex; gap: 8px; }
+  .cruz-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 0;
+    background: var(--amber);
+    color: var(--amber-text);
+    transition: filter 0.15s ease, background 0.2s ease, color 0.2s ease;
+  }
+  .cruz-btn:hover { filter: brightness(1.08); }
+  .cruz-btn.copied { background: var(--green); color: #003420; }
 </style>
 </head>
 <body>
@@ -3295,6 +3405,13 @@
       <span class="item-text">
         Sueltas (sin pegar)
         <div class="item-sub">Las que tienes en la mano sin pegar al álbum</div>
+      </span>
+    </button>
+    <button class="item" data-more-act="cruzar">
+      <span class="item-icon" style="color: var(--green);">⇄</span>
+      <span class="item-text">
+        Cruzar lista con un amigo
+        <div class="item-sub">Pegá su lista y mirá qué pueden intercambiar</div>
       </span>
     </button>
     <button class="item" data-more-act="sanitizar">
@@ -5607,6 +5724,13 @@
       return;
     }
 
+    if (tabActiva === 'cruzar') {
+      ctrls.style.display = 'none';
+      cont.innerHTML = renderCruzar();
+      bindCruzar();
+      return;
+    }
+
     if (tabActiva === 'orden') {
       ctrls.style.display = 'none';
       cont.innerHTML = renderOrden();
@@ -7150,6 +7274,244 @@
     bindRepetidasBulk();
   }
 
+  // -------- Cruzar lista con un amigo --------
+  // Detecta secciones "tengo / me faltan" en el texto crudo del amigo y las
+  // separa para sanitizarlas por separado. Heurística por keywords.
+  function _cruzDetectSections(raw) {
+    const TENGO_RE = /tengo|repetid|para\s*cambi|para\s*dar|sobran|🔄/i;
+    const FALTAN_RE = /falt|necesi|busc|me\s*hace|📋/i;
+    const lines = raw.split(/\r?\n/);
+    const tengo = [], faltan = [], unknown = [];
+    let cur = 'unknown';
+    let sawHeader = false;
+    for (const line of lines) {
+      const t = line.trim();
+      if (!t) continue;
+      const isShortHeader = t.length < 60;
+      // Header de sección? (línea corta con keyword + opcional ":")
+      if (isShortHeader && TENGO_RE.test(t) && !/[A-Z]{3}\s*[:\-]\s*\d/.test(t)) {
+        cur = 'tengo'; sawHeader = true;
+        const after = t.match(/[:：]\s*(.+)$/);
+        if (after && after[1]) tengo.push(after[1]);
+        continue;
+      }
+      if (isShortHeader && FALTAN_RE.test(t) && !/[A-Z]{3}\s*[:\-]\s*\d/.test(t)) {
+        cur = 'faltan'; sawHeader = true;
+        const after = t.match(/[:：]\s*(.+)$/);
+        if (after && after[1]) faltan.push(after[1]);
+        continue;
+      }
+      if (cur === 'tengo') tengo.push(line);
+      else if (cur === 'faltan') faltan.push(line);
+      else unknown.push(line);
+    }
+    // Si nunca vimos header explícito, asumimos que todo es "tengo"
+    // (caso más común: alguien manda solo su lista de repetidas)
+    if (!sawHeader) {
+      return { tengo: raw, faltan: '' };
+    }
+    if (unknown.length && tengo.length === 0) {
+      return { tengo: unknown.join('\n'), faltan: faltan.join('\n') };
+    }
+    return { tengo: tengo.join('\n'), faltan: faltan.join('\n') };
+  }
+
+  // Pesos por categoría para calcular balance del cambio
+  const _CRUZ_WEIGHTS = { cero: 15, estrella: 8, fwc: 5, escudo: 3, equipo: 3, jugador: 1 };
+
+  function _cruzCompute(otherTengo, otherFaltan) {
+    // Construir lookup de items por id
+    const itemById = {};
+    secciones.forEach(sec => sec.items.forEach(it => { itemById[it.id] = it; }));
+
+    // Él me da: lo que el amigo TIENE y a mí me FALTA
+    const elMeDa = [];
+    const seenInIn = {};
+    otherTengo.forEach(item => {
+      if (seenInIn[item.id]) return;
+      const it = itemById[item.id];
+      if (!it) return;
+      const p = getPegada(item.id), s = getSueltas(item.id);
+      if (p === 0 && s === 0) {
+        seenInIn[item.id] = true;
+        const cat = _finCategoryOf(item.id);
+        elMeDa.push({ id: item.id, displayNum: it.displayNum, label: it.label, category: cat, weight: _CRUZ_WEIGHTS[cat] || 1 });
+      }
+    });
+
+    // Yo le doy: lo que el amigo NECESITA y yo tengo REPETIDA (p+s>=2)
+    const yoLeDoy = [];
+    const seenOut = {};
+    otherFaltan.forEach(item => {
+      if (seenOut[item.id]) return;
+      const it = itemById[item.id];
+      if (!it) return;
+      const p = getPegada(item.id), s = getSueltas(item.id);
+      const total = p + s;
+      if (total >= 2) {
+        seenOut[item.id] = true;
+        const cat = _finCategoryOf(item.id);
+        yoLeDoy.push({ id: item.id, displayNum: it.displayNum, label: it.label, category: cat, weight: _CRUZ_WEIGHTS[cat] || 1, copiesAvailable: total - 1 });
+      }
+    });
+
+    // Sort por weight descendente (estrellas/escudos/0 primero)
+    elMeDa.sort((a, b) => b.weight - a.weight);
+    yoLeDoy.sort((a, b) => b.weight - a.weight);
+
+    return { elMeDa, yoLeDoy };
+  }
+
+  // Agrupa items por equipo/sección para el render compacto
+  function _cruzGroupByTeam(items) {
+    const groups = {}; const order = [];
+    items.forEach(it => {
+      let key;
+      if (it.id === '00') key = 'Intro';
+      else if (it.id.indexOf('FWC') === 0) {
+        const num = parseInt(it.id.slice(3), 10);
+        key = (num <= 8) ? 'Intro' : 'History';
+      } else {
+        const dash = it.id.indexOf('-');
+        key = dash > 0 ? it.id.slice(0, dash) : 'Otros';
+      }
+      if (!groups[key]) { groups[key] = []; order.push(key); }
+      groups[key].push(it);
+    });
+    return { groups, order };
+  }
+
+  function _cruzRenderCol(items, sideLabel, sideClass, emptyMsg) {
+    let html = '<div class="cruz-col ' + sideClass + '">' +
+      '<div class="cruz-col-title">' +
+        '<span>' + sideLabel + '</span>' +
+        '<span class="cruz-col-count">' + items.length + ' ' + (items.length === 1 ? 'lámina' : 'láminas') + '</span>' +
+      '</div>';
+    if (items.length === 0) {
+      html += '<div class="cruz-col-empty">' + emptyMsg + '</div>';
+    } else {
+      const { groups, order } = _cruzGroupByTeam(items);
+      order.forEach(k => {
+        const its = groups[k];
+        const nums = its.map(it => {
+          if (k === 'Intro' || k === 'History') return it.displayNum;
+          let s = it.displayNum;
+          if (it.copiesAvailable && it.copiesAvailable > 1) s += '(×' + it.copiesAvailable + ')';
+          return s;
+        }).join(', ');
+        html += '<div class="cruz-team-row"><b>' + k + ':</b> ' + nums + '</div>';
+      });
+    }
+    html += '</div>';
+    return html;
+  }
+
+  function _cruzBuildPropuestaText(matches) {
+    const { elMeDa, yoLeDoy } = matches;
+    const lines = ['🤝 Cambio propuesto', ''];
+    if (elMeDa.length) {
+      lines.push('📥 Vos me das (' + elMeDa.length + '):');
+      const { groups, order } = _cruzGroupByTeam(elMeDa);
+      order.forEach(k => {
+        const nums = groups[k].map(it => it.displayNum).join(', ');
+        lines.push(k + ': ' + nums);
+      });
+      lines.push('');
+    }
+    if (yoLeDoy.length) {
+      lines.push('📤 Yo te doy (' + yoLeDoy.length + '):');
+      const { groups, order } = _cruzGroupByTeam(yoLeDoy);
+      order.forEach(k => {
+        const nums = groups[k].map(it => it.displayNum + (it.copiesAvailable > 1 ? '(×' + it.copiesAvailable + ')' : '')).join(', ');
+        lines.push(k + ': ' + nums);
+      });
+      lines.push('');
+    }
+    if (!elMeDa.length && !yoLeDoy.length) lines.push('No hay matches por ahora.');
+    else lines.push('🤝 ¿Hacemos el cambio?');
+    return lines.join('\n');
+  }
+
+  function renderCruzar() {
+    return '<div class="info-box">' +
+        'Pegá la lista que te mandó tu amigo y la app cruza con tu álbum: ' +
+        'qué <b style="color:var(--green);">te puede dar</b> él, y qué <b style="color:var(--accent);">vos le podés dar</b>. ' +
+        'Detecta secciones "tengo" y "me faltan" automáticamente.' +
+      '</div>' +
+      '<textarea id="cruz-input" class="cruz-input" rows="6" ' +
+        'placeholder="Ej:\nTengo: COL 5, 12, 17 · BRA 7×2 · FWC4\nMe faltan: ARG 3, 11 · MEX-13 · 00" ' +
+        'autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"></textarea>' +
+      '<div id="cruz-result"></div>';
+  }
+
+  function _cruzRender(matches) {
+    const { elMeDa, yoLeDoy } = matches;
+    const total = elMeDa.length + yoLeDoy.length;
+    if (total === 0) {
+      return '<div class="cruz-empty">No encontré matches con tu álbum. Verificá el formato del texto o pediles a tu amigo que mande también su lista de faltantes.</div>';
+    }
+    // Balance
+    const wIn = elMeDa.reduce((s, it) => s + it.weight, 0);
+    const wOut = yoLeDoy.reduce((s, it) => s + it.weight, 0);
+    const ratio = (wIn === 0 || wOut === 0) ? null : (Math.max(wIn, wOut) / Math.min(wIn, wOut));
+    const balanceClass = (ratio && ratio > 1.5) ? 'cruz-balance warn' : 'cruz-balance';
+    const balanceLine = (elMeDa.length && yoLeDoy.length)
+      ? 'Recibís <b>' + elMeDa.length + '</b> (peso ' + wIn + ') · Das <b>' + yoLeDoy.length + '</b> (peso ' + wOut + ')'
+      : (elMeDa.length
+          ? 'Tu amigo solo mandó "tengo": pediéle también sus faltantes para ver qué le podés dar.'
+          : 'Tu amigo solo mandó "me faltan": pediéle su lista de repetidas para ver qué te puede dar.');
+    const warnLine = (ratio && ratio > 1.5)
+      ? '<br>⚠ Cambio desbalanceado (~' + ratio.toFixed(1) + 'x). Considerá ajustar.'
+      : '';
+
+    let html = '<div class="' + balanceClass + '">' + balanceLine + warnLine + '</div>';
+    html += '<div class="cruz-cols">';
+    html += _cruzRenderCol(elMeDa, '📥 Él te puede dar', 'in', 'Sin matches en su lado.');
+    html += _cruzRenderCol(yoLeDoy, '📤 Vos le podés dar', 'out', 'Sin matches en tu lado.');
+    html += '</div>';
+    html += '<div class="cruz-actions">' +
+      '<button class="cruz-btn" id="cruz-copy">📋 Copiar propuesta</button>' +
+    '</div>';
+    return html;
+  }
+
+  function bindCruzar() {
+    const input = document.getElementById('cruz-input');
+    const result = document.getElementById('cruz-result');
+    if (!input || !result) return;
+
+    let lastMatches = { elMeDa: [], yoLeDoy: [] };
+
+    function update() {
+      const raw = input.value || '';
+      if (!raw.trim()) {
+        result.innerHTML = '<div class="cruz-empty">Pegá texto arriba para ver el cruce.</div>';
+        return;
+      }
+      const sections = _cruzDetectSections(raw);
+      const tengoSanit = sections.tengo.trim() ? sanitizeFriendText(sections.tengo) : '';
+      const faltanSanit = sections.faltan.trim() ? sanitizeFriendText(sections.faltan) : '';
+      const tengoCodes = tengoSanit ? parseBulkInput(tengoSanit) : [];
+      const faltanCodes = faltanSanit ? parseBulkInput(faltanSanit) : [];
+      lastMatches = _cruzCompute(tengoCodes, faltanCodes);
+      result.innerHTML = _cruzRender(lastMatches);
+
+      const btn = document.getElementById('cruz-copy');
+      if (btn) btn.onclick = () => {
+        copyToClipboard(_cruzBuildPropuestaText(lastMatches), btn);
+      };
+    }
+
+    let timer = null;
+    input.addEventListener('input', () => {
+      clearTimeout(timer);
+      timer = setTimeout(update, 250);
+    });
+    input.addEventListener('paste', () => setTimeout(update, 0));
+
+    setTimeout(() => input.focus(), 50);
+  }
+
   // -------- Normalizar texto: pega cualquier formato → formato estándar --------
   function renderSanitizar() {
     return '<div class="info-box">' +
@@ -8420,6 +8782,12 @@
         if (act === 'close') return;
         if (act === 'finanzas') {
           tabActiva = 'finanzas';
+          renderTabs();
+          renderContenido();
+          updateBottomNavActive();
+          updateGroupSelectorVisibility();
+        } else if (act === 'cruzar') {
+          tabActiva = 'cruzar';
           renderTabs();
           renderContenido();
           updateBottomNavActive();
