@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Mockup Inicio · Filtro por Sueltas / Faltantes / Repetidas</title>
+<style>
+  /* === Variables y reset, copiados del prod === */
+  :root {
+    --bg: #000;
+    --bg-2: #1a1a1a;
+    --bg-3: #2a2a2a;
+    --border: #3a3a37;
+    --text: #f0eee6;
+    --text-2: #b8b6ae;
+    --text-3: #888780;
+    --green: #00D685;
+    --amber: #EF9F27;
+    --amber-text: #412402;
+    --amber-dark: #BA7517;
+    --danger: #E24B4A;
+    --blue: #4A9EFF;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  .page { max-width: 460px; margin: 0 auto; padding: 14px; }
+  .hero { text-align: center; margin-bottom: 12px; }
+  .hero h1 { margin: 0 0 4px; font-size: 14px; font-weight: 600; color: var(--text-2); }
+  .hero p { margin: 0; color: var(--text-3); font-size: 11px; }
+
+  /* === Donut + pills (igual al prod) === */
+  .donut-wrap {
+    display: flex; justify-content: center; margin-bottom: 12px;
+    cursor: pointer; user-select: none;
+  }
+  .donut {
+    width: 160px; height: 160px;
+    background: conic-gradient(var(--green) 0% 47%, var(--bg-3) 47% 100%);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    transition: box-shadow 0.15s ease;
+  }
+  .donut::after {
+    content: '';
+    position: absolute;
+    inset: 16px;
+    background: var(--bg);
+    border-radius: 50%;
+  }
+  .donut-wrap.active .donut {
+    box-shadow: 0 0 0 2px var(--green), 0 0 18px rgba(0,214,133,0.45);
+  }
+  .donut-wrap:active { transform: scale(0.98); }
+  .donut-text { position: relative; text-align: center; z-index: 1; }
+  .donut-pct { font-size: 28px; font-weight: 800; color: var(--green); line-height: 1; }
+  .donut-frac { font-size: 11px; color: var(--text-2); margin-top: 4px; }
+  .donut-label { font-size: 9px; color: var(--text-3); text-transform: uppercase; letter-spacing: 1px; }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .stat-pill {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    user-select: none;
+  }
+  .stat-pill:active { transform: scale(0.97); }
+  .stat-pill-value { font-size: 22px; font-weight: 800; line-height: 1.1; font-family: "JetBrains Mono", Menlo, monospace; }
+  .stat-pill-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; margin-top: 3px; opacity: 0.85; }
+  .stat-pill-sub { font-size: 9px; color: var(--text-3); margin-top: 2px; }
+
+  .stat-pill.blue .stat-pill-value { color: var(--blue); }
+  .stat-pill.red .stat-pill-value { color: var(--danger); }
+  .stat-pill.amber .stat-pill-value { color: var(--amber); }
+
+  /* Pill activa: borde + glow del color */
+  .stat-pill.active.blue {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 1px var(--blue), 0 0 14px rgba(74,158,255,0.35);
+    background: rgba(74,158,255,0.08);
+  }
+  .stat-pill.active.red {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 1px var(--danger), 0 0 14px rgba(226,75,74,0.35);
+    background: rgba(226,75,74,0.08);
+  }
+  .stat-pill.active.amber {
+    border-color: var(--amber);
+    box-shadow: 0 0 0 1px var(--amber), 0 0 14px rgba(239,159,39,0.35);
+    background: rgba(239,159,39,0.08);
+  }
+
+  /* === Sección compacta de equipo (idéntico al prod) === */
+  .seccion-compacta {
+    background: var(--bg-2);
+    border-radius: var(--radius-lg);
+    padding: 12px 14px;
+    margin-bottom: 10px;
+  }
+  .seccion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .seccion-titulo { font-size: 13px; font-weight: 600; color: var(--text); }
+  .seccion-stats { font-size: 10px; font-family: "JetBrains Mono", Menlo, monospace; color: var(--text-3); }
+  .circles-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+  .compact-card {
+    border-radius: 6px;
+    overflow: hidden;
+    border: 0.5px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-2);
+    user-select: none;
+    position: relative;
+  }
+  .compact-card-num {
+    flex: 1;
+    text-align: center;
+    padding: 6px 0 4px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.1;
+    cursor: pointer;
+    position: relative;
+  }
+  .compact-card.falta .compact-card-num {
+    background: rgba(226, 75, 74, 0.12);
+    color: var(--danger);
+  }
+  .compact-card.pegada .compact-card-num {
+    background: var(--green);
+    color: white;
+  }
+  .compact-card.repetida .compact-card-num {
+    background: var(--amber);
+    color: var(--amber-text);
+  }
+  .compact-card.suelta .compact-card-num {
+    background: rgba(74, 158, 255, 0.18);
+    color: var(--blue);
+  }
+  .compact-card-controls {
+    display: flex;
+    border-top: 0.5px solid var(--border);
+  }
+  .compact-card-controls button {
+    flex: 1;
+    padding: 5px 0;
+    background: var(--bg-2);
+    color: var(--text-2);
+    border: 0;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    font-family: inherit;
+  }
+  .compact-card-controls button:first-child {
+    border-right: 0.5px solid var(--border);
+  }
+  .circle-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: var(--text);
+    color: var(--bg);
+    font-size: 8px;
+    border-radius: 100px;
+    padding: 0 3px;
+    font-weight: 700;
+  }
+
+  /* === Filtro: oculta equipos sin matches y láminas no-match === */
+  body.filter-active .seccion-compacta.no-match { display: none; }
+  body.filter-active .compact-card:not(.match) { display: none; }
+  /* Cuando filtras, el grid puede quedar con pocas columnas — el grid layout
+     mantiene 5 columnas y los huecos quedan vacíos. Eso conserva el formato. */
+
+  footer {
+    text-align: center;
+    color: var(--text-3);
+    font-size: 11px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 0.5px solid var(--border);
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="hero">
+    <h1>Mockup · Inicio con filtros</h1>
+    <p>Toca una pill para filtrar. Mismo formato del Inicio en móvil.</p>
+  </div>
+
+  <!-- Donut + pills (igual al prod) -->
+  <div class="donut-wrap" data-filter="pegada">
+    <div class="donut">
+      <div class="donut-text">
+        <div class="donut-pct">47.0%</div>
+        <div class="donut-frac">461 / 980</div>
+        <div class="donut-label">Pegadas</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-pill blue" data-filter="suelta">
+      <div class="stat-pill-value">23</div>
+      <div class="stat-pill-label">Sueltas</div>
+      <div class="stat-pill-sub">28 copias</div>
+    </div>
+    <div class="stat-pill red" data-filter="falta">
+      <div class="stat-pill-value">496</div>
+      <div class="stat-pill-label">Faltantes</div>
+      <div class="stat-pill-sub">por conseguir</div>
+    </div>
+    <div class="stat-pill amber" data-filter="repetida">
+      <div class="stat-pill-value">15</div>
+      <div class="stat-pill-label">Repetidas</div>
+      <div class="stat-pill-sub">12 monas</div>
+    </div>
+  </div>
+
+  <!-- Lista (4 equipos de muestra: MEX y KOR con faltantes; ARG sin faltantes; BRA sin matches según filtro) -->
+  <div id="lista">
+
+    <div class="seccion-compacta">
+      <div class="seccion-header">
+        <div class="seccion-titulo">México (MEX) · A</div>
+        <div class="seccion-stats">17/20 · 1 rep</div>
+      </div>
+      <div class="circles-grid">
+        <div class="compact-card falta" data-status="falta">
+          <div class="compact-card-num">1</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card pegada" data-status="pegada">
+          <div class="compact-card-num">2</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card falta" data-status="falta">
+          <div class="compact-card-num">3</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card pegada" data-status="pegada">
+          <div class="compact-card-num">4</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card pegada" data-status="pegada">
+          <div class="compact-card-num">5</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card pegada" data-status="pegada">
+          <div class="compact-card-num">6</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card pegada" data-status="pegada">
+          <div class="compact-card-num">7</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card suelta" data-status="suelta">
+          <div class="compact-card-num">8</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card pegada" data-status="pegada">
+          <div class="compact-card-num">9</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card pegada" data-status="pegada">
+          <div class="compact-card-num">10</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card pegada" data-status="pegada">
+          <div class="compact-card-num">11</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card pegada" data-status="pegada">
+          <div class="compact-card-num">12</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card pegada" data-status="pegada">
+          <div class="compact-card-num">13</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card repetida" data-status="repetida">
+          <div class="compact-card-num">14<span class="circle-badge">+1</span></div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card pegada" data-status="pegada">
+          <div class="compact-card-num">15</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card pegada" data-status="pegada">
+          <div class="compact-card-num">16</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card pegada" data-status="pegada">
+          <div class="compact-card-num">17</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card pegada" data-status="pegada">
+          <div class="compact-card-num">18</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card pegada" data-status="pegada">
+          <div class="compact-card-num">19</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card pegada" data-status="pegada">
+          <div class="compact-card-num">20</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="seccion-compacta">
+      <div class="seccion-header">
+        <div class="seccion-titulo">Brasil (BRA) · G</div>
+        <div class="seccion-stats">20/20 · 0 rep</div>
+      </div>
+      <div class="circles-grid">
+        <div class="compact-card pegada" data-status="pegada">
+          <div class="compact-card-num">1</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card pegada" data-status="pegada">
+          <div class="compact-card-num">2</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card pegada" data-status="pegada">
+          <div class="compact-card-num">3</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card pegada" data-status="pegada">
+          <div class="compact-card-num">4</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card pegada" data-status="pegada">
+          <div class="compact-card-num">5</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="seccion-compacta">
+      <div class="seccion-header">
+        <div class="seccion-titulo">Corea del Sur (KOR) · F</div>
+        <div class="seccion-stats">19/20 · 0 rep</div>
+      </div>
+      <div class="circles-grid">
+        <div class="compact-card pegada" data-status="pegada">
+          <div class="compact-card-num">1</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card pegada" data-status="pegada">
+          <div class="compact-card-num">2</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card pegada" data-status="pegada">
+          <div class="compact-card-num">3</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card pegada" data-status="pegada">
+          <div class="compact-card-num">4</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card falta" data-status="falta">
+          <div class="compact-card-num">5</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card pegada" data-status="pegada">
+          <div class="compact-card-num">6</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="seccion-compacta">
+      <div class="seccion-header">
+        <div class="seccion-titulo">Argentina (ARG) · C</div>
+        <div class="seccion-stats">14/20 · 2 rep</div>
+      </div>
+      <div class="circles-grid">
+        <div class="compact-card pegada" data-status="pegada">
+          <div class="compact-card-num">1</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card suelta" data-status="suelta">
+          <div class="compact-card-num">2</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card pegada" data-status="pegada">
+          <div class="compact-card-num">3</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card repetida" data-status="repetida">
+          <div class="compact-card-num">4<span class="circle-badge">+2</span></div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="compact-card pegada" data-status="pegada">
+          <div class="compact-card-num">5</div>
+          <div class="compact-card-controls"><button>−</button><button>+</button></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    Mockup · Filtros desde el Inicio (formato real del móvil)
+  </footer>
+</div>
+
+<script>
+  let activeFilter = null;
+  const triggers = document.querySelectorAll('[data-filter]');
+  const cards = document.querySelectorAll('.compact-card');
+  const secciones = document.querySelectorAll('.seccion-compacta');
+
+  function applyFilter(status) {
+    activeFilter = status;
+    document.body.classList.toggle('filter-active', !!status);
+
+    triggers.forEach(t => t.classList.toggle('active', t.dataset.filter === status));
+
+    if (status) {
+      cards.forEach(c => c.classList.toggle('match', c.dataset.status === status));
+      secciones.forEach(s => {
+        const has = s.querySelector('.compact-card.match');
+        s.classList.toggle('no-match', !has);
+      });
+    } else {
+      cards.forEach(c => c.classList.remove('match'));
+      secciones.forEach(s => s.classList.remove('no-match'));
+    }
+  }
+
+  triggers.forEach(t => {
+    t.addEventListener('click', () => {
+      const status = t.dataset.filter;
+      applyFilter(activeFilter === status ? null : status);
+    });
+  });
+</script>
+</body>
+</html>

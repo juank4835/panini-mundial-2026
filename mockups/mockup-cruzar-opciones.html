@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Mockup · Cruzar listas — opciones A y B</title>
+<style>
+  :root {
+    --bg: #000;
+    --bg-2: #1a1a1a;
+    --bg-3: #2a2a2a;
+    --border: #3a3a37;
+    --text: #f0eee6;
+    --text-2: #b8b6ae;
+    --text-3: #888780;
+    --amber: #EF9F27;
+    --blue: #4A9EFF;
+    --cyan: #00E5FF;
+    --green: #00D685;
+    --danger: #E24B4A;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    font-size: 13px;
+    -webkit-font-smoothing: antialiased;
+    padding: 20px;
+    padding-top: env(safe-area-inset-top, 20px);
+  }
+  .page {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .page-header {
+    text-align: center;
+    margin-bottom: 28px;
+    padding-bottom: 18px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .page-header .eyebrow {
+    color: var(--text-3);
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .page-header h1 {
+    margin: 6px 0 4px;
+    font-size: 20px;
+    font-weight: 600;
+  }
+  .page-header p {
+    margin: 0;
+    color: var(--text-3);
+    font-size: 12px;
+  }
+
+  .comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  @media (max-width: 900px) {
+    .comparison { grid-template-columns: 1fr; }
+  }
+
+  .option {
+    background: #050505;
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+  }
+  .option-head {
+    margin-bottom: 14px;
+  }
+  .option-tag {
+    display: inline-block;
+    color: var(--text-3);
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    margin-bottom: 4px;
+  }
+  .option-title {
+    margin: 0 0 4px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .option-sub {
+    margin: 0;
+    color: var(--text-3);
+    font-size: 11px;
+  }
+
+  /* state toggles per option */
+  .state-toggles {
+    display: flex;
+    gap: 6px;
+    margin: 12px 0;
+    flex-wrap: wrap;
+  }
+  .state-toggles button {
+    background: var(--bg-2);
+    border: 0.5px solid var(--border);
+    color: var(--text-2);
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-size: 10px;
+    padding: 5px 10px;
+    border-radius: 100px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+  .state-toggles button:hover { background: var(--bg-3); }
+  .state-toggles button.active {
+    background: var(--bg-2);
+    color: var(--amber);
+    border-color: var(--amber);
+  }
+
+  /* Phone frame for the actual mockup */
+  .frame {
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: 18px;
+    padding: 16px 14px;
+    min-height: 600px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+  .frame-h {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .frame-h .icon {
+    color: var(--amber);
+    font-size: 16px;
+  }
+  .frame-h h2 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+  }
+
+  /* Form-like sections */
+  .partner-input {
+    margin-bottom: 14px;
+  }
+  .partner-input label {
+    display: block;
+    color: var(--text-3);
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .partner-input .input {
+    background: var(--bg-2);
+    border: 0.5px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 13px;
+    color: var(--text);
+    font-family: inherit;
+  }
+
+  .paste-box {
+    margin-bottom: 12px;
+  }
+  .paste-box .lbl {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+  .paste-box .lbl span {
+    color: var(--text-2);
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .paste-box .lbl small {
+    color: var(--text-3);
+    font-size: 10px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .paste-box textarea,
+  .paste-box .ta {
+    width: 100%;
+    background: var(--bg-2);
+    border: 0.5px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    color: var(--text);
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-size: 11.5px;
+    line-height: 1.6;
+    min-height: 64px;
+    resize: vertical;
+  }
+  .paste-box .ta.empty {
+    color: var(--text-3);
+    font-style: italic;
+  }
+  .paste-box.amber .ta { border-color: rgba(239,159,39,0.35); }
+  .paste-box.blue .ta { border-color: rgba(74,158,255,0.35); }
+
+  /* Result sections */
+  .result-bar {
+    margin: 16px 0 8px;
+    color: var(--text-3);
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    padding-top: 14px;
+    border-top: 0.5px solid var(--border);
+  }
+  .result-block {
+    background: var(--bg-2);
+    border: 0.5px solid var(--border);
+    border-left-width: 3px;
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+  }
+  .result-block.blue {
+    border-left-color: var(--blue);
+    box-shadow: inset 0 0 0 0.5px rgba(74,158,255,0.18);
+  }
+  .result-block.amber {
+    border-left-color: var(--amber);
+    box-shadow: inset 0 0 0 0.5px rgba(239,159,39,0.18);
+  }
+  .result-block.dim {
+    opacity: 0.45;
+  }
+  .result-block .rb-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .result-block .rb-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .result-block.blue .rb-title { color: var(--blue); }
+  .result-block.amber .rb-title { color: var(--amber); }
+  .result-block .rb-count {
+    color: var(--text-3);
+    font-size: 10px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .result-block .rb-sub {
+    color: var(--text-3);
+    font-size: 10.5px;
+    margin-bottom: 8px;
+    font-style: italic;
+  }
+  .result-block .rb-list {
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-size: 11.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+  .result-block .rb-list .team-code {
+    color: var(--text-2);
+    font-weight: 700;
+    display: inline-block;
+    width: 38px;
+  }
+  .result-block .rb-list .num { color: var(--text); }
+  .result-block.blue .rb-list .num {
+    color: var(--blue);
+    text-shadow: 0 0 4px rgba(74,158,255,0.4);
+  }
+  .result-block.amber .rb-list .num {
+    color: var(--amber);
+    text-shadow: 0 0 4px rgba(239,159,39,0.4);
+  }
+  .result-block .rb-list .x {
+    color: var(--text-3);
+    font-size: 10px;
+    margin-left: 1px;
+  }
+  .result-block .empty-state {
+    color: var(--text-3);
+    font-size: 11px;
+    text-align: center;
+    padding: 10px 0;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .result-block .empty-state .arrow {
+    display: block;
+    color: var(--text-3);
+    margin-top: 4px;
+    font-size: 12px;
+  }
+
+  /* Share buttons */
+  .actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+  .actions button {
+    flex: 1;
+    min-width: 90px;
+    background: var(--bg-2);
+    border: 0.5px solid var(--border);
+    color: var(--text-2);
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-size: 10.5px;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+  }
+  .actions button.amber {
+    color: var(--amber);
+    border-color: rgba(239,159,39,0.5);
+  }
+  .actions button.blue {
+    color: var(--blue);
+    border-color: rgba(74,158,255,0.5);
+  }
+  .actions button.primary {
+    color: var(--text);
+    border-color: var(--text-2);
+  }
+
+  /* Tabs for option B */
+  .tab-bar {
+    display: flex;
+    gap: 4px;
+    background: var(--bg-2);
+    padding: 4px;
+    border-radius: 8px;
+    margin-bottom: 14px;
+    border: 0.5px solid var(--border);
+  }
+  .tab-bar button {
+    flex: 1;
+    background: transparent;
+    border: 0;
+    color: var(--text-3);
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-size: 11px;
+    padding: 8px 6px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+  .tab-bar button.active {
+    background: var(--bg);
+    color: var(--text);
+    box-shadow: 0 0 0 0.5px var(--border);
+  }
+  .tab-bar button.active.blue { color: var(--blue); }
+  .tab-bar button.active.amber { color: var(--amber); }
+
+  /* Footer of each option (pros/cons) */
+  .pros-cons {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 0.5px dashed var(--border);
+    font-size: 11px;
+    color: var(--text-2);
+    line-height: 1.7;
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 0;
+  }
+  .pros-cons li { margin-bottom: 4px; }
+  .pros-cons li.plus::before {
+    content: '+';
+    color: var(--green);
+    margin-right: 6px;
+    font-weight: 700;
+  }
+  .pros-cons li.minus::before {
+    content: '–';
+    color: var(--danger);
+    margin-right: 6px;
+    font-weight: 700;
+  }
+
+  /* tiny help annotation below adaptive panel */
+  .helper-note {
+    margin-top: 10px;
+    padding: 8px 10px;
+    background: rgba(239,159,39,0.06);
+    border: 0.5px solid rgba(239,159,39,0.2);
+    border-radius: 6px;
+    color: var(--text-2);
+    font-size: 10.5px;
+    line-height: 1.55;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="eyebrow">Mockup · Cruzar listas</div>
+    <h1>Dos opciones de UX para evaluar</h1>
+    <p>Click los togglers de cada panel para ver los estados que maneja cada diseño</p>
+  </div>
+
+  <div class="comparison">
+
+    <!-- ═══════════ OPCIÓN A — ADAPTATIVO ═══════════ -->
+    <section class="option" id="opt-a">
+      <div class="option-head">
+        <div class="option-tag">Opción A</div>
+        <h2 class="option-title">Adaptativo · una sola pantalla</h2>
+        <p class="option-sub">El resultado se reconfigura según qué entrada se llenó. Sin modos explícitos.</p>
+      </div>
+
+      <div class="state-toggles" data-target="a">
+        <button data-state="empty">vacío</button>
+        <button data-state="only-repes" class="active">solo sus repetidas</button>
+        <button data-state="only-faltas">solo sus faltantes</button>
+        <button data-state="both">ambos pegados</button>
+      </div>
+
+      <div class="frame">
+        <div class="frame-h">
+          <span class="icon">⇄</span>
+          <h2>Cruzar listas</h2>
+        </div>
+
+        <div class="partner-input">
+          <label>Con:</label>
+          <div class="input">Pacho</div>
+        </div>
+
+        <div class="paste-box amber">
+          <div class="lbl"><span>Sus repetidas</span><small>lo que él tiene para dar</small></div>
+          <div class="ta" id="a-paste-repes">BRA: 1, 3, 7
+ESP: 12, 5
+ARG: 18</div>
+        </div>
+
+        <div class="paste-box blue">
+          <div class="lbl"><span>Sus faltantes</span><small>lo que él necesita</small></div>
+          <div class="ta empty" id="a-paste-faltas">(pega su lista de faltantes…)</div>
+        </div>
+
+        <div class="result-bar">Resultado</div>
+
+        <!-- ME DA block -->
+        <div class="result-block blue" id="a-block-meda">
+          <div class="rb-head">
+            <div class="rb-title">← ME DA</div>
+            <div class="rb-count">3 láminas</div>
+          </div>
+          <div class="rb-sub">Mis faltantes ∩ sus repetidas</div>
+          <div class="rb-list">
+            <div><span class="team-code">BRA</span> <span class="num">3</span>, <span class="num">7</span></div>
+            <div><span class="team-code">ESP</span> <span class="num">12</span></div>
+          </div>
+        </div>
+
+        <!-- LE DOY block -->
+        <div class="result-block amber dim" id="a-block-ledoy">
+          <div class="rb-head">
+            <div class="rb-title">→ LE DOY</div>
+            <div class="rb-count">— láminas</div>
+          </div>
+          <div class="empty-state">
+            Pega sus faltantes arriba<span class="arrow">↑</span>
+          </div>
+        </div>
+
+        <div class="actions" id="a-actions">
+          <button class="blue">Compartir solo "me da"</button>
+        </div>
+
+        <div class="helper-note" id="a-helper">
+          La sección <strong>"← me da"</strong> ya está computada con tus faltantes vs sus repetidas. Cuando pegues sus faltantes aparecerá también <strong>"→ le doy"</strong>.
+        </div>
+      </div>
+
+      <ul class="pros-cons">
+        <li class="plus">Una sola UI — no decides "modo" upfront</li>
+        <li class="plus">Output se adapta al input (revela lo que aplica)</li>
+        <li class="plus">Tu lado ya lo sabe la app — nunca pegas lo tuyo</li>
+        <li class="minus">Menos discoverable: usuarios nuevos pueden no saber que pueden pegar solo una mitad</li>
+      </ul>
+    </section>
+
+    <!-- ═══════════ OPCIÓN B — TABS ═══════════ -->
+    <section class="option" id="opt-b">
+      <div class="option-head">
+        <div class="option-tag">Opción B</div>
+        <h2 class="option-title">Tabs explícitos · tres modos</h2>
+        <p class="option-sub">Cada modo es una pestaña con su propia UI minimizada. Decisión upfront.</p>
+      </div>
+
+      <div class="state-toggles" data-target="b">
+        <button data-state="ledoy" class="active">Tab "Le doy"</button>
+        <button data-state="meda">Tab "Me da"</button>
+        <button data-state="cruzar">Tab "Cruzar ambos"</button>
+      </div>
+
+      <div class="frame">
+        <div class="frame-h">
+          <span class="icon">⇄</span>
+          <h2>Cruzar listas</h2>
+        </div>
+
+        <div class="tab-bar" id="b-tabs">
+          <button data-tab="ledoy" class="active amber">→ Le doy</button>
+          <button data-tab="meda">← Me da</button>
+          <button data-tab="cruzar">Cruzar ambos</button>
+        </div>
+
+        <div class="partner-input">
+          <label>Con:</label>
+          <div class="input">Pacho</div>
+        </div>
+
+        <!-- LE DOY content -->
+        <div id="b-content-ledoy">
+          <div class="paste-box blue">
+            <div class="lbl"><span>Sus faltantes</span><small>pega lo que él necesita</small></div>
+            <div class="ta">COL: 4, 8, 15
+ARG: 1</div>
+          </div>
+
+          <div class="result-bar">Lo que le puedo dar</div>
+
+          <div class="result-block amber">
+            <div class="rb-head">
+              <div class="rb-title">→ LE DOY</div>
+              <div class="rb-count">4 láminas · 8 copias</div>
+            </div>
+            <div class="rb-list">
+              <div><span class="team-code">COL</span> <span class="num">4</span><span class="x">×2</span>, <span class="num">8</span></div>
+              <div><span class="team-code">ARG</span> <span class="num">1</span><span class="x">×3</span></div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="amber primary">Compartir lo que doy</button>
+          </div>
+        </div>
+
+        <!-- ME DA content -->
+        <div id="b-content-meda" style="display:none">
+          <div class="paste-box amber">
+            <div class="lbl"><span>Sus repetidas</span><small>pega lo que él tiene para dar</small></div>
+            <div class="ta">BRA: 1, 3, 7
+ESP: 12, 5
+ARG: 18</div>
+          </div>
+
+          <div class="result-bar">Lo que me puede dar</div>
+
+          <div class="result-block blue">
+            <div class="rb-head">
+              <div class="rb-title">← ME DA</div>
+              <div class="rb-count">3 láminas</div>
+            </div>
+            <div class="rb-list">
+              <div><span class="team-code">BRA</span> <span class="num">3</span>, <span class="num">7</span></div>
+              <div><span class="team-code">ESP</span> <span class="num">12</span></div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="blue primary">Compartir lo que me da</button>
+          </div>
+        </div>
+
+        <!-- CRUZAR content -->
+        <div id="b-content-cruzar" style="display:none">
+          <div class="paste-box amber">
+            <div class="lbl"><span>Sus repetidas</span><small>lo que él tiene para dar</small></div>
+            <div class="ta">BRA: 1, 3, 7
+ESP: 12, 5
+ARG: 18</div>
+          </div>
+          <div class="paste-box blue">
+            <div class="lbl"><span>Sus faltantes</span><small>lo que él necesita</small></div>
+            <div class="ta">COL: 4, 8, 15
+ARG: 1</div>
+          </div>
+
+          <div class="result-bar">Cruce bilateral</div>
+
+          <div class="result-block blue">
+            <div class="rb-head">
+              <div class="rb-title">← ME DA</div>
+              <div class="rb-count">3 láminas</div>
+            </div>
+            <div class="rb-list">
+              <div><span class="team-code">BRA</span> <span class="num">3</span>, <span class="num">7</span></div>
+              <div><span class="team-code">ESP</span> <span class="num">12</span></div>
+            </div>
+          </div>
+
+          <div class="result-block amber">
+            <div class="rb-head">
+              <div class="rb-title">→ LE DOY</div>
+              <div class="rb-count">4 láminas · 8 copias</div>
+            </div>
+            <div class="rb-list">
+              <div><span class="team-code">COL</span> <span class="num">4</span><span class="x">×2</span>, <span class="num">8</span></div>
+              <div><span class="team-code">ARG</span> <span class="num">1</span><span class="x">×3</span></div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="primary">Compartir todo</button>
+            <button class="amber">Solo le doy</button>
+            <button class="blue">Solo me da</button>
+          </div>
+        </div>
+      </div>
+
+      <ul class="pros-cons">
+        <li class="plus">Obvio qué hace cada modo (etiqueta explícita "le doy" / "me da")</li>
+        <li class="plus">UI por tab es más simple — solo el input relevante</li>
+        <li class="minus">3 vistas distintas para mantener consistentes</li>
+        <li class="minus">Inputs duplicados entre tabs (el de "sus repetidas" aparece en 2)</li>
+        <li class="minus">Para el cruce bilateral toca elegir tab explícitamente</li>
+      </ul>
+    </section>
+
+  </div>
+</div>
+
+<script>
+  // ═══ OPCIÓN A — toggle de estados (vacío / solo-repes / solo-faltas / both) ═══
+  const aRepes = document.getElementById('a-paste-repes');
+  const aFaltas = document.getElementById('a-paste-faltas');
+  const aMeda = document.getElementById('a-block-meda');
+  const aLedoy = document.getElementById('a-block-ledoy');
+  const aActions = document.getElementById('a-actions');
+  const aHelper = document.getElementById('a-helper');
+
+  function setA(state) {
+    // Defaults: ambos vacíos
+    aRepes.classList.add('empty');
+    aRepes.textContent = '(pega su lista de repetidas…)';
+    aFaltas.classList.add('empty');
+    aFaltas.textContent = '(pega su lista de faltantes…)';
+
+    if (state === 'only-repes' || state === 'both') {
+      aRepes.classList.remove('empty');
+      aRepes.textContent = 'BRA: 1, 3, 7\nESP: 12, 5\nARG: 18';
+    }
+    if (state === 'only-faltas' || state === 'both') {
+      aFaltas.classList.remove('empty');
+      aFaltas.textContent = 'COL: 4, 8, 15\nARG: 1';
+    }
+
+    // ME DA block
+    if (state === 'only-repes' || state === 'both') {
+      aMeda.classList.remove('dim');
+      aMeda.querySelector('.rb-count').textContent = '3 láminas';
+      aMeda.querySelector('.rb-list').innerHTML =
+        '<div><span class="team-code">BRA</span> <span class="num">3</span>, <span class="num">7</span></div>' +
+        '<div><span class="team-code">ESP</span> <span class="num">12</span></div>';
+      aMeda.querySelector('.rb-sub') && aMeda.querySelector('.rb-sub').style.removeProperty('display');
+    } else {
+      aMeda.classList.add('dim');
+      aMeda.querySelector('.rb-count').textContent = '— láminas';
+      aMeda.querySelector('.rb-list').innerHTML =
+        '<div class="empty-state">Pega sus repetidas arriba<span class="arrow">↑</span></div>';
+    }
+
+    // LE DOY block
+    if (state === 'only-faltas' || state === 'both') {
+      aLedoy.classList.remove('dim');
+      aLedoy.querySelector('.rb-count').textContent = '4 láminas · 8 copias';
+      aLedoy.querySelector('.rb-list, .empty-state') &&
+        (aLedoy.querySelector('.rb-list, .empty-state').outerHTML =
+          '<div class="rb-list">' +
+            '<div><span class="team-code">COL</span> <span class="num">4</span><span class="x">×2</span>, <span class="num">8</span></div>' +
+            '<div><span class="team-code">ARG</span> <span class="num">1</span><span class="x">×3</span></div>' +
+          '</div>');
+      // recreate rb-sub if missing
+      if (!aLedoy.querySelector('.rb-sub')) {
+        const sub = document.createElement('div');
+        sub.className = 'rb-sub';
+        sub.textContent = 'Mis repetidas ∩ sus faltantes';
+        aLedoy.querySelector('.rb-head').insertAdjacentElement('afterend', sub);
+      }
+    } else {
+      aLedoy.classList.add('dim');
+      aLedoy.querySelector('.rb-count').textContent = '— láminas';
+      const inner = aLedoy.querySelector('.rb-list, .empty-state, .rb-sub');
+      // strip everything after head
+      while (aLedoy.children.length > 1) aLedoy.removeChild(aLedoy.lastChild);
+      const es = document.createElement('div');
+      es.className = 'empty-state';
+      es.innerHTML = 'Pega sus faltantes arriba<span class="arrow">↑</span>';
+      aLedoy.appendChild(es);
+    }
+
+    // Actions
+    let actionsHTML = '';
+    if (state === 'both') {
+      actionsHTML =
+        '<button class="primary">Compartir todo</button>' +
+        '<button class="amber">Solo le doy</button>' +
+        '<button class="blue">Solo me da</button>';
+    } else if (state === 'only-repes') {
+      actionsHTML = '<button class="blue primary">Compartir lo que me da</button>';
+    } else if (state === 'only-faltas') {
+      actionsHTML = '<button class="amber primary">Compartir lo que doy</button>';
+    } else {
+      actionsHTML = '<button disabled style="opacity:0.4">Compartir (pega algo primero)</button>';
+    }
+    aActions.innerHTML = actionsHTML;
+
+    // Helper
+    if (state === 'empty') {
+      aHelper.innerHTML = 'Pega <strong>al menos una</strong> de las dos listas. La UI se adapta: si solo pegas sus repetidas verás "<strong>← me da</strong>"; si solo pegas sus faltantes verás "<strong>→ le doy</strong>"; si pegas ambas verás las dos.';
+    } else if (state === 'only-repes') {
+      aHelper.innerHTML = 'Modo activo: <strong>"← me da"</strong> — tus faltantes vs sus repetidas. Pega sus faltantes para ver también <strong>"→ le doy"</strong>.';
+    } else if (state === 'only-faltas') {
+      aHelper.innerHTML = 'Modo activo: <strong>"→ le doy"</strong> — tus repetidas vs sus faltantes. Pega sus repetidas para ver también <strong>"← me da"</strong>.';
+    } else {
+      aHelper.innerHTML = 'Cruce bilateral completo. Puedes compartir todo, solo lo que doy, o solo lo que me da.';
+    }
+  }
+
+  document.querySelectorAll('[data-target="a"] button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-target="a"] button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      setA(btn.dataset.state);
+    });
+  });
+
+  // ═══ OPCIÓN B — toggle de tabs ═══
+  function setB(tab) {
+    ['ledoy', 'meda', 'cruzar'].forEach(t => {
+      document.getElementById('b-content-' + t).style.display = (t === tab) ? '' : 'none';
+    });
+    document.querySelectorAll('#b-tabs button').forEach(b => {
+      b.classList.remove('active', 'amber', 'blue');
+    });
+    const activeBtn = document.querySelector('#b-tabs button[data-tab="' + tab + '"]');
+    activeBtn.classList.add('active');
+    if (tab === 'ledoy') activeBtn.classList.add('amber');
+    if (tab === 'meda') activeBtn.classList.add('blue');
+  }
+  document.querySelectorAll('[data-target="b"] button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-target="b"] button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      setB(btn.dataset.state);
+    });
+  });
+  // tab bar inside frame B also clickable
+  document.querySelectorAll('#b-tabs button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.tab;
+      // sync external toggle
+      document.querySelectorAll('[data-target="b"] button').forEach(b => {
+        b.classList.toggle('active', b.dataset.state === tab);
+      });
+      setB(tab);
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Mockup v7 · Páginas tipo álbum real</title>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --paper: #f5efde;       /* Color papel del álbum */
+    --paper-2: #ebe3cd;
+    --paper-shadow: rgba(0,0,0,0.4);
+    --ink: #1a1a1a;
+    --ink-2: #555;
+    --green: #2da44e;
+    --amber: #d97706;
+    --danger: #c1352e;
+    --gold: #b8860b;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: linear-gradient(180deg, #1a0e08 0%, #0a0606 100%);
+    color: #f0eee6;
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    font-size: 13px;
+  }
+  .page { max-width: 1200px; margin: 0 auto; padding: 16px; }
+
+  .hero { text-align: center; margin-bottom: 14px; }
+  .hero h1 { margin: 0 0 4px; font-size: 18px; font-weight: 600; }
+  .hero p { margin: 0; color: #888; font-size: 12px; }
+
+  .stats-mini {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .stat-pill {
+    flex: 1;
+    background: rgba(255,255,255,0.06);
+    border: 0.5px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+  }
+  .stat-pill b {
+    display: block;
+    font-size: 18px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .stat-pill small {
+    color: #888;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .stat-pill.tengo b { color: #00D685; }
+  .stat-pill.rep b { color: #EF9F27; }
+  .stat-pill.falta b { color: #E24B4A; }
+
+  /* Grid de páginas (cada equipo es una "página" del álbum) */
+  .album-pages {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .album-page {
+    background: var(--paper);
+    background-image:
+      radial-gradient(circle at 30% 20%, rgba(255,255,255,0.4) 0%, transparent 50%),
+      linear-gradient(135deg, var(--paper) 0%, var(--paper-2) 100%);
+    border-radius: 6px;
+    padding: 14px 14px 12px;
+    color: var(--ink);
+    box-shadow:
+      0 2px 4px rgba(0,0,0,0.3),
+      0 8px 24px rgba(0,0,0,0.2),
+      inset 0 1px 0 rgba(255,255,255,0.5);
+    position: relative;
+  }
+  /* Cinta dorada arriba */
+  .album-page::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 14px;
+    right: 14px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    border-radius: 0 0 3px 3px;
+  }
+
+  .page-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 1.5px solid rgba(0,0,0,0.15);
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+  }
+  .page-team {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .page-meta {
+    font-size: 10px;
+    color: var(--ink-2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: right;
+  }
+  .page-meta b {
+    display: block;
+    color: var(--ink);
+    font-size: 13px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    letter-spacing: 0;
+  }
+
+  /* Slots de stickers — 5 columnas x 4 filas, como una página real */
+  .sticker-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+  .slot {
+    aspect-ratio: 0.75; /* sticker rectangular vertical */
+    border-radius: 4px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  /* Tengo: sticker "pegado" — verde con sombra hacia adentro */
+  .slot.tengo {
+    background: linear-gradient(135deg, var(--green) 0%, #218a3f 100%);
+    color: #fff;
+    box-shadow:
+      inset 0 1px 1px rgba(255,255,255,0.2),
+      0 1px 2px rgba(0,0,0,0.2);
+  }
+  /* Repetida: sticker dorado (vale para cambio) */
+  .slot.rep {
+    background: linear-gradient(135deg, #FFB948 0%, var(--amber) 100%);
+    color: var(--ink);
+    box-shadow:
+      inset 0 1px 1px rgba(255,255,255,0.4),
+      0 1px 3px rgba(217,119,6,0.4);
+  }
+  .slot.rep .x {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: var(--ink);
+    color: #FFB948;
+    border: 1.5px solid #FFB948;
+    border-radius: 100px;
+    padding: 0 4px;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1.4;
+    min-width: 18px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+  /* Falta: slot vacío con borde punteado rojo (como en el álbum) */
+  .slot.falta {
+    background: rgba(193,53,46,0.08);
+    border: 1.5px dashed var(--danger);
+    color: var(--danger);
+    box-shadow: inset 0 0 8px rgba(193,53,46,0.1);
+  }
+
+  /* Para los IDs largos */
+  .slot.long { font-size: 9px; }
+
+  footer {
+    text-align: center;
+    color: #666;
+    font-size: 11px;
+    margin-top: 24px;
+    padding-top: 16px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="hero">
+    <h1>📒 Álbum Panini Mundial 2026 — v7 Páginas tipo álbum</h1>
+    <p>Cada equipo es una página · slots vacíos = me faltan · stickers dorados = repetidas (para cambio)</p>
+  </div>
+
+  <div class="stats-mini">
+    <div class="stat-pill tengo"><b>649</b><small>Tengo</small></div>
+    <div class="stat-pill rep"><b>87</b><small>Repetidas</small></div>
+    <div class="stat-pill falta"><b>331</b><small>Faltan</small></div>
+  </div>
+
+  <div class="album-pages">
+
+    <!-- México (Grupo A) -->
+    <div class="album-page">
+      <div class="page-header">
+        <div class="page-team">México</div>
+        <div class="page-meta"><b>17 / 20</b>Grupo A</div>
+      </div>
+      <div class="sticker-grid">
+        <div class="slot tengo">1</div>
+        <div class="slot tengo">2</div>
+        <div class="slot rep">3<span class="x">×2</span></div>
+        <div class="slot tengo">4</div>
+        <div class="slot falta">5</div>
+        <div class="slot tengo">6</div>
+        <div class="slot tengo">7</div>
+        <div class="slot tengo">8</div>
+        <div class="slot tengo">9</div>
+        <div class="slot tengo">10</div>
+        <div class="slot tengo">11</div>
+        <div class="slot falta">12</div>
+        <div class="slot rep">13<span class="x">×4</span></div>
+        <div class="slot tengo">14</div>
+        <div class="slot tengo">15</div>
+        <div class="slot tengo">16</div>
+        <div class="slot falta">17</div>
+        <div class="slot tengo">18</div>
+        <div class="slot rep">19<span class="x">×2</span></div>
+        <div class="slot tengo">20</div>
+      </div>
+    </div>
+
+    <!-- Sudáfrica (Grupo A) -->
+    <div class="album-page">
+      <div class="page-header">
+        <div class="page-team">Sudáfrica</div>
+        <div class="page-meta"><b>12 / 20</b>Grupo A</div>
+      </div>
+      <div class="sticker-grid">
+        <div class="slot falta">1</div>
+        <div class="slot tengo">2</div>
+        <div class="slot tengo">3</div>
+        <div class="slot falta">4</div>
+        <div class="slot falta">5</div>
+        <div class="slot tengo">6</div>
+        <div class="slot tengo">7</div>
+        <div class="slot falta">8</div>
+        <div class="slot tengo">9</div>
+        <div class="slot tengo">10</div>
+        <div class="slot falta">11</div>
+        <div class="slot falta">12</div>
+        <div class="slot tengo">13</div>
+        <div class="slot tengo">14</div>
+        <div class="slot tengo">15</div>
+        <div class="slot tengo">16</div>
+        <div class="slot falta">17</div>
+        <div class="slot tengo">18</div>
+        <div class="slot tengo">19</div>
+        <div class="slot falta">20</div>
+      </div>
+    </div>
+
+    <!-- Brasil (Grupo C) -->
+    <div class="album-page">
+      <div class="page-header">
+        <div class="page-team">Brasil</div>
+        <div class="page-meta"><b>19 / 20</b>Grupo C</div>
+      </div>
+      <div class="sticker-grid">
+        <div class="slot tengo">1</div>
+        <div class="slot tengo">2</div>
+        <div class="slot rep">3<span class="x">×5</span></div>
+        <div class="slot tengo">4</div>
+        <div class="slot tengo">5</div>
+        <div class="slot tengo">6</div>
+        <div class="slot tengo">7</div>
+        <div class="slot tengo">8</div>
+        <div class="slot tengo">9</div>
+        <div class="slot tengo">10</div>
+        <div class="slot tengo">11</div>
+        <div class="slot tengo">12</div>
+        <div class="slot tengo">13</div>
+        <div class="slot tengo">14</div>
+        <div class="slot tengo">15</div>
+        <div class="slot tengo">16</div>
+        <div class="slot falta">17</div>
+        <div class="slot tengo">18</div>
+        <div class="slot tengo">19</div>
+        <div class="slot tengo">20</div>
+      </div>
+    </div>
+
+    <!-- Argentina (Grupo J) -->
+    <div class="album-page">
+      <div class="page-header">
+        <div class="page-team">Argentina</div>
+        <div class="page-meta"><b>15 / 20</b>Grupo J</div>
+      </div>
+      <div class="sticker-grid">
+        <div class="slot tengo">1</div>
+        <div class="slot falta">2</div>
+        <div class="slot tengo">3</div>
+        <div class="slot tengo">4</div>
+        <div class="slot tengo">5</div>
+        <div class="slot tengo">6</div>
+        <div class="slot falta">7</div>
+        <div class="slot rep">8<span class="x">×3</span></div>
+        <div class="slot tengo">9</div>
+        <div class="slot tengo">10</div>
+        <div class="slot falta">11</div>
+        <div class="slot tengo">12</div>
+        <div class="slot tengo">13</div>
+        <div class="slot rep">14<span class="x">×2</span></div>
+        <div class="slot falta">15</div>
+        <div class="slot tengo">16</div>
+        <div class="slot tengo">17</div>
+        <div class="slot tengo">18</div>
+        <div class="slot falta">19</div>
+        <div class="slot tengo">20</div>
+      </div>
+    </div>
+
+    <!-- Colombia (Grupo K) -->
+    <div class="album-page">
+      <div class="page-header">
+        <div class="page-team">Colombia</div>
+        <div class="page-meta"><b>18 / 20</b>Grupo K</div>
+      </div>
+      <div class="sticker-grid">
+        <div class="slot tengo">1</div>
+        <div class="slot rep">2<span class="x">×3</span></div>
+        <div class="slot tengo">3</div>
+        <div class="slot tengo">4</div>
+        <div class="slot tengo">5</div>
+        <div class="slot tengo">6</div>
+        <div class="slot rep">7<span class="x">×2</span></div>
+        <div class="slot falta">8</div>
+        <div class="slot tengo">9</div>
+        <div class="slot tengo">10</div>
+        <div class="slot tengo">11</div>
+        <div class="slot tengo">12</div>
+        <div class="slot falta">13</div>
+        <div class="slot tengo">14</div>
+        <div class="slot rep">15<span class="x">×2</span></div>
+        <div class="slot tengo">16</div>
+        <div class="slot tengo">17</div>
+        <div class="slot tengo">18</div>
+        <div class="slot tengo">19</div>
+        <div class="slot rep">20<span class="x">×2</span></div>
+      </div>
+    </div>
+
+    <!-- Intro (9 stickers) -->
+    <div class="album-page">
+      <div class="page-header">
+        <div class="page-team">Intro</div>
+        <div class="page-meta"><b>7 / 9</b>Logos · Mascotas</div>
+      </div>
+      <div class="sticker-grid">
+        <div class="slot falta long">00</div>
+        <div class="slot tengo long">FW1</div>
+        <div class="slot rep long">FW2<span class="x">×2</span></div>
+        <div class="slot tengo long">FW3</div>
+        <div class="slot falta long">FW4</div>
+        <div class="slot tengo long">FW5</div>
+        <div class="slot tengo long">FW6</div>
+        <div class="slot rep long">FW7<span class="x">×3</span></div>
+        <div class="slot tengo long">FW8</div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    Vista pública · v7 estilo páginas de álbum · Datos inventados
+  </footer>
+</div>
+</body>
+</html>

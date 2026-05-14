@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup · Me faltan vs Repetidas — comparativa de simetría</title>
+<style>
+  :root {
+    --bg: #1a1a18;
+    --bg-2: #262624;
+    --bg-3: #333330;
+    --border: #3a3a37;
+    --border-2: #4a4a47;
+    --text: #f0eee6;
+    --text-2: #b8b6ae;
+    --text-3: #888780;
+    --green: #1D9E75;
+    --green-dark: #0F6E56;
+    --amber: #EF9F27;
+    --amber-text: #412402;
+    --amber-dark: #BA7517;
+    --danger: #E24B4A;
+    --danger-dark: #b13635;
+    --blue: #4A9EFF;
+    --accent: #FF8C1A;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .page {
+    max-width: 1380px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+  .page-header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .page-header h1 { margin: 0 0 6px; font-size: 22px; font-weight: 500; }
+  .page-header p {
+    color: var(--text-2);
+    font-size: 13px;
+    margin: 0;
+  }
+  .legend {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
+  .legend span {
+    background: var(--bg-2);
+    border: 0.5px solid var(--border);
+    border-radius: 100px;
+    padding: 4px 10px;
+    font-size: 11px;
+    color: var(--text-2);
+  }
+  .legend span b { color: var(--text); font-weight: 600; }
+  .legend .pill-same { border-color: var(--green); }
+  .legend .pill-same b { color: var(--green); }
+  .legend .pill-diff { border-color: var(--amber); }
+  .legend .pill-diff b { color: var(--amber); }
+
+  /* Two-column compare layout */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  @media (max-width: 900px) {
+    .compare { grid-template-columns: 1fr; }
+  }
+  .panel {
+    background: var(--bg-2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .panel-header {
+    padding: 14px 16px;
+    border-bottom: 0.5px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .panel-header h2 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .panel-header .panel-tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 100px;
+    color: var(--bg);
+    font-weight: 700;
+  }
+  .panel-falt .panel-header { border-bottom-color: var(--danger); }
+  .panel-falt .panel-tag { background: var(--danger); color: #fff; }
+  .panel-rep .panel-header { border-bottom-color: var(--amber); }
+  .panel-rep .panel-tag { background: var(--amber); color: var(--amber-text); }
+  .panel-body { padding: 14px 16px; }
+
+  /* Row marker on left side identifying the slot type */
+  .slot {
+    position: relative;
+    margin-bottom: 12px;
+  }
+  .slot:last-child { margin-bottom: 0; }
+  .slot-label {
+    position: absolute;
+    left: -38px;
+    top: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--bg-3);
+    color: var(--text-3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .slot.same .slot-label { background: rgba(29,158,117,0.18); color: var(--green); border: 1px solid var(--green); }
+  .slot.diff .slot-label { background: rgba(239,159,39,0.18); color: var(--amber); border: 1px solid var(--amber); }
+  .panel-body { padding-left: 56px; }
+
+  /* Generic UI bits to render the mockup like the real app */
+  .info-box {
+    background: var(--bg);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--text-2);
+    border-left: 3px solid var(--accent);
+  }
+  .info-box.danger { border-left-color: var(--danger); }
+  .info-box.amber { border-left-color: var(--amber); }
+  .info-box b { color: var(--text); }
+  .info-box b.danger { color: var(--danger); }
+  .info-box b.amber { color: var(--amber); }
+
+  .btn-share {
+    width: 100%;
+    padding: 12px 16px;
+    border: 0;
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-share-falt {
+    background: var(--danger);
+    color: #fff;
+  }
+  .btn-share-rep {
+    background: var(--amber);
+    color: var(--amber-text);
+  }
+
+  /* Search-like input */
+  .search-wrap {
+    position: relative;
+  }
+  .search-wrap input {
+    width: 100%;
+    padding: 11px 36px 11px 14px;
+    background: var(--bg);
+    color: var(--text);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+  }
+  .search-wrap input:focus { border-color: var(--amber); }
+  .search-wrap .clear {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--bg-3);
+    color: var(--text-2);
+    border: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+  }
+  .search-meta {
+    font-size: 11px;
+    color: var(--text-3);
+    margin: 6px 0 0 2px;
+  }
+
+  .quick-action {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 14px;
+    border: 0;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-family: inherit;
+    text-align: left;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.18);
+  }
+  .quick-action.amber {
+    background: linear-gradient(180deg, var(--amber) 0%, var(--amber-dark) 100%);
+    color: var(--amber-text);
+  }
+  .quick-action.danger {
+    background: linear-gradient(180deg, var(--danger) 0%, var(--danger-dark) 100%);
+    color: #fff;
+  }
+  .quick-icon {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: rgba(0,0,0,0.18);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px;
+  }
+  .quick-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .quick-title { font-size: 13px; font-weight: 600; }
+  .quick-sub { font-size: 11px; opacity: 0.75; }
+  .quick-kbd {
+    flex-shrink: 0;
+    padding: 4px 8px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 5px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  /* Bulk panel (collapsible) */
+  .bulk-details {
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .bulk-details summary {
+    padding: 12px 14px;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 13px;
+  }
+  .bulk-details summary::-webkit-details-marker { display: none; }
+  .bulk-body { padding: 0 14px 14px; border-top: 0.5px solid var(--border); }
+  .bulk-help {
+    font-size: 12px;
+    color: var(--text-2);
+    padding: 10px 0 8px;
+  }
+  .bulk-textarea {
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--bg-2);
+    color: var(--text);
+    border: 0.5px solid var(--border-2);
+    border-radius: var(--radius);
+    font-family: "JetBrains Mono", Menlo, monospace;
+    line-height: 1.4;
+    resize: vertical;
+    min-height: 70px;
+  }
+  .bulk-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .bulk-actions button {
+    padding: 9px 14px;
+    border: 0;
+    border-radius: 6px;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .btn-verify-amber { background: var(--amber); color: var(--amber-text); flex: 1; min-width: 130px; }
+  .btn-verify-red { background: var(--danger); color: #fff; flex: 1; min-width: 130px; }
+  .btn-paste { background: var(--bg-3); color: var(--text); }
+  .btn-clear { background: transparent; color: var(--text-3); border: 0.5px solid var(--border); }
+
+  /* List of items (rows) */
+  .list-block {
+    background: var(--bg);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    border: 0.5px solid var(--border);
+  }
+  .list-section-title {
+    font-size: 11px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .list-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .list-row:last-child { border-bottom: 0; }
+  .num-chip {
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-weight: 600;
+    font-size: 13px;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .num-chip.rep { background: rgba(239,159,39,0.18); border: 1px solid var(--amber); color: var(--amber); }
+  .num-chip.falt { background: rgba(226,75,74,0.18); border: 1px solid var(--danger); color: var(--danger); }
+  .num-chip-x {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    background: var(--amber);
+    color: var(--amber-text);
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 4px;
+    border-radius: 6px;
+    border: 1px solid var(--bg);
+    line-height: 1.2;
+  }
+  .row-info { flex: 1; font-size: 12px; min-width: 0; }
+  .row-info b {
+    display: block;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-size: 11px;
+  }
+  .row-info span { color: var(--text-2); font-size: 11px; }
+  .row-action {
+    padding: 7px 12px;
+    border: 0;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .row-action.minus { background: var(--amber); color: var(--amber-text); }
+  .row-action.plus { background: var(--danger); color: #fff; }
+
+  /* Faltantes grid (compact cards) */
+  .falt-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(54px, 1fr));
+    gap: 6px;
+  }
+  .falt-card {
+    aspect-ratio: 1 / 1;
+    background: rgba(226,75,74,0.16);
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    border-radius: 6px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-weight: 600;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Annotation block at bottom comparing both */
+  .annotations {
+    margin-top: 32px;
+    background: var(--bg-2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 18px 22px;
+  }
+  .annotations h3 {
+    margin: 0 0 12px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .annotations table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .annotations th, .annotations td {
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 0.5px solid var(--border);
+    vertical-align: top;
+  }
+  .annotations th {
+    color: var(--text-3);
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    width: 14%;
+  }
+  .annotations td b { color: var(--text); }
+  .annotations .same { color: var(--green); font-weight: 600; }
+  .annotations .diff { color: var(--amber); font-weight: 600; }
+  .annotations .verdict {
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: var(--bg);
+    border-radius: var(--radius);
+    border-left: 3px solid var(--accent);
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .annotations .verdict b { color: var(--accent); }
+
+  .footnote {
+    text-align: center;
+    color: var(--text-3);
+    font-size: 11px;
+    margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="page-header">
+    <h1>🔴 Me faltan  ↔  🟡 Repetidas</h1>
+    <p>Comparativa de las dos pestañas para alinear estructura y sentir simetría.</p>
+    <div class="legend">
+      <span class="pill-same"><b>● slot 1–2</b> ya simétricos hoy</span>
+      <span class="pill-diff"><b>● slot 3–6</b> asimétricos · candidatos a alinear</span>
+    </div>
+  </div>
+
+  <div class="compare">
+    <!-- ===================== COL 1 — ME FALTAN ===================== -->
+    <div class="panel panel-falt">
+      <div class="panel-header">
+        <h2>🔴 Me faltan <span style="color:var(--text-3); font-weight:400;">— estado actual</span></h2>
+        <span class="panel-tag">FALT</span>
+      </div>
+      <div class="panel-body">
+
+        <!-- 1) HEADER -->
+        <div class="slot same">
+          <span class="slot-label">1</span>
+          <div class="info-box danger">
+            Te faltan <b class="danger">213 láminas</b>. Compartí la lista o verificá un mensaje del amigo abajo.
+          </div>
+        </div>
+
+        <!-- 2) COMPARTIR -->
+        <div class="slot same">
+          <span class="slot-label">2</span>
+          <button class="btn-share btn-share-falt">📲 Compartir las que me faltan</button>
+        </div>
+
+        <!-- 3) INPUT (textarea, no search) -->
+        <div class="slot diff">
+          <span class="slot-label">3</span>
+          <textarea class="bulk-textarea" rows="2" placeholder="Escribí o pegá códigos. Ej: MEX-7, COL: 13, 17  ó  pega la lista del amigo">COL: 5, 7, 12  BRA: 3</textarea>
+          <div class="bulk-actions">
+            <button class="btn-verify-red">↵ Verificar</button>
+            <button class="btn-paste">📋 Pegar</button>
+            <button class="btn-clear">Limpiar</button>
+          </div>
+        </div>
+
+        <!-- 4) NO HAY QUICK-ACTION -->
+        <div class="slot diff">
+          <span class="slot-label">4</span>
+          <div style="padding:12px 14px; background:var(--bg); border:0.5px dashed var(--border); border-radius:var(--radius); color:var(--text-3); font-size:12px; text-align:center;">
+            ⚠️ No existe el botón <b>"Aplicar 1 directo"</b> cuando hay 1 sola coincidencia.<br>
+            <span style="font-size:11px;">(En Repetidas sí existe el "Sacar 1 con ↵")</span>
+          </div>
+        </div>
+
+        <!-- 5) NO HAY BULK PANEL -->
+        <div class="slot diff">
+          <span class="slot-label">5</span>
+          <div style="padding:12px 14px; background:var(--bg); border:0.5px dashed var(--border); border-radius:var(--radius); color:var(--text-3); font-size:12px; text-align:center;">
+            ⚠️ No hay panel colapsable <b>"Verificar lista en bloque"</b>.<br>
+            <span style="font-size:11px;">El textarea de slot 3 hace ambas funciones (search rápida + bulk-paste).</span>
+          </div>
+        </div>
+
+        <!-- 6) LIST (faltantes grid) -->
+        <div class="slot diff">
+          <span class="slot-label">6</span>
+          <div class="list-block">
+            <div class="list-section-title">Colombia · Grupo G</div>
+            <div class="falt-grid">
+              <div class="falt-card">COL 1</div>
+              <div class="falt-card">COL 5</div>
+              <div class="falt-card">COL 7</div>
+              <div class="falt-card">COL 12</div>
+              <div class="falt-card">COL 13</div>
+              <div class="falt-card">COL 16</div>
+              <div class="falt-card">COL 19</div>
+            </div>
+            <div class="list-section-title" style="margin-top:14px;">Brasil · Grupo C</div>
+            <div class="falt-grid">
+              <div class="falt-card">BRA 3</div>
+              <div class="falt-card">BRA 8</div>
+              <div class="falt-card">BRA 11</div>
+              <div class="falt-card">BRA 17</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== COL 2 — REPETIDAS ===================== -->
+    <div class="panel panel-rep">
+      <div class="panel-header">
+        <h2>🟡 Repetidas <span style="color:var(--text-3); font-weight:400;">— estado actual</span></h2>
+        <span class="panel-tag">REP</span>
+      </div>
+      <div class="panel-body">
+
+        <!-- 1) HEADER -->
+        <div class="slot same">
+          <span class="slot-label">1</span>
+          <div class="info-box amber">
+            Tienes <b class="amber">14 láminas</b> repetidas (<b>22</b> copias extras en total). Listas para <b>vender o cambiar</b>.
+          </div>
+        </div>
+
+        <!-- 2) COMPARTIR -->
+        <div class="slot same">
+          <span class="slot-label">2</span>
+          <button class="btn-share btn-share-rep">📲 Compartir lista de repetidas</button>
+        </div>
+
+        <!-- 3) SEARCH single-line -->
+        <div class="slot diff">
+          <span class="slot-label">3</span>
+          <div class="search-wrap">
+            <input type="search" placeholder="🔍 Buscar para ir sacando (ej: COL, 5, Messi)" value="COL 5">
+            <button class="clear">✕</button>
+          </div>
+          <div class="search-meta">1 coincidencia · presiona ↵ o el botón abajo para sacar 1</div>
+        </div>
+
+        <!-- 4) QUICK-ACTION -->
+        <div class="slot diff">
+          <span class="slot-label">4</span>
+          <button class="quick-action amber">
+            <span class="quick-icon">✓</span>
+            <span class="quick-body">
+              <span class="quick-title">Sacar 1 · <b>COL 5</b> — Lerma</span>
+              <span class="quick-sub">queda ×1</span>
+            </span>
+            <span class="quick-kbd">↵</span>
+          </button>
+        </div>
+
+        <!-- 5) BULK PANEL -->
+        <div class="slot diff">
+          <span class="slot-label">5</span>
+          <details class="bulk-details" open>
+            <summary>📋 Sacar varias de una sola vez ▾</summary>
+            <div class="bulk-body">
+              <div class="bulk-help">Pega los códigos que vendiste o cambiaste — te digo cuáles tenías como repetidas y las saco todas de un toque.</div>
+              <textarea class="bulk-textarea" rows="3" placeholder="Ej: COL: 5, 12, 17  ó  ECU 1, BRA 3"></textarea>
+              <div class="bulk-actions">
+                <button class="btn-verify-amber">🔍 Verificar lista</button>
+                <button class="btn-paste">📋 Pegar</button>
+                <button class="btn-clear">Limpiar</button>
+              </div>
+            </div>
+          </details>
+        </div>
+
+        <!-- 6) LIST (rows con −1) -->
+        <div class="slot diff">
+          <span class="slot-label">6</span>
+          <div class="list-block">
+            <div class="list-section-title">Colombia · Grupo G</div>
+            <div class="list-row">
+              <div class="num-chip rep">COL 5<span class="num-chip-x">×2</span></div>
+              <div class="row-info">
+                <b>COL05</b>
+                <span>J. Lerma</span>
+              </div>
+              <button class="row-action minus">−1</button>
+            </div>
+            <div class="list-row">
+              <div class="num-chip rep">COL 11<span class="num-chip-x">×1</span></div>
+              <div class="row-info">
+                <b>COL11</b>
+                <span>L. Díaz</span>
+              </div>
+              <button class="row-action minus">−1</button>
+            </div>
+            <div class="list-section-title" style="margin-top:14px;">Brasil · Grupo C</div>
+            <div class="list-row">
+              <div class="num-chip rep">BRA 8<span class="num-chip-x">×3</span></div>
+              <div class="row-info">
+                <b>BRA08</b>
+                <span>Vinícius Jr.</span>
+              </div>
+              <button class="row-action minus">−1</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== TABLA DE ASIMETRÍAS ===================== -->
+  <div class="annotations">
+    <h3>Asimetrías slot por slot</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Slot</th>
+          <th>🔴 Me faltan</th>
+          <th>🟡 Repetidas</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>1 · Header</b></td>
+          <td>info-box rojo con conteo</td>
+          <td>info-box amber con conteo</td>
+          <td><span class="same">✓ Simétrico</span></td>
+        </tr>
+        <tr>
+          <td><b>2 · Compartir</b></td>
+          <td>botón rojo full-width</td>
+          <td>botón amber full-width</td>
+          <td><span class="same">✓ Simétrico</span></td>
+        </tr>
+        <tr>
+          <td><b>3 · Input rápido</b></td>
+          <td><i>No existe</i> — solo hay textarea bulk</td>
+          <td><b>Buscador single-line</b> con form + clear ✕</td>
+          <td><span class="diff">✗ Asimétrico</span></td>
+        </tr>
+        <tr>
+          <td><b>4 · Quick-action</b></td>
+          <td><i>No existe</i></td>
+          <td><b>Botón "Sacar 1 · COL 5"</b> + ↵ atajo</td>
+          <td><span class="diff">✗ Asimétrico</span></td>
+        </tr>
+        <tr>
+          <td><b>5 · Bulk panel</b></td>
+          <td>Textarea siempre visible (no colapsable)</td>
+          <td><b>&lt;details&gt;</b> colapsable con textarea + 3 botones + result</td>
+          <td><span class="diff">✗ Asimétrico</span></td>
+        </tr>
+        <tr>
+          <td><b>6 · Lista</b></td>
+          <td>Grid compacto de cards rojas (solo número)</td>
+          <td>Filas con chip + nombre + botón −1</td>
+          <td><span class="diff">✗ Asimétrico (semántico)</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="verdict">
+      <b>Diagnóstico:</b> el split actual existe por razones reales — Repetidas tiene <i>acción</i> (vender), Faltantes tiene <i>aspiración</i> (no las tienes, no hay botón directo). Pero podemos alinear los 4 slots de input/lista así:
+
+      <ol style="margin:8px 0 0; padding-left:20px; line-height:1.7;">
+        <li><b>Slot 3 — agregar buscador a Faltantes</b>: filtro live sobre el grid (escribe "COL" → solo se ven COL). Sin acción asociada, solo navegación.</li>
+        <li><b>Slot 4 — quick-action en Faltantes</b>: cuando filtras a 1 sola, botón rojo "Tengo COL 5 ↵" → marca como suelta (+1).</li>
+        <li><b>Slot 5 — convertir el textarea de Faltantes en &lt;details&gt; colapsable</b> con el mismo header "📋 Verificar lista de un mensaje". Hoy ese textarea ocupa mucho espacio aunque no lo uses.</li>
+        <li><b>Slot 6 — opción de vista lista en Faltantes</b>: toggle para ver Faltantes como lista de filas (con nombre del jugador y botón "+1 Tengo") en lugar del grid compacto.</li>
+      </ol>
+    </div>
+  </div>
+
+  <p class="footnote">Mockup estático · solo para discusión de diseño. Los valores y láminas son inventados.</p>
+</div>
+</body>
+</html>

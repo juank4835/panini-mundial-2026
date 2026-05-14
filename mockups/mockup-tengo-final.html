@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup final · ¿La tengo? con escáner de faltantes</title>
+<style>
+  :root {
+    --bg: #1a1a18;
+    --bg-2: #262624;
+    --bg-3: #333330;
+    --text: #f0eee6;
+    --text-2: #b4b2a9;
+    --text-3: #888780;
+    --border: rgba(240, 238, 230, 0.12);
+    --border-2: rgba(240, 238, 230, 0.25);
+    --accent: #FF8C1A;
+    --green: #1D9E75;
+    --green-dark: #0F6E56;
+    --amber: #EF9F27;
+    --amber-text: #412402;
+    --amber-dark: #BA7517;
+    --danger: #E24B4A;
+    --blue: #4A9EFF;
+    --blue-dark: #2570CC;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #0d0d0c;
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 24px 16px 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+  h1 { font-size: 18px; color: var(--text); margin: 0; font-weight: 500; text-align: center; }
+  .label { font-size: 12px; color: var(--text-3); text-align: center; max-width: 420px; line-height: 1.5; }
+  .label b { color: var(--accent); }
+  .row { display: flex; flex-wrap: wrap; gap: 28px; justify-content: center; align-items: flex-start; }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .phone-name {
+    background: var(--bg-2);
+    color: var(--accent);
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 600;
+    border: 0.5px solid var(--accent);
+  }
+  .phone {
+    width: 380px;
+    height: 800px;
+    background: var(--bg);
+    border-radius: 32px;
+    border: 1px solid var(--border-2);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .notch {
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 18px;
+    font-size: 11px;
+    background: var(--bg);
+  }
+  .notch .time { font-weight: 600; }
+  .notch .icons { display: flex; gap: 6px; font-size: 10px; }
+  .phone-content { flex: 1; overflow-y: auto; padding: 8px 14px 12px; }
+  .phone-content::-webkit-scrollbar { width: 0; }
+  .phone-bottom {
+    flex-shrink: 0;
+    background: var(--bg-2);
+    border-top: 0.5px solid var(--border-2);
+    padding: 8px 0 16px;
+    display: flex;
+    justify-content: space-around;
+  }
+  .nav-item {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    flex: 1;
+    color: var(--text-3);
+    font-size: 9px;
+  }
+  .nav-item.active { color: var(--accent); }
+  .nav-item .icon { font-size: 18px; }
+  .nav-item .label-tab { font-weight: 500; font-size: 9px; }
+
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0 12px;
+  }
+  .top-bar h1.title { font-size: 17px; font-weight: 600; margin: 0; }
+  .icon-btn {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--bg-2);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-2); font-size: 14px;
+  }
+
+  /* === Scan input area === */
+  .scan-card {
+    background: var(--bg-2);
+    border: 0.5px solid var(--border-2);
+    border-radius: var(--radius-lg);
+    padding: 12px;
+    margin-bottom: 14px;
+  }
+  .scan-card-title {
+    font-size: 11px;
+    color: var(--text-3);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+  .scan-card textarea {
+    width: 100%;
+    min-height: 60px;
+    padding: 10px 12px;
+    background: var(--bg);
+    border: 0.5px solid var(--border-2);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-size: 13px;
+    resize: vertical;
+  }
+  .scan-card textarea:focus { outline: none; border-color: var(--accent); }
+  .scan-actions {
+    display: flex; gap: 6px;
+    margin-top: 8px;
+  }
+  .scan-actions button {
+    flex: 1;
+    padding: 9px;
+    border: 0.5px solid var(--border-2);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 12px;
+    background: var(--bg-3);
+    font-weight: 500;
+  }
+  .scan-actions .clipboard {
+    background: var(--blue);
+    color: white;
+    border-color: var(--blue-dark);
+    flex: 0 0 90px;
+  }
+  .scan-actions .verify {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* === Faltantes header === */
+  .falt-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 14px 0 10px;
+    padding: 0 2px;
+  }
+  .falt-header .left {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .falt-header h2 {
+    font-size: 14px;
+    margin: 0;
+    color: var(--text);
+    font-weight: 500;
+  }
+  .falt-header .badge {
+    background: rgba(226,75,74,0.15);
+    color: var(--danger);
+    padding: 2px 8px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 600;
+    border: 0.5px solid var(--danger);
+  }
+  .falt-header .filter {
+    background: var(--bg-2);
+    border: 0.5px solid var(--border);
+    border-radius: 100px;
+    padding: 4px 10px;
+    color: var(--text-2);
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .falt-header .filter .arrow { color: var(--accent); font-size: 12px; }
+
+  /* === Section headers === */
+  .sec-h {
+    font-size: 11px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    margin: 14px 0 6px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .sec-h .count { color: var(--danger); }
+
+  /* === Grid de faltantes === */
+  .falt-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+  .falt-card {
+    aspect-ratio: 1;
+    border-radius: 6px;
+    background: rgba(226,75,74,0.12);
+    border: 0.5px solid rgba(226,75,74,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--danger);
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    transition: all 0.2s;
+  }
+  .falt-card:hover { background: rgba(226,75,74,0.2); }
+
+  /* Estado highlighted (cuando matchea con búsqueda) */
+  .falt-card.match {
+    animation: pulse 1.4s ease-in-out infinite;
+    border-width: 2px;
+    transform: scale(1.05);
+    z-index: 2;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255,140,26,0.7); }
+    50% { box-shadow: 0 0 0 6px rgba(255,140,26,0); }
+  }
+  .falt-card.match {
+    background: rgba(255,140,26,0.25);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Estado just-applied (después de aplicar +1)
+     Pasa a azul (suelta), NO verde (pegada). La lámina ahora está
+     en posesión pero todavía no fue pegada al álbum. */
+  .falt-card.applied {
+    background: rgba(74,158,255,0.18);
+    border-color: var(--blue);
+    color: var(--blue);
+    transform: scale(0.95);
+    opacity: 0.85;
+  }
+  .falt-card.applied::after {
+    content: '🔵';
+    position: absolute;
+    top: 2px; right: 2px;
+    font-size: 9px;
+  }
+
+  /* === Toast / feedback === */
+  .toast {
+    position: absolute;
+    bottom: 90px;
+    left: 14px;
+    right: 14px;
+    background: var(--blue);
+    color: white;
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 50;
+  }
+  .toast b { font-family: "JetBrains Mono", Menlo, monospace; }
+
+  .pros-cons {
+    width: 380px;
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+  .pros-cons .pro { color: var(--green); }
+  .pros-cons b { color: var(--text); }
+</style>
+</head>
+<body>
+
+<div>
+  <h1>"¿La tengo?" como escáner de faltantes 🔍</h1>
+  <div class="label">Click en el código rojo = aplicar +1 directo (lo agregás como suelta).<br>O escribís códigos arriba: lo que matchea con un faltante <b>se ilumina</b> y aplica.</div>
+</div>
+
+<div class="row">
+
+  <!-- ============ ESTADO 1: Vista inicial ============ -->
+  <div class="phone-wrap">
+    <div class="phone-name">📱 Estado vacío (recién entrás)</div>
+    <div class="phone">
+      <div class="notch"><span class="time">9:41</span><span class="icons"><span>📶</span><span>🔋</span></span></div>
+      <div class="phone-content">
+        <div class="top-bar">
+          <h1 class="title">🔍 ¿La tengo?</h1>
+          <div class="icon-btn">⚙</div>
+        </div>
+
+        <div class="scan-card">
+          <div class="scan-card-title">Escribí o pegá códigos</div>
+          <textarea placeholder="MEX-7, COL-13, BRA-3...&#10;Soporta una sola, listas largas, formato amigo, etc."></textarea>
+          <div class="scan-actions">
+            <button class="clipboard">📋 Pegar</button>
+            <button class="verify">↵ Verificar</button>
+          </div>
+        </div>
+
+        <div class="falt-header">
+          <div class="left">
+            <h2>Te faltan</h2>
+            <span class="badge">157</span>
+          </div>
+          <button class="filter">Por equipo <span class="arrow">▾</span></button>
+        </div>
+
+        <div class="sec-h"><span>Intro · Logo, mascotas y anfitriones</span><span class="count">2</span></div>
+        <div class="falt-grid">
+          <div class="falt-card">FWC3</div>
+          <div class="falt-card">FWC7</div>
+        </div>
+
+        <div class="sec-h"><span>México (MEX) · Grupo A</span><span class="count">4</span></div>
+        <div class="falt-grid">
+          <div class="falt-card">1</div>
+          <div class="falt-card">3</div>
+          <div class="falt-card">16</div>
+          <div class="falt-card">19</div>
+        </div>
+
+        <div class="sec-h"><span>Sudáfrica (RSA) · Grupo A</span><span class="count">11</span></div>
+        <div class="falt-grid">
+          <div class="falt-card">5</div>
+          <div class="falt-card">6</div>
+          <div class="falt-card">8</div>
+          <div class="falt-card">9</div>
+          <div class="falt-card">10</div>
+          <div class="falt-card">11</div>
+          <div class="falt-card">12</div>
+          <div class="falt-card">15</div>
+          <div class="falt-card">16</div>
+          <div class="falt-card">17</div>
+        </div>
+
+        <div class="sec-h"><span>Corea del Sur (KOR) · Grupo A</span><span class="count">8</span></div>
+        <div class="falt-grid">
+          <div class="falt-card">1</div>
+          <div class="falt-card">3</div>
+          <div class="falt-card">4</div>
+          <div class="falt-card">5</div>
+        </div>
+      </div>
+      <div class="phone-bottom">
+        <div class="nav-item"><span class="icon">🏠</span><span class="label-tab">Inicio</span></div>
+        <div class="nav-item"><span class="icon">🔵</span><span class="label-tab">Sueltas</span></div>
+        <div class="nav-item"><span class="icon">⇄</span><span class="label-tab">Cambios</span></div>
+        <div class="nav-item active"><span class="icon">🔍</span><span class="label-tab">¿La tengo?</span></div>
+        <div class="nav-item"><span class="icon">⋯</span><span class="label-tab">Más</span></div>
+      </div>
+    </div>
+    <div class="pros-cons">
+      <span class="pro">✓</span> Al entrar ya ves <b>todos tus faltantes (157)</b> agrupados por equipo · Tap en cualquiera = +1 directo · Cuenta total y por equipo · Filtro "Por equipo" para zoom-in
+    </div>
+  </div>
+
+  <!-- ============ ESTADO 2: Escribiendo códigos ============ -->
+  <div class="phone-wrap">
+    <div class="phone-name">⌨ Escribiendo "MEX-3, RSA-9"</div>
+    <div class="phone">
+      <div class="notch"><span class="time">9:41</span><span class="icons"><span>📶</span><span>🔋</span></span></div>
+      <div class="phone-content">
+        <div class="top-bar">
+          <h1 class="title">🔍 ¿La tengo?</h1>
+          <div class="icon-btn">⚙</div>
+        </div>
+
+        <div class="scan-card">
+          <div class="scan-card-title">Escribí o pegá códigos</div>
+          <textarea>MEX-3, RSA-9</textarea>
+          <div class="scan-actions">
+            <button class="clipboard">📋 Pegar</button>
+            <button class="verify">↵ Verificar</button>
+          </div>
+        </div>
+
+        <div style="background: rgba(255,140,26,0.1); border: 0.5px solid var(--accent); border-radius: var(--radius); padding: 10px 12px; margin-bottom: 14px; font-size: 12px;">
+          <b style="color:var(--accent);">2 coincidencias en tus faltantes</b><br>
+          <span style="color: var(--text-2); font-size: 11px;">Las marqué con 🔥 abajo. Aprieta cualquier tarjeta para aplicar +1.</span>
+        </div>
+
+        <div class="falt-header">
+          <div class="left">
+            <h2>Te faltan</h2>
+            <span class="badge">157</span>
+          </div>
+          <button class="filter">Por equipo <span class="arrow">▾</span></button>
+        </div>
+
+        <div class="sec-h"><span>Intro</span><span class="count">2</span></div>
+        <div class="falt-grid">
+          <div class="falt-card">FWC3</div>
+          <div class="falt-card">FWC7</div>
+        </div>
+
+        <div class="sec-h"><span>México (MEX) · A · <b style="color:var(--accent);">1 match</b></span><span class="count">4</span></div>
+        <div class="falt-grid">
+          <div class="falt-card">1</div>
+          <div class="falt-card match">3</div>
+          <div class="falt-card">16</div>
+          <div class="falt-card">19</div>
+        </div>
+
+        <div class="sec-h"><span>Sudáfrica (RSA) · A · <b style="color:var(--accent);">1 match</b></span><span class="count">11</span></div>
+        <div class="falt-grid">
+          <div class="falt-card">5</div>
+          <div class="falt-card">6</div>
+          <div class="falt-card">8</div>
+          <div class="falt-card match">9</div>
+          <div class="falt-card">10</div>
+          <div class="falt-card">11</div>
+          <div class="falt-card">12</div>
+          <div class="falt-card">15</div>
+          <div class="falt-card">16</div>
+          <div class="falt-card">17</div>
+        </div>
+      </div>
+      <div class="phone-bottom">
+        <div class="nav-item"><span class="icon">🏠</span><span class="label-tab">Inicio</span></div>
+        <div class="nav-item"><span class="icon">🔵</span><span class="label-tab">Sueltas</span></div>
+        <div class="nav-item"><span class="icon">⇄</span><span class="label-tab">Cambios</span></div>
+        <div class="nav-item active"><span class="icon">🔍</span><span class="label-tab">¿La tengo?</span></div>
+        <div class="nav-item"><span class="icon">⋯</span><span class="label-tab">Más</span></div>
+      </div>
+    </div>
+    <div class="pros-cons">
+      <span class="pro">✓</span> Conforme escribís, los códigos que <b>matchean con tus faltantes</b> se iluminan en naranja (pulsan) · Banner arriba dice cuántas coincidencias hay · Aprietas la tarjeta = aplica +1
+    </div>
+  </div>
+
+  <!-- ============ ESTADO 3: Después de aplicar ============ -->
+  <div class="phone-wrap">
+    <div class="phone-name">🔵 Después de "Verificar" (aplicó 2 como sueltas)</div>
+    <div class="phone">
+      <div class="notch"><span class="time">9:41</span><span class="icons"><span>📶</span><span>🔋</span></span></div>
+      <div class="phone-content">
+        <div class="top-bar">
+          <h1 class="title">🔍 ¿La tengo?</h1>
+          <div class="icon-btn">⚙</div>
+        </div>
+
+        <div class="scan-card">
+          <div class="scan-card-title">Escribí o pegá códigos</div>
+          <textarea placeholder="Otra lista..."></textarea>
+          <div class="scan-actions">
+            <button class="clipboard">📋 Pegar</button>
+            <button class="verify">↵ Verificar</button>
+          </div>
+        </div>
+
+        <div class="falt-header">
+          <div class="left">
+            <h2>Te faltan</h2>
+            <span class="badge">155</span>
+          </div>
+          <button class="filter">Por equipo <span class="arrow">▾</span></button>
+        </div>
+
+        <div class="sec-h"><span>Intro</span><span class="count">2</span></div>
+        <div class="falt-grid">
+          <div class="falt-card">FWC3</div>
+          <div class="falt-card">FWC7</div>
+        </div>
+
+        <div class="sec-h"><span>México (MEX) · A</span><span class="count">3</span></div>
+        <div class="falt-grid">
+          <div class="falt-card">1</div>
+          <div class="falt-card applied">3</div>
+          <div class="falt-card">16</div>
+          <div class="falt-card">19</div>
+        </div>
+
+        <div class="sec-h"><span>Sudáfrica (RSA) · A</span><span class="count">10</span></div>
+        <div class="falt-grid">
+          <div class="falt-card">5</div>
+          <div class="falt-card">6</div>
+          <div class="falt-card">8</div>
+          <div class="falt-card applied">9</div>
+          <div class="falt-card">10</div>
+          <div class="falt-card">11</div>
+          <div class="falt-card">12</div>
+          <div class="falt-card">15</div>
+          <div class="falt-card">16</div>
+          <div class="falt-card">17</div>
+        </div>
+
+        <div style="font-size: 10px; color: var(--text-3); text-align: center; margin-top: 16px; line-height: 1.5;">
+          🔵 Las azules son las que acabas de agregar como sueltas.<br>
+          En 2s salen del listado de faltantes y aparecen en la pestaña 🔵 Sueltas, listas para pegar al álbum cuando quieras.
+        </div>
+      </div>
+      <div class="toast">
+        🔵 Agregaste como suelta <b>MEX-3</b> y <b>RSA-9</b>. Faltantes: 155. Pegalas en la pestaña 🔵 Sueltas.
+      </div>
+      <div class="phone-bottom">
+        <div class="nav-item"><span class="icon">🏠</span><span class="label-tab">Inicio</span></div>
+        <div class="nav-item"><span class="icon">🔵</span><span class="label-tab">Sueltas</span></div>
+        <div class="nav-item"><span class="icon">⇄</span><span class="label-tab">Cambios</span></div>
+        <div class="nav-item active"><span class="icon">🔍</span><span class="label-tab">¿La tengo?</span></div>
+        <div class="nav-item"><span class="icon">⋯</span><span class="label-tab">Más</span></div>
+      </div>
+    </div>
+    <div class="pros-cons">
+      <span class="pro">✓</span> Las que aplicaste cambian a <b style="color:var(--blue);">azul (suelta)</b> con 🔵 · Toast confirma la acción · Contador baja en vivo · A los 2-3s las azules se desvanecen de faltantes (pasan a la pestaña <b style="color:var(--blue);">🔵 Sueltas</b>, listas para pegar al álbum cuando quieras)
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ Detalles del flujo ============ -->
+<div style="max-width: 700px; background: var(--bg-2); border-radius: var(--radius-lg); padding: 18px 22px; border: 0.5px solid var(--border-2); color: var(--text-2); font-size: 13px; line-height: 1.7;">
+  <h2 style="font-size: 15px; color: var(--accent); margin: 0 0 10px; font-weight: 500;">🎯 Cómo funciona</h2>
+  <ol style="margin: 0; padding-left: 20px;">
+    <li><b style="color:var(--text);">Al abrir la pestaña</b>: ves todas tus faltantes (rojas) agrupadas por intro / equipo / history. Total visible arriba.</li>
+    <li><b style="color:var(--text);">Tap directo en una tarjeta roja</b> = +1 aplicado, se vuelve <b style="color:var(--blue);">azul (suelta)</b> con 🔵, después de 2s se desvanece de los faltantes (pasa a la pestaña Sueltas, lista para pegar al álbum cuando quieras).</li>
+    <li><b style="color:var(--text);">Escribir en el textarea</b>: a medida que tipeás, las tarjetas que matchean se iluminan en naranja con un pulso. Banner arriba muestra "X coincidencias".</li>
+    <li><b style="color:var(--text);">Botón "↵ Verificar"</b>: aplica +1 (como suelta) a todas las que matchearon, en una sola transacción al backend.</li>
+    <li><b style="color:var(--text);">Botón "📋 Pegar"</b>: lee del portapapeles directamente — útil cuando un amigo te manda un mensaje con varios códigos.</li>
+    <li><b style="color:var(--text);">Filtro "Por equipo"</b>: si solo quieres ver faltantes de Colombia o México, filtras y queda enfocado.</li>
+  </ol>
+
+  <div style="background: rgba(74,158,255,0.1); border-left: 3px solid var(--blue); padding: 10px 14px; border-radius: 4px; margin-top: 14px; font-size: 12px;">
+    <b style="color:var(--blue);">💡 Importante:</b> al aplicar desde aquí la lámina pasa de <b style="color:var(--danger);">faltante (rojo)</b> a <b style="color:var(--blue);">suelta (azul)</b>, NO directamente a pegada. Esto refleja la realidad: ahora la tienes en la mano, pero todavía no la pegaste al álbum. Cuando físicamente la pegues, vas a la pestaña 🔵 Sueltas y le das "Pegar al álbum" (entonces sí pasa a verde).
+  </div>
+
+  <h2 style="font-size: 15px; color: var(--accent); margin: 20px 0 10px; font-weight: 500;">📋 Casos de uso</h2>
+  <ul style="margin: 0; padding-left: 20px;">
+    <li><b style="color:var(--text);">Abriste un sobre</b>: escribes los 5 códigos, ves cuáles te servían (en naranja) y aplicas con un solo Verificar.</li>
+    <li><b style="color:var(--text);">Amigo te dice "Tengo MEX-3"</b>: tap directo en la tarjeta MEX-3 (si está en tu lista) o escribe MEX-3 y aplica.</li>
+    <li><b style="color:var(--text);">Pegar lista de WhatsApp</b>: pegas, ves cuáles son útiles, aplicas.</li>
+    <li><b style="color:var(--text);">Browse mode</b>: scrolleás viendo qué te falta de cada equipo, cuando alguien te da una sin avisar previamente.</li>
+  </ul>
+
+  <h2 style="font-size: 15px; color: var(--accent); margin: 20px 0 10px; font-weight: 500;">🔧 Implementación</h2>
+  <p style="margin: 0;">~3-4 horas. Los datos los tenemos: <code style="background:var(--bg);padding:1px 5px;border-radius:3px;font-size:11px;">getStatus(id) === 'falta'</code> filtra los faltantes. La grilla reusa los estilos existentes del modo móvil. El highlighter (animación pulse) se aplica en JS al matchear con `parseBulkInput`.</p>
+</div>
+
+</body>
+</html>

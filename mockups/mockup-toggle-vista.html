@@ -1,0 +1,1044 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup · Toggle compacta / expandida con filtros</title>
+<style>
+  /* === Variables idénticas al app === */
+  :root {
+    --bg: #000000;
+    --bg-2: #1a1a1a;
+    --bg-3: #2a2a2a;
+    --text: #f0eee6;
+    --text-2: #b4b2a9;
+    --text-3: #888780;
+    --border: rgba(240, 238, 230, 0.12);
+    --amber: #EF9F27;
+    --blue: #4A9EFF;
+    --green: #00D685;
+    --danger: #E24B4A;
+    --accent: #FF8C1A;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: #050505;
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif;
+    font-size: 14px;
+  }
+  .page { max-width: 1100px; margin: 0 auto; padding: 24px 16px 80px; }
+  .page-title { font-size: 20px; font-weight: 600; margin: 0 0 4px; }
+  .page-sub { color: var(--text-2); font-size: 13px; margin: 0 0 24px; }
+  .filter-row {
+    display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start;
+    justify-content: center;
+    margin-bottom: 36px;
+  }
+  .filter-group-title {
+    text-align: center;
+    color: var(--text-3);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 0 0 14px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .filter-group-title.suelta { color: var(--blue); }
+  .filter-group-title.falta { color: var(--danger); }
+  .filter-group-title.repetida { color: var(--amber); }
+  .phone {
+    width: 390px;
+    background: var(--bg);
+    border-radius: 36px;
+    border: 1px solid #1f1f1f;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  }
+  .phone-status {
+    height: 28px;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0 24px;
+    font-size: 14px; color: var(--text); font-weight: 600;
+  }
+  .phone-status .right { font-size: 11px; color: var(--text-2); letter-spacing: 1px; }
+  .phone-label {
+    text-align: center; color: var(--text-3); font-size: 11px;
+    margin: 6px 0 12px; text-transform: uppercase; letter-spacing: 1.2px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+
+  /* === Header (real) === */
+  .app { padding: 0 12px 14px; }
+  .page-header {
+    display: flex; align-items: center; justify-content: space-between; gap: 6px;
+    background: var(--bg);
+    padding: 10px 0 6px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .page-header h1 {
+    margin: 0; flex: 1; min-width: 0;
+    font-size: 17px; font-weight: 500;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .header-actions { display: flex; gap: 0; flex-shrink: 0; }
+  .header-icon-btn {
+    background: none; border: 0; color: var(--bg-3);
+    padding: 5px; cursor: pointer;
+  }
+  .header-icon-btn svg { width: 19px; height: 19px; display: block; }
+  .subtitle { color: var(--text-3); font-size: 10px; margin: 6px 0 10px; }
+
+  /* === Hero real con toggle al lado del donut === */
+  .stats-grid { display: block; margin-bottom: 12px; }
+  .hero-with-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 4px 0 14px;
+  }
+  .donut-wrap {
+    position: relative;
+    width: 200px; height: 200px;
+    flex-shrink: 0;
+  }
+  .donut-svg { width: 100%; height: 100%; display: block; }
+  .donut-track { stroke: var(--bg-3); stroke-width: 14; fill: none; }
+  .donut-fill {
+    stroke: var(--green);
+    stroke-width: 14;
+    fill: none;
+    stroke-linecap: round;
+    transform: rotate(-90deg);
+    transform-origin: 100px 100px;
+    filter:
+      drop-shadow(0 0 4px rgba(0, 214, 133, 0.8))
+      drop-shadow(0 0 12px rgba(0, 214, 133, 0.45));
+  }
+  .donut-text {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    pointer-events: none;
+  }
+  .donut-pct {
+    font-size: 34px; font-weight: 700;
+    color: var(--green); line-height: 1; letter-spacing: -1px;
+    text-shadow:
+      0 0 8px rgba(0, 214, 133, 0.7),
+      0 0 16px rgba(0, 214, 133, 0.5),
+      0 0 28px rgba(0, 214, 133, 0.3);
+  }
+  .donut-frac {
+    font-size: 14px; color: var(--green);
+    margin-top: 4px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    text-shadow: 0 0 6px rgba(0,214,133,0.55), 0 0 12px rgba(0,214,133,0.3);
+  }
+  .donut-label {
+    font-size: 10px; color: var(--text-3);
+    text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;
+  }
+
+  /* Toggle vertical compacto al lado del donut */
+  .hero-toggle {
+    display: inline-flex;
+    flex-direction: column;
+    background: var(--bg-2);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 3px;
+    gap: 2px;
+  }
+  .hero-toggle button {
+    background: transparent; border: 0;
+    color: var(--text-3);
+    padding: 8px 8px;
+    border-radius: 9px;
+    cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    -webkit-tap-highlight-color: transparent;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 9px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    width: 56px;
+  }
+  .hero-toggle button svg { width: 16px; height: 16px; stroke-width: 2; display: block; }
+  .hero-toggle button.active {
+    background: var(--bg-3);
+    color: var(--amber);
+    box-shadow: 0 0 0 0.5px var(--amber) inset;
+    text-shadow: 0 0 4px rgba(239,159,39,0.45);
+  }
+
+  .stats-row {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+  }
+  .stat-pill {
+    background: var(--bg-2);
+    border-radius: var(--radius);
+    padding: 10px 6px;
+    text-align: center;
+    border: 1px solid transparent;
+  }
+  .stat-pill-blue   { border-color: rgba(74, 158, 255, 0.55); }
+  .stat-pill-red    { border-color: rgba(226, 75, 74, 0.55);  }
+  .stat-pill-amber  { border-color: rgba(239, 159, 39, 0.55); }
+  .stat-pill-value { font-size: 20px; font-weight: 700; line-height: 1; }
+  .stat-pill-label { font-size: 11px; color: var(--text-2); margin-top: 4px; font-weight: 500; }
+  .stat-pill-sub { font-size: 9px; color: var(--text-3); margin-top: 3px; }
+  .stat-pill-blue .stat-pill-value {
+    color: var(--blue);
+    text-shadow:
+      0 0 6px rgba(74,158,255,0.7),
+      0 0 14px rgba(74,158,255,0.4),
+      0 0 22px rgba(74,158,255,0.2);
+  }
+  .stat-pill-red .stat-pill-value {
+    color: var(--danger);
+    text-shadow:
+      0 0 6px rgba(226,75,74,0.7),
+      0 0 14px rgba(226,75,74,0.4),
+      0 0 22px rgba(226,75,74,0.2);
+  }
+  .stat-pill-amber .stat-pill-value {
+    color: var(--amber);
+    text-shadow:
+      0 0 6px rgba(239,159,39,0.7),
+      0 0 14px rgba(239,159,39,0.4),
+      0 0 22px rgba(239,159,39,0.2);
+  }
+  .stat-pill.home-filter-on.stat-pill-blue {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 1px var(--blue), 0 0 14px rgba(74,158,255,0.35);
+    background: rgba(74,158,255,0.08);
+  }
+  .stat-pill.home-filter-on.stat-pill-red {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 1px var(--danger), 0 0 14px rgba(226,75,74,0.35);
+    background: rgba(226,75,74,0.08);
+  }
+  .stat-pill.home-filter-on.stat-pill-amber {
+    border-color: var(--amber);
+    box-shadow: 0 0 0 1px var(--amber), 0 0 14px rgba(239,159,39,0.35);
+    background: rgba(239,159,39,0.08);
+  }
+
+  /* === Bulk panels collapsed (real) === */
+  .home-bulk-panel {
+    background: var(--bg-2);
+    border-radius: var(--radius);
+    margin: 0 0 8px;
+    overflow: hidden;
+  }
+  .home-bulk-panel.falta { border: 0.5px solid rgba(226,75,74,0.5); }
+  .home-bulk-panel.repetida { border: 0.5px solid rgba(239,159,39,0.5); }
+  .home-bulk-panel.vender { border: 0.5px solid rgba(0,214,133,0.5); }
+  .home-bulk-head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px;
+  }
+  .home-bulk-icon {
+    width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    font-size: 12px; font-weight: 700; flex-shrink: 0;
+  }
+  .home-bulk-panel.falta .home-bulk-icon { background: rgba(226,75,74,0.18); color: var(--danger); }
+  .home-bulk-panel.repetida .home-bulk-icon { background: rgba(239,159,39,0.18); color: var(--amber); }
+  .home-bulk-panel.vender .home-bulk-icon { background: rgba(0,214,133,0.18); color: var(--green); }
+  .home-bulk-text { flex: 1; font-size: 12px; font-weight: 700; }
+  .home-bulk-panel.falta .home-bulk-text { color: var(--danger); }
+  .home-bulk-panel.repetida .home-bulk-text { color: var(--amber); }
+  .home-bulk-panel.vender .home-bulk-text { color: var(--green); }
+  .home-bulk-toggle { color: var(--text-3); font-size: 14px; }
+
+  /* === COMPACTA — copia 1:1 (sin filtro) === */
+  .home-compact-tabla {
+    display: grid;
+    grid-template-columns: 44px repeat(10, 1fr);
+    gap: 3px;
+    margin: 0 0 10px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .home-compact-tabla .group-row {
+    grid-column: 1 / -1;
+    background: var(--bg-2);
+    color: var(--amber);
+    padding: 5px 10px;
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.8px;
+    margin-top: 6px; border-radius: 4px;
+  }
+  .home-compact-tabla .team-name {
+    padding: 2px 4px;
+    background: var(--bg-2); border-radius: 4px;
+    color: var(--text-2); font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+    grid-row: span 2;
+  }
+  .home-compact-tabla .cell {
+    aspect-ratio: 1;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 11px;
+    border-radius: 50%;
+    position: relative;
+    line-height: 1;
+    color: #fff;
+  }
+  .home-compact-tabla .cell.pegada   { background: var(--green); }
+  .home-compact-tabla .cell.falta    { background: var(--danger); }
+  .home-compact-tabla .cell.suelta   { background: var(--blue); flex-direction: column; gap: 0; }
+  .home-compact-tabla .cell.repetida { background: var(--amber); flex-direction: column; gap: 0; }
+  .home-compact-tabla .cell .x { font-size: 7px; font-weight: 700; line-height: 1; opacity: 0.85; }
+  .home-compact-tabla .cell .x::before { content: '×'; opacity: 0.7; }
+
+  /* === COMPACTA + filtro: layout flex por equipo (nuevo) ===
+     Sólo se muestran equipos con al menos un match. Cada equipo es una
+     fila: team-name a la izquierda + las celdas que matchean fluyendo
+     a la derecha. No hay grilla 10-col porque sólo hay las matches. */
+  .home-compact-tabla.filter-active {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .home-compact-tabla.filter-active .group-row {
+    margin-top: 6px;
+  }
+  .home-compact-tabla.filter-active .team-filter-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 0;
+  }
+  .home-compact-tabla.filter-active .team-name {
+    width: 44px;
+    height: 28px;
+    flex-shrink: 0;
+  }
+  .home-compact-tabla.filter-active .cells-flow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+  }
+  .home-compact-tabla.filter-active .cells-flow .cell {
+    width: 28px;
+    height: 28px;
+    aspect-ratio: auto;
+    flex-shrink: 0;
+  }
+
+  /* === EXPANDIDA — copia 1:1 === */
+  .seccion-compacta {
+    background: var(--bg-2);
+    border-radius: var(--radius-lg);
+    padding: 12px 14px;
+    margin-bottom: 10px;
+  }
+  .seccion-compacta.filter-suelta { background: transparent; border: 0.5px solid rgba(74,158,255,0.5); }
+  .seccion-compacta.filter-falta  { background: transparent; border: 0.5px solid rgba(226,75,74,0.5); }
+  .seccion-compacta.filter-repetida { background: transparent; border: 0.5px solid rgba(239,159,39,0.5); }
+  .seccion-compacta .seccion-header {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 8px;
+  }
+  .seccion-titulo { font-size: 13px; font-weight: 500; }
+  .seccion-stats {
+    font-size: 10px;
+    color: var(--text-2);
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .seccion-pegar-todas-mock {
+    display: block;
+    width: 100%;
+    margin: 0 0 8px;
+    padding: 8px 12px;
+    background: rgba(74, 158, 255, 0.12);
+    border: 0.5px solid rgba(74, 158, 255, 0.5);
+    color: var(--blue);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 12px; font-weight: 700;
+    text-align: center;
+  }
+  .circles-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+  .compact-card {
+    border-radius: 6px;
+    overflow: hidden;
+    border: 0.5px solid var(--border);
+    display: flex; flex-direction: column;
+    background: var(--bg-2);
+  }
+  .compact-card-num {
+    flex: 1; text-align: center;
+    padding: 6px 0 4px;
+    font-size: 14px; font-weight: 600;
+    position: relative; line-height: 1.1;
+  }
+  .compact-card.falta    { border-color: var(--danger); }
+  .compact-card.suelta   { border-color: var(--blue); }
+  .compact-card.pegada   { border-color: var(--green); }
+  .compact-card.repetida { border-color: var(--amber); }
+  .compact-card.falta .compact-card-num {
+    color: var(--danger);
+    text-shadow: 0 0 6px rgba(226,75,74,0.5), 0 0 12px rgba(226,75,74,0.28);
+  }
+  .compact-card.pegada .compact-card-num {
+    color: var(--green);
+    text-shadow: 0 0 6px rgba(0,214,133,0.55), 0 0 12px rgba(0,214,133,0.3);
+  }
+  .compact-card.repetida .compact-card-num {
+    color: var(--amber);
+    text-shadow: 0 0 6px rgba(239,159,39,0.5), 0 0 12px rgba(239,159,39,0.28);
+  }
+  .compact-card.suelta .compact-card-num {
+    color: var(--blue);
+    text-shadow: 0 0 6px rgba(74,158,255,0.5), 0 0 12px rgba(74,158,255,0.28);
+  }
+  .compact-card-controls { display: flex; border-top: 0.5px solid var(--border); }
+  .compact-card-controls button {
+    flex: 1; padding: 5px 0;
+    background: var(--bg-2); color: var(--text-2);
+    border: 0; font-size: 14px; line-height: 1;
+    font-family: inherit;
+  }
+  .compact-card-controls button:first-child { border-right: 0.5px solid var(--border); }
+  .circle-badge {
+    position: absolute;
+    top: -2px; right: -2px;
+    background: var(--text); color: var(--bg);
+    font-size: 8px; min-width: 14px; height: 14px;
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 600; padding: 0 3px;
+    border: 1px solid var(--bg);
+  }
+
+  /* Annotation callouts */
+  .callout {
+    margin: 18px auto 0;
+    max-width: 700px;
+    background: rgba(239,159,39,0.06);
+    border: 0.5px solid rgba(239,159,39,0.4);
+    border-radius: 12px;
+    padding: 14px 16px;
+    color: var(--text-2);
+    font-size: 13px; line-height: 1.55;
+  }
+  .callout b { color: var(--amber); }
+  .callout code {
+    background: var(--bg-2);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 11px;
+    color: var(--text);
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1 class="page-title">Toggle Compacta ⇄ Expandida con filtros activos</h1>
+  <p class="page-sub">Toggle al lado del donut. En compacta + filtro: equipos sin matches desaparecen y sólo se muestran las celdas que matchean (flujo horizontal por equipo).</p>
+
+  <!-- ============================== FILTRO SUELTAS ============================== -->
+  <h2 class="filter-group-title suelta">— Filtro Sueltas (azul) —</h2>
+  <div class="filter-row">
+
+    <!-- COMPACT + SUELTAS -->
+    <div>
+      <div class="phone-label">Compacta · Sueltas</div>
+      <div class="phone">
+        <div class="phone-status"><span>3:42</span><span class="right">●●● ⌃ █</span></div>
+        <div class="app">
+          <div class="page-header">
+            <h1>Álbum Panini Mundial 2026</h1>
+            <div class="header-actions">
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h14"/><path d="M14 4l4 4-4 4"/><path d="M20 16H6"/><path d="M10 12l-4 4 4 4"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13c0-3.5 3.5-6 8-6 1 0 2 .2 3 .5l3-2v3.5c1.5 1 2.5 2.5 2.5 4 0 1.5-1 3-2.5 4l-.5 2h-2l-.5-1H8.5L8 19H6l-.5-2C4 16 3 14.5 3 13z"/><circle cx="14" cy="12" r="0.7" fill="currentColor"/><line x1="9" y1="9" x2="12" y2="9"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M3 3h7v7H3V3zm2 2h3v3H5V5z"/><path fill="currentColor" fill-rule="evenodd" d="M14 3h7v7h-7V3zm2 2h3v3h-3V5z"/><path fill="currentColor" fill-rule="evenodd" d="M3 14h7v7H3v-7zm2 2h3v3H5v-3z"/><path fill="currentColor" d="M13 13h2v2h-2zM16 13h2v2h-2zM19 13h2v2h-2zM13 16h2v2h-2zM16 16h2v2h-2zM19 16h2v2h-2zM13 19h2v2h-2zM16 19h2v2h-2zM19 19h2v2h-2z"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
+            </div>
+          </div>
+          <p class="subtitle">Tracker colaborativo · pegadas, repetidas, faltantes</p>
+
+          <div class="stats-grid">
+            <div class="hero-with-toggle">
+              <div class="donut-wrap">
+                <svg viewBox="0 0 200 200" class="donut-svg">
+                  <circle class="donut-track" cx="100" cy="100" r="85"></circle>
+                  <circle class="donut-fill"  cx="100" cy="100" r="85" stroke-dasharray="534.07" stroke-dashoffset="331.12"></circle>
+                </svg>
+                <div class="donut-text">
+                  <div class="donut-pct">38.0%</div>
+                  <div class="donut-frac">372 / 980</div>
+                  <div class="donut-label">pegadas</div>
+                </div>
+              </div>
+              <div class="hero-toggle">
+                <button class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="3"/><rect x="3" y="10" width="18" height="3"/><rect x="3" y="16" width="18" height="3"/></svg>Comp</button>
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Exp</button>
+              </div>
+            </div>
+            <div class="stats-row">
+              <div class="stat-pill stat-pill-blue home-filter-on">
+                <div class="stat-pill-value">52</div>
+                <div class="stat-pill-label">Sueltas</div>
+                <div class="stat-pill-sub">64 copias</div>
+              </div>
+              <div class="stat-pill stat-pill-red"><div class="stat-pill-value">556</div><div class="stat-pill-label">Faltantes</div><div class="stat-pill-sub">por conseguir</div></div>
+              <div class="stat-pill stat-pill-amber"><div class="stat-pill-value">673</div><div class="stat-pill-label">Repetidas</div><div class="stat-pill-sub">673 monas</div></div>
+            </div>
+          </div>
+
+          <div class="home-compact-tabla filter-active">
+            <div class="group-row">Grupo C · 3 equipos con sueltas</div>
+            <div class="team-filter-row">
+              <div class="team-name">BRA</div>
+              <div class="cells-flow">
+                <div class="cell suelta">6</div>
+                <div class="cell suelta">17</div>
+              </div>
+            </div>
+            <div class="team-filter-row">
+              <div class="team-name">MAR</div>
+              <div class="cells-flow">
+                <div class="cell suelta">7</div>
+                <div class="cell suelta">14</div>
+                <div class="cell suelta">20</div>
+              </div>
+            </div>
+            <div class="team-filter-row">
+              <div class="team-name">HAI</div>
+              <div class="cells-flow">
+                <div class="cell suelta">12</div>
+                <div class="cell suelta">20</div>
+              </div>
+            </div>
+            <div class="group-row">Grupo D · 2 equipos con sueltas</div>
+            <div class="team-filter-row">
+              <div class="team-name">USA</div>
+              <div class="cells-flow">
+                <div class="cell suelta">3</div>
+                <div class="cell suelta">11</div>
+                <div class="cell suelta">18</div>
+              </div>
+            </div>
+            <div class="team-filter-row">
+              <div class="team-name">PAR</div>
+              <div class="cells-flow">
+                <div class="cell suelta">5</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPANDED + SUELTAS -->
+    <div>
+      <div class="phone-label">Expandida · Sueltas</div>
+      <div class="phone">
+        <div class="phone-status"><span>3:42</span><span class="right">●●● ⌃ █</span></div>
+        <div class="app">
+          <div class="page-header">
+            <h1>Álbum Panini Mundial 2026</h1>
+            <div class="header-actions">
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h14"/><path d="M14 4l4 4-4 4"/><path d="M20 16H6"/><path d="M10 12l-4 4 4 4"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13c0-3.5 3.5-6 8-6 1 0 2 .2 3 .5l3-2v3.5c1.5 1 2.5 2.5 2.5 4 0 1.5-1 3-2.5 4l-.5 2h-2l-.5-1H8.5L8 19H6l-.5-2C4 16 3 14.5 3 13z"/><circle cx="14" cy="12" r="0.7" fill="currentColor"/><line x1="9" y1="9" x2="12" y2="9"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M3 3h7v7H3V3zm2 2h3v3H5V5z"/><path fill="currentColor" fill-rule="evenodd" d="M14 3h7v7h-7V3zm2 2h3v3h-3V5z"/><path fill="currentColor" fill-rule="evenodd" d="M3 14h7v7H3v-7zm2 2h3v3H5v-3z"/><path fill="currentColor" d="M13 13h2v2h-2zM16 13h2v2h-2zM19 13h2v2h-2zM13 16h2v2h-2zM16 16h2v2h-2zM19 16h2v2h-2zM13 19h2v2h-2zM16 19h2v2h-2zM19 19h2v2h-2z"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
+            </div>
+          </div>
+          <p class="subtitle">Tracker colaborativo · pegadas, repetidas, faltantes</p>
+
+          <div class="stats-grid">
+            <div class="hero-with-toggle">
+              <div class="donut-wrap">
+                <svg viewBox="0 0 200 200" class="donut-svg">
+                  <circle class="donut-track" cx="100" cy="100" r="85"></circle>
+                  <circle class="donut-fill"  cx="100" cy="100" r="85" stroke-dasharray="534.07" stroke-dashoffset="331.12"></circle>
+                </svg>
+                <div class="donut-text">
+                  <div class="donut-pct">38.0%</div>
+                  <div class="donut-frac">372 / 980</div>
+                  <div class="donut-label">pegadas</div>
+                </div>
+              </div>
+              <div class="hero-toggle">
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="3"/><rect x="3" y="10" width="18" height="3"/><rect x="3" y="16" width="18" height="3"/></svg>Comp</button>
+                <button class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Exp</button>
+              </div>
+            </div>
+            <div class="stats-row">
+              <div class="stat-pill stat-pill-blue home-filter-on"><div class="stat-pill-value">52</div><div class="stat-pill-label">Sueltas</div><div class="stat-pill-sub">64 copias</div></div>
+              <div class="stat-pill stat-pill-red"><div class="stat-pill-value">556</div><div class="stat-pill-label">Faltantes</div><div class="stat-pill-sub">por conseguir</div></div>
+              <div class="stat-pill stat-pill-amber"><div class="stat-pill-value">673</div><div class="stat-pill-label">Repetidas</div><div class="stat-pill-sub">673 monas</div></div>
+            </div>
+          </div>
+
+          <div class="seccion-compacta filter-suelta">
+            <div class="seccion-header">
+              <div class="seccion-titulo">Brasil · C</div>
+              <div class="seccion-stats">2 sueltas</div>
+            </div>
+            <button class="seccion-pegar-todas-mock">+ Pegar todas las sueltas (2)</button>
+            <div class="circles-grid">
+              <div class="compact-card suelta"><div class="compact-card-num">6</div><div class="compact-card-controls"><button>−</button><button>+</button></div></div>
+              <div class="compact-card suelta"><div class="compact-card-num">17</div><div class="compact-card-controls"><button>−</button><button>+</button></div></div>
+            </div>
+          </div>
+          <div class="seccion-compacta filter-suelta">
+            <div class="seccion-header">
+              <div class="seccion-titulo">Marruecos · C</div>
+              <div class="seccion-stats">3 sueltas</div>
+            </div>
+            <button class="seccion-pegar-todas-mock">+ Pegar todas las sueltas (3)</button>
+            <div class="circles-grid">
+              <div class="compact-card suelta"><div class="compact-card-num">7</div><div class="compact-card-controls"><button>−</button><button>+</button></div></div>
+              <div class="compact-card suelta"><div class="compact-card-num">14</div><div class="compact-card-controls"><button>−</button><button>+</button></div></div>
+              <div class="compact-card suelta"><div class="compact-card-num">20</div><div class="compact-card-controls"><button>−</button><button>+</button></div></div>
+            </div>
+          </div>
+          <div class="seccion-compacta filter-suelta">
+            <div class="seccion-header">
+              <div class="seccion-titulo">Haití · C</div>
+              <div class="seccion-stats">2 sueltas</div>
+            </div>
+            <button class="seccion-pegar-todas-mock">+ Pegar todas las sueltas (2)</button>
+            <div class="circles-grid">
+              <div class="compact-card suelta"><div class="compact-card-num">12</div><div class="compact-card-controls"><button>−</button><button>+</button></div></div>
+              <div class="compact-card suelta"><div class="compact-card-num">20</div><div class="compact-card-controls"><button>−</button><button>+</button></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- ============================== FILTRO FALTANTES ============================== -->
+  <h2 class="filter-group-title falta">— Filtro Faltantes (rojo) —</h2>
+  <div class="filter-row">
+
+    <!-- COMPACT + FALTANTES -->
+    <div>
+      <div class="phone-label">Compacta · Faltantes</div>
+      <div class="phone">
+        <div class="phone-status"><span>3:42</span><span class="right">●●● ⌃ █</span></div>
+        <div class="app">
+          <div class="page-header">
+            <h1>Álbum Panini Mundial 2026</h1>
+            <div class="header-actions">
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h14"/><path d="M14 4l4 4-4 4"/><path d="M20 16H6"/><path d="M10 12l-4 4 4 4"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13c0-3.5 3.5-6 8-6 1 0 2 .2 3 .5l3-2v3.5c1.5 1 2.5 2.5 2.5 4 0 1.5-1 3-2.5 4l-.5 2h-2l-.5-1H8.5L8 19H6l-.5-2C4 16 3 14.5 3 13z"/><circle cx="14" cy="12" r="0.7" fill="currentColor"/><line x1="9" y1="9" x2="12" y2="9"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M3 3h7v7H3V3zm2 2h3v3H5V5z"/><path fill="currentColor" fill-rule="evenodd" d="M14 3h7v7h-7V3zm2 2h3v3h-3V5z"/><path fill="currentColor" fill-rule="evenodd" d="M3 14h7v7H3v-7zm2 2h3v3H5v-3z"/><path fill="currentColor" d="M13 13h2v2h-2zM16 13h2v2h-2zM19 13h2v2h-2zM13 16h2v2h-2zM16 16h2v2h-2zM19 16h2v2h-2zM13 19h2v2h-2zM16 19h2v2h-2zM19 19h2v2h-2z"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
+            </div>
+          </div>
+          <p class="subtitle">Tracker colaborativo · pegadas, repetidas, faltantes</p>
+
+          <div class="stats-grid">
+            <div class="hero-with-toggle">
+              <div class="donut-wrap">
+                <svg viewBox="0 0 200 200" class="donut-svg">
+                  <circle class="donut-track" cx="100" cy="100" r="85"></circle>
+                  <circle class="donut-fill"  cx="100" cy="100" r="85" stroke-dasharray="534.07" stroke-dashoffset="331.12"></circle>
+                </svg>
+                <div class="donut-text">
+                  <div class="donut-pct">38.0%</div>
+                  <div class="donut-frac">372 / 980</div>
+                  <div class="donut-label">pegadas</div>
+                </div>
+              </div>
+              <div class="hero-toggle">
+                <button class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="3"/><rect x="3" y="10" width="18" height="3"/><rect x="3" y="16" width="18" height="3"/></svg>Comp</button>
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Exp</button>
+              </div>
+            </div>
+            <div class="stats-row">
+              <div class="stat-pill stat-pill-blue"><div class="stat-pill-value">52</div><div class="stat-pill-label">Sueltas</div><div class="stat-pill-sub">64 copias</div></div>
+              <div class="stat-pill stat-pill-red home-filter-on"><div class="stat-pill-value">556</div><div class="stat-pill-label">Faltantes</div><div class="stat-pill-sub">por conseguir</div></div>
+              <div class="stat-pill stat-pill-amber"><div class="stat-pill-value">673</div><div class="stat-pill-label">Repetidas</div><div class="stat-pill-sub">673 monas</div></div>
+            </div>
+          </div>
+
+          <div class="home-bulk-panel falta">
+            <div class="home-bulk-head">
+              <div class="home-bulk-icon">+</div>
+              <div class="home-bulk-text">Registrar láminas que tengo</div>
+              <div class="home-bulk-toggle">▾</div>
+            </div>
+          </div>
+
+          <div class="home-compact-tabla filter-active">
+            <div class="group-row">Grupo C · 4 equipos con faltantes</div>
+            <div class="team-filter-row">
+              <div class="team-name">BRA</div>
+              <div class="cells-flow">
+                <div class="cell falta">4</div>
+                <div class="cell falta">12</div>
+              </div>
+            </div>
+            <div class="team-filter-row">
+              <div class="team-name">MAR</div>
+              <div class="cells-flow">
+                <div class="cell falta">10</div>
+                <div class="cell falta">12</div>
+                <div class="cell falta">13</div>
+                <div class="cell falta">18</div>
+              </div>
+            </div>
+            <div class="team-filter-row">
+              <div class="team-name">HAI</div>
+              <div class="cells-flow">
+                <div class="cell falta">7</div>
+              </div>
+            </div>
+            <div class="team-filter-row">
+              <div class="team-name">SCO</div>
+              <div class="cells-flow">
+                <div class="cell falta">4</div>
+                <div class="cell falta">13</div>
+              </div>
+            </div>
+            <div class="group-row">Grupo D · 3 equipos con faltantes</div>
+            <div class="team-filter-row">
+              <div class="team-name">USA</div>
+              <div class="cells-flow">
+                <div class="cell falta">8</div>
+                <div class="cell falta">14</div>
+                <div class="cell falta">19</div>
+              </div>
+            </div>
+            <div class="team-filter-row">
+              <div class="team-name">PAR</div>
+              <div class="cells-flow">
+                <div class="cell falta">2</div>
+                <div class="cell falta">11</div>
+              </div>
+            </div>
+            <div class="team-filter-row">
+              <div class="team-name">AUS</div>
+              <div class="cells-flow">
+                <div class="cell falta">5</div>
+                <div class="cell falta">9</div>
+                <div class="cell falta">16</div>
+                <div class="cell falta">20</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPANDED + FALTANTES -->
+    <div>
+      <div class="phone-label">Expandida · Faltantes</div>
+      <div class="phone">
+        <div class="phone-status"><span>3:42</span><span class="right">●●● ⌃ █</span></div>
+        <div class="app">
+          <div class="page-header">
+            <h1>Álbum Panini Mundial 2026</h1>
+            <div class="header-actions">
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h14"/><path d="M14 4l4 4-4 4"/><path d="M20 16H6"/><path d="M10 12l-4 4 4 4"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13c0-3.5 3.5-6 8-6 1 0 2 .2 3 .5l3-2v3.5c1.5 1 2.5 2.5 2.5 4 0 1.5-1 3-2.5 4l-.5 2h-2l-.5-1H8.5L8 19H6l-.5-2C4 16 3 14.5 3 13z"/><circle cx="14" cy="12" r="0.7" fill="currentColor"/><line x1="9" y1="9" x2="12" y2="9"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M3 3h7v7H3V3zm2 2h3v3H5V5z"/><path fill="currentColor" fill-rule="evenodd" d="M14 3h7v7h-7V3zm2 2h3v3h-3V5z"/><path fill="currentColor" fill-rule="evenodd" d="M3 14h7v7H3v-7zm2 2h3v3H5v-3z"/><path fill="currentColor" d="M13 13h2v2h-2zM16 13h2v2h-2zM19 13h2v2h-2zM13 16h2v2h-2zM16 16h2v2h-2zM19 16h2v2h-2zM13 19h2v2h-2zM16 19h2v2h-2zM19 19h2v2h-2z"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
+            </div>
+          </div>
+          <p class="subtitle">Tracker colaborativo · pegadas, repetidas, faltantes</p>
+
+          <div class="stats-grid">
+            <div class="hero-with-toggle">
+              <div class="donut-wrap">
+                <svg viewBox="0 0 200 200" class="donut-svg">
+                  <circle class="donut-track" cx="100" cy="100" r="85"></circle>
+                  <circle class="donut-fill"  cx="100" cy="100" r="85" stroke-dasharray="534.07" stroke-dashoffset="331.12"></circle>
+                </svg>
+                <div class="donut-text">
+                  <div class="donut-pct">38.0%</div>
+                  <div class="donut-frac">372 / 980</div>
+                  <div class="donut-label">pegadas</div>
+                </div>
+              </div>
+              <div class="hero-toggle">
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="3"/><rect x="3" y="10" width="18" height="3"/><rect x="3" y="16" width="18" height="3"/></svg>Comp</button>
+                <button class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Exp</button>
+              </div>
+            </div>
+            <div class="stats-row">
+              <div class="stat-pill stat-pill-blue"><div class="stat-pill-value">52</div><div class="stat-pill-label">Sueltas</div><div class="stat-pill-sub">64 copias</div></div>
+              <div class="stat-pill stat-pill-red home-filter-on"><div class="stat-pill-value">556</div><div class="stat-pill-label">Faltantes</div><div class="stat-pill-sub">por conseguir</div></div>
+              <div class="stat-pill stat-pill-amber"><div class="stat-pill-value">673</div><div class="stat-pill-label">Repetidas</div><div class="stat-pill-sub">673 monas</div></div>
+            </div>
+          </div>
+
+          <div class="home-bulk-panel falta">
+            <div class="home-bulk-head">
+              <div class="home-bulk-icon">+</div>
+              <div class="home-bulk-text">Registrar láminas que tengo</div>
+              <div class="home-bulk-toggle">▾</div>
+            </div>
+          </div>
+
+          <div class="seccion-compacta filter-falta">
+            <div class="seccion-header">
+              <div class="seccion-titulo">Brasil · C</div>
+              <div class="seccion-stats">2 faltantes</div>
+            </div>
+            <div class="circles-grid">
+              <div class="compact-card falta"><div class="compact-card-num">4</div><div class="compact-card-controls"><button>−</button><button>+</button></div></div>
+              <div class="compact-card falta"><div class="compact-card-num">12</div><div class="compact-card-controls"><button>−</button><button>+</button></div></div>
+            </div>
+          </div>
+          <div class="seccion-compacta filter-falta">
+            <div class="seccion-header">
+              <div class="seccion-titulo">Marruecos · C</div>
+              <div class="seccion-stats">4 faltantes</div>
+            </div>
+            <div class="circles-grid">
+              <div class="compact-card falta"><div class="compact-card-num">10</div><div class="compact-card-controls"><button>−</button><button>+</button></div></div>
+              <div class="compact-card falta"><div class="compact-card-num">12</div><div class="compact-card-controls"><button>−</button><button>+</button></div></div>
+              <div class="compact-card falta"><div class="compact-card-num">13</div><div class="compact-card-controls"><button>−</button><button>+</button></div></div>
+              <div class="compact-card falta"><div class="compact-card-num">18</div><div class="compact-card-controls"><button>−</button><button>+</button></div></div>
+            </div>
+          </div>
+          <div class="seccion-compacta filter-falta">
+            <div class="seccion-header">
+              <div class="seccion-titulo">Escocia · C</div>
+              <div class="seccion-stats">2 faltantes</div>
+            </div>
+            <div class="circles-grid">
+              <div class="compact-card falta"><div class="compact-card-num">4</div><div class="compact-card-controls"><button>−</button><button>+</button></div></div>
+              <div class="compact-card falta"><div class="compact-card-num">13</div><div class="compact-card-controls"><button>−</button><button>+</button></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- ============================== FILTRO REPETIDAS ============================== -->
+  <h2 class="filter-group-title repetida">— Filtro Repetidas (ámbar) —</h2>
+  <div class="filter-row">
+
+    <!-- COMPACT + REPETIDAS -->
+    <div>
+      <div class="phone-label">Compacta · Repetidas</div>
+      <div class="phone">
+        <div class="phone-status"><span>3:42</span><span class="right">●●● ⌃ █</span></div>
+        <div class="app">
+          <div class="page-header">
+            <h1>Álbum Panini Mundial 2026</h1>
+            <div class="header-actions">
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h14"/><path d="M14 4l4 4-4 4"/><path d="M20 16H6"/><path d="M10 12l-4 4 4 4"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13c0-3.5 3.5-6 8-6 1 0 2 .2 3 .5l3-2v3.5c1.5 1 2.5 2.5 2.5 4 0 1.5-1 3-2.5 4l-.5 2h-2l-.5-1H8.5L8 19H6l-.5-2C4 16 3 14.5 3 13z"/><circle cx="14" cy="12" r="0.7" fill="currentColor"/><line x1="9" y1="9" x2="12" y2="9"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M3 3h7v7H3V3zm2 2h3v3H5V5z"/><path fill="currentColor" fill-rule="evenodd" d="M14 3h7v7h-7V3zm2 2h3v3h-3V5z"/><path fill="currentColor" fill-rule="evenodd" d="M3 14h7v7H3v-7zm2 2h3v3H5v-3z"/><path fill="currentColor" d="M13 13h2v2h-2zM16 13h2v2h-2zM19 13h2v2h-2zM13 16h2v2h-2zM16 16h2v2h-2zM19 16h2v2h-2zM13 19h2v2h-2zM16 19h2v2h-2zM19 19h2v2h-2z"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
+            </div>
+          </div>
+          <p class="subtitle">Tracker colaborativo · pegadas, repetidas, faltantes</p>
+
+          <div class="stats-grid">
+            <div class="hero-with-toggle">
+              <div class="donut-wrap">
+                <svg viewBox="0 0 200 200" class="donut-svg">
+                  <circle class="donut-track" cx="100" cy="100" r="85"></circle>
+                  <circle class="donut-fill"  cx="100" cy="100" r="85" stroke-dasharray="534.07" stroke-dashoffset="331.12"></circle>
+                </svg>
+                <div class="donut-text">
+                  <div class="donut-pct">38.0%</div>
+                  <div class="donut-frac">372 / 980</div>
+                  <div class="donut-label">pegadas</div>
+                </div>
+              </div>
+              <div class="hero-toggle">
+                <button class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="3"/><rect x="3" y="10" width="18" height="3"/><rect x="3" y="16" width="18" height="3"/></svg>Comp</button>
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Exp</button>
+              </div>
+            </div>
+            <div class="stats-row">
+              <div class="stat-pill stat-pill-blue"><div class="stat-pill-value">52</div><div class="stat-pill-label">Sueltas</div><div class="stat-pill-sub">64 copias</div></div>
+              <div class="stat-pill stat-pill-red"><div class="stat-pill-value">556</div><div class="stat-pill-label">Faltantes</div><div class="stat-pill-sub">por conseguir</div></div>
+              <div class="stat-pill stat-pill-amber home-filter-on"><div class="stat-pill-value">673</div><div class="stat-pill-label">Repetidas</div><div class="stat-pill-sub">673 monas</div></div>
+            </div>
+          </div>
+
+          <div class="home-bulk-panel repetida">
+            <div class="home-bulk-head">
+              <div class="home-bulk-icon">▶</div>
+              <div class="home-bulk-text">Pegar varias para sacar</div>
+              <div class="home-bulk-toggle">▾</div>
+            </div>
+          </div>
+          <div class="home-bulk-panel vender">
+            <div class="home-bulk-head">
+              <div class="home-bulk-icon">$</div>
+              <div class="home-bulk-text">Vender repetidas</div>
+              <div class="home-bulk-toggle">▾</div>
+            </div>
+          </div>
+
+          <div class="home-compact-tabla filter-active">
+            <div class="group-row">Grupo C · 4 equipos con repetidas</div>
+            <div class="team-filter-row">
+              <div class="team-name">BRA</div>
+              <div class="cells-flow">
+                <div class="cell repetida">2<span class="x">2</span></div>
+                <div class="cell repetida">9</div>
+                <div class="cell repetida">15</div>
+              </div>
+            </div>
+            <div class="team-filter-row">
+              <div class="team-name">MAR</div>
+              <div class="cells-flow">
+                <div class="cell repetida">3<span class="x">3</span></div>
+                <div class="cell repetida">4</div>
+                <div class="cell repetida">5</div>
+                <div class="cell repetida">6</div>
+                <div class="cell repetida">11</div>
+              </div>
+            </div>
+            <div class="team-filter-row">
+              <div class="team-name">HAI</div>
+              <div class="cells-flow">
+                <div class="cell repetida">1</div>
+                <div class="cell repetida">5</div>
+                <div class="cell repetida">8</div>
+                <div class="cell repetida">9</div>
+                <div class="cell repetida">10</div>
+                <div class="cell repetida">11</div>
+                <div class="cell repetida">13</div>
+                <div class="cell repetida">17</div>
+                <div class="cell repetida">18</div>
+                <div class="cell repetida">19</div>
+              </div>
+            </div>
+            <div class="team-filter-row">
+              <div class="team-name">SCO</div>
+              <div class="cells-flow">
+                <div class="cell repetida">6</div>
+                <div class="cell repetida">10</div>
+                <div class="cell repetida">16</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPANDED + REPETIDAS -->
+    <div>
+      <div class="phone-label">Expandida · Repetidas</div>
+      <div class="phone">
+        <div class="phone-status"><span>3:42</span><span class="right">●●● ⌃ █</span></div>
+        <div class="app">
+          <div class="page-header">
+            <h1>Álbum Panini Mundial 2026</h1>
+            <div class="header-actions">
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h14"/><path d="M14 4l4 4-4 4"/><path d="M20 16H6"/><path d="M10 12l-4 4 4 4"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13c0-3.5 3.5-6 8-6 1 0 2 .2 3 .5l3-2v3.5c1.5 1 2.5 2.5 2.5 4 0 1.5-1 3-2.5 4l-.5 2h-2l-.5-1H8.5L8 19H6l-.5-2C4 16 3 14.5 3 13z"/><circle cx="14" cy="12" r="0.7" fill="currentColor"/><line x1="9" y1="9" x2="12" y2="9"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M3 3h7v7H3V3zm2 2h3v3H5V5z"/><path fill="currentColor" fill-rule="evenodd" d="M14 3h7v7h-7V3zm2 2h3v3h-3V5z"/><path fill="currentColor" fill-rule="evenodd" d="M3 14h7v7H3v-7zm2 2h3v3H5v-3z"/><path fill="currentColor" d="M13 13h2v2h-2zM16 13h2v2h-2zM19 13h2v2h-2zM13 16h2v2h-2zM16 16h2v2h-2zM19 16h2v2h-2zM13 19h2v2h-2zM16 19h2v2h-2zM19 19h2v2h-2z"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
+            </div>
+          </div>
+          <p class="subtitle">Tracker colaborativo · pegadas, repetidas, faltantes</p>
+
+          <div class="stats-grid">
+            <div class="hero-with-toggle">
+              <div class="donut-wrap">
+                <svg viewBox="0 0 200 200" class="donut-svg">
+                  <circle class="donut-track" cx="100" cy="100" r="85"></circle>
+                  <circle class="donut-fill"  cx="100" cy="100" r="85" stroke-dasharray="534.07" stroke-dashoffset="331.12"></circle>
+                </svg>
+                <div class="donut-text">
+                  <div class="donut-pct">38.0%</div>
+                  <div class="donut-frac">372 / 980</div>
+                  <div class="donut-label">pegadas</div>
+                </div>
+              </div>
+              <div class="hero-toggle">
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="3"/><rect x="3" y="10" width="18" height="3"/><rect x="3" y="16" width="18" height="3"/></svg>Comp</button>
+                <button class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Exp</button>
+              </div>
+            </div>
+            <div class="stats-row">
+              <div class="stat-pill stat-pill-blue"><div class="stat-pill-value">52</div><div class="stat-pill-label">Sueltas</div><div class="stat-pill-sub">64 copias</div></div>
+              <div class="stat-pill stat-pill-red"><div class="stat-pill-value">556</div><div class="stat-pill-label">Faltantes</div><div class="stat-pill-sub">por conseguir</div></div>
+              <div class="stat-pill stat-pill-amber home-filter-on"><div class="stat-pill-value">673</div><div class="stat-pill-label">Repetidas</div><div class="stat-pill-sub">673 monas</div></div>
+            </div>
+          </div>
+
+          <div class="home-bulk-panel repetida">
+            <div class="home-bulk-head">
+              <div class="home-bulk-icon">▶</div>
+              <div class="home-bulk-text">Pegar varias para sacar</div>
+              <div class="home-bulk-toggle">▾</div>
+            </div>
+          </div>
+          <div class="home-bulk-panel vender">
+            <div class="home-bulk-head">
+              <div class="home-bulk-icon">$</div>
+              <div class="home-bulk-text">Vender repetidas</div>
+              <div class="home-bulk-toggle">▾</div>
+            </div>
+          </div>
+
+          <div class="seccion-compacta filter-repetida">
+            <div class="seccion-header">
+              <div class="seccion-titulo">Brasil · C</div>
+              <div class="seccion-stats">3 rep · 4 monas</div>
+            </div>
+            <div class="circles-grid">
+              <div class="compact-card repetida"><div class="compact-card-num">2<span class="circle-badge">+2</span></div><div class="compact-card-controls"><button>−</button><button>+</button></div></div>
+              <div class="compact-card repetida"><div class="compact-card-num">9</div><div class="compact-card-controls"><button>−</button><button>+</button></div></div>
+              <div class="compact-card repetida"><div class="compact-card-num">15</div><div class="compact-card-controls"><button>−</button><button>+</button></div></div>
+            </div>
+          </div>
+          <div class="seccion-compacta filter-repetida">
+            <div class="seccion-header">
+              <div class="seccion-titulo">Marruecos · C</div>
+              <div class="seccion-stats">5 rep · 7 monas</div>
+            </div>
+            <div class="circles-grid">
+              <div class="compact-card repetida"><div class="compact-card-num">3<span class="circle-badge">+3</span></div><div class="compact-card-controls"><button>−</button><button>+</button></div></div>
+              <div class="compact-card repetida"><div class="compact-card-num">4</div><div class="compact-card-controls"><button>−</button><button>+</button></div></div>
+              <div class="compact-card repetida"><div class="compact-card-num">5</div><div class="compact-card-controls"><button>−</button><button>+</button></div></div>
+              <div class="compact-card repetida"><div class="compact-card-num">6</div><div class="compact-card-controls"><button>−</button><button>+</button></div></div>
+              <div class="compact-card repetida"><div class="compact-card-num">11</div><div class="compact-card-controls"><button>−</button><button>+</button></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="callout">
+    <b>Toggle al lado del donut</b>: pill vertical con dos botones (Comp / Exp) más un mini-ícono de filas vs grilla. Ocupa ~56px de ancho a la derecha del donut, no roba espacio al contenido y queda visible siempre que veas el hero.
+    <br><br>
+    <b>Compacta + filtro</b>: cuando filtras por Sueltas / Faltantes / Repetidas, sólo aparecen los equipos que tienen al menos una match y dentro de cada equipo sólo las celdas que matchean. La estructura cambia de grilla 10-col a flex por equipo: <code>BRA · ◯ ◯</code>, <code>MAR · ◯ ◯ ◯</code>. Los demás equipos no se renderizan.
+  </div>
+
+</div>
+</body>
+</html>

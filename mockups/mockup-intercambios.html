@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup · Modelos de intercambio</title>
+<style>
+  :root {
+    --bg: #1a1a18;
+    --bg-2: #262624;
+    --bg-3: #333330;
+    --text: #f0eee6;
+    --text-2: #b4b2a9;
+    --text-3: #888780;
+    --border: rgba(240, 238, 230, 0.12);
+    --border-2: rgba(240, 238, 230, 0.25);
+    --accent: #FF8C1A;
+    --green: #1D9E75;
+    --green-dark: #0F6E56;
+    --amber: #EF9F27;
+    --amber-text: #412402;
+    --amber-dark: #BA7517;
+    --danger: #E24B4A;
+    --purple: #8B5CF6;
+    --blue: #4A9EFF;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #0d0d0c;
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 24px 16px 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+  h1 { font-size: 18px; color: var(--text); margin: 0 0 4px; font-weight: 500; }
+  .mockup-label {
+    font-size: 12px;
+    color: var(--text-3);
+    text-align: center;
+    margin-bottom: 8px;
+    max-width: 380px;
+  }
+  .mockup-label b { color: var(--accent); }
+
+  .scenario {
+    background: var(--bg-2);
+    border-radius: var(--radius-lg);
+    padding: 16px 20px;
+    max-width: 700px;
+    text-align: center;
+    border: 0.5px solid var(--border-2);
+  }
+  .scenario h2 {
+    font-size: 14px;
+    margin: 0 0 8px;
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .scenario p { margin: 4px 0; font-size: 13px; color: var(--text-2); }
+  .scenario b { color: var(--text); }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .phone {
+    width: 380px;
+    background: var(--bg);
+    border-radius: 24px;
+    border: 1px solid var(--border-2);
+    padding: 16px 14px 28px;
+    overflow: hidden;
+  }
+  .phone .header h1 { font-size: 18px; margin: 0; }
+  .phone .subtitle { font-size: 11px; color: var(--text-2); margin-bottom: 12px; }
+  .sync-dot { color: var(--green); font-size: 12px; margin-left: 6px; }
+  .tabs-mini { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 12px; }
+  .tab-mini {
+    padding: 5px 9px;
+    border-radius: 6px;
+    border: 0.5px solid var(--border);
+    background: transparent;
+    color: var(--text-2);
+    font-size: 11px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .tab-mini.active {
+    background: var(--bg-2);
+    color: var(--text);
+    border-color: var(--border-2);
+    font-weight: 500;
+  }
+  .tab-mini.new {
+    background: rgba(255,140,26,0.15);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .section-title {
+    font-size: 12px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 14px 0 8px;
+  }
+
+  /* === Mini-card común de los 3 modelos === */
+  .grid-5 {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .card {
+    border-radius: 6px;
+    overflow: hidden;
+    border: 0.5px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-2);
+    user-select: none;
+    position: relative;
+  }
+  .card-num {
+    text-align: center;
+    padding: 6px 0 4px;
+    font-size: 14px;
+    font-weight: 600;
+    position: relative;
+  }
+  .card.falta .card-num { background: rgba(226,75,74,0.12); color: var(--danger); }
+  .card.pegada .card-num { background: var(--green); color: white; }
+  .card.repetida .card-num { background: var(--amber); color: var(--amber-text); }
+  .card-controls { display: flex; border-top: 0.5px solid var(--border); }
+  .card-controls button {
+    flex: 1;
+    padding: 4px 0;
+    background: var(--bg-2);
+    color: var(--text-2);
+    border: 0;
+    font-size: 13px;
+    font-family: inherit;
+  }
+  .card-controls button:first-child { border-right: 0.5px solid var(--border); }
+  .qty-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: var(--text);
+    color: var(--bg);
+    font-size: 8px;
+    min-width: 14px;
+    height: 14px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    padding: 0 3px;
+    border: 1px solid var(--bg);
+    z-index: 1;
+  }
+  /* Pin de aparición distinta por modelo */
+  .lock-mini {
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    background: var(--blue);
+    color: white;
+    font-size: 8px;
+    width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--bg);
+  }
+  /* Línea inferior con detalle de apartadas — Modelo A */
+  .card-detail {
+    font-size: 8px;
+    text-align: center;
+    color: var(--text-3);
+    padding: 2px 0;
+    border-top: 0.5px solid var(--border);
+    background: var(--bg);
+    line-height: 1.2;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .card-detail .lib { color: var(--green); }
+  .card-detail .apart { color: var(--blue); }
+
+  /* Long-press mockup modal */
+  .modal-mock {
+    background: var(--bg-2);
+    border-radius: var(--radius-lg);
+    border: 0.5px solid var(--border-2);
+    padding: 16px;
+    margin-top: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  }
+  .modal-mock .head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .modal-mock .preview {
+    width: 56px;
+    border-radius: 6px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .modal-mock .preview .card-num {
+    padding: 8px 0;
+    font-size: 16px;
+    position: relative;
+  }
+  .modal-mock .info b { display: block; font-size: 14px; font-family: "JetBrains Mono", Menlo, monospace; }
+  .modal-mock .info .name { font-size: 12px; color: var(--text-2); }
+  .modal-mock .info .breakdown {
+    font-size: 11px;
+    color: var(--text-3);
+    margin-top: 4px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .modal-mock .actions { display: flex; flex-direction: column; gap: 6px; }
+  .modal-mock .actions button {
+    padding: 9px;
+    background: var(--bg-3);
+    color: var(--text);
+    border: 0.5px solid var(--border-2);
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    text-align: left;
+  }
+  .modal-mock .actions button.primary {
+    background: var(--blue);
+    color: white;
+    border-color: var(--blue);
+  }
+  .modal-mock .actions button.danger {
+    color: var(--danger);
+    border-color: var(--danger);
+  }
+  .modal-mock .actions button.green {
+    background: var(--green);
+    color: white;
+    border-color: var(--green-dark);
+  }
+  .modal-mock label {
+    font-size: 11px;
+    color: var(--text-3);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .modal-mock input {
+    width: 100%;
+    padding: 8px 10px;
+    background: var(--bg);
+    border: 0.5px solid var(--border-2);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+
+  /* Modelo B - pestaña Pendientes */
+  .pendientes-list {
+    background: var(--bg-2);
+    border-radius: var(--radius-lg);
+    padding: 14px;
+  }
+  .person-card {
+    background: var(--bg);
+    border-radius: var(--radius);
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 0.5px solid var(--border);
+  }
+  .person-card .name {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .person-card .balance {
+    font-size: 11px;
+    color: var(--text-3);
+    margin-bottom: 8px;
+  }
+  .person-card .row-pendiente {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 4px;
+    align-items: baseline;
+    font-size: 11px;
+  }
+  .person-card .row-pendiente .label {
+    width: 70px;
+    flex-shrink: 0;
+    color: var(--text-3);
+  }
+  .person-card .chip {
+    display: inline-block;
+    padding: 2px 6px;
+    background: var(--bg-3);
+    border-radius: 3px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-size: 10px;
+    margin-right: 3px;
+  }
+  .person-card .chip.le-debes {
+    background: rgba(74,158,255,0.15);
+    color: var(--blue);
+    border: 0.5px solid rgba(74,158,255,0.3);
+  }
+  .person-card .chip.te-debe {
+    background: rgba(29,158,117,0.15);
+    color: var(--green);
+    border: 0.5px solid rgba(29,158,117,0.3);
+  }
+  .person-card .actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .person-card .actions button {
+    flex: 1;
+    padding: 6px;
+    background: var(--bg-3);
+    color: var(--text);
+    border: 0.5px solid var(--border-2);
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 11px;
+    cursor: pointer;
+  }
+  .person-card .actions button.primary {
+    background: var(--green);
+    color: white;
+    border-color: var(--green-dark);
+    font-weight: 500;
+  }
+
+  /* Modelo C — tickets */
+  .ticket-list { background: var(--bg-2); border-radius: var(--radius-lg); padding: 14px; }
+  .ticket {
+    background: var(--bg);
+    border-radius: var(--radius);
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 0.5px solid var(--border);
+  }
+  .ticket .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .ticket .who { font-size: 14px; font-weight: 500; }
+  .ticket .estado {
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .ticket .estado.pendiente {
+    background: rgba(239,159,39,0.2);
+    color: var(--amber);
+    border: 0.5px solid var(--amber-dark);
+  }
+  .ticket .estado.completado {
+    background: rgba(29,158,117,0.2);
+    color: var(--green);
+    border: 0.5px solid var(--green-dark);
+  }
+  .ticket .estado.negociando {
+    background: rgba(74,158,255,0.2);
+    color: var(--blue);
+    border: 0.5px solid var(--blue);
+  }
+  .ticket .lines { font-size: 12px; }
+  .ticket .lines .row-x { display: flex; gap: 8px; margin-bottom: 3px; }
+  .ticket .lines .label { width: 60px; flex-shrink: 0; color: var(--text-3); font-size: 11px; }
+  .ticket .lines .codes { font-family: "JetBrains Mono", Menlo, monospace; font-size: 11px; color: var(--text); }
+  .ticket .lines .codes .arrow { color: var(--accent); }
+  .ticket .meta {
+    font-size: 10px;
+    color: var(--text-3);
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 0.5px dashed var(--border);
+  }
+  .ticket .actions { display: flex; gap: 6px; margin-top: 8px; }
+  .ticket .actions button {
+    flex: 1;
+    padding: 6px;
+    background: var(--bg-3);
+    color: var(--text);
+    border: 0.5px solid var(--border-2);
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 11px;
+    cursor: pointer;
+  }
+  .ticket .actions button.primary {
+    background: var(--green);
+    color: white;
+    border-color: var(--green-dark);
+    font-weight: 500;
+  }
+  .ticket .actions button.danger {
+    color: var(--danger);
+    border-color: var(--danger);
+  }
+  .new-ticket-btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--accent);
+    color: var(--bg);
+    border: 0;
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 4px;
+  }
+
+  /* Footer comparativa */
+  .compare {
+    max-width: 920px;
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin-top: 16px;
+  }
+  .compare th, .compare td {
+    border: 0.5px solid var(--border);
+    padding: 10px 14px;
+    text-align: left;
+    vertical-align: top;
+  }
+  .compare th {
+    background: var(--bg-2);
+    color: var(--text);
+    font-weight: 500;
+  }
+  .compare td { color: var(--text-2); }
+  .compare .y { color: var(--green); }
+  .compare .n { color: var(--danger); }
+  .compare .partial { color: var(--amber); }
+
+  .legend-mini {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    margin-right: 10px;
+  }
+  .legend-mini .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 1px solid;
+  }
+
+  .quick-jump {
+    position: sticky;
+    top: 8px;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(8px);
+    padding: 8px 14px;
+    border-radius: 100px;
+    border: 0.5px solid var(--border-2);
+    font-size: 11px;
+    z-index: 10;
+    display: flex;
+    gap: 14px;
+  }
+  .quick-jump a { color: var(--text-2); text-decoration: none; }
+  .quick-jump a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div>
+  <h1>Mockup — Modelos para manejar intercambios</h1>
+  <div class="mockup-label">3 niveles de complejidad. Mismo escenario en cada uno.</div>
+</div>
+
+<div class="quick-jump">
+  <a href="#a">Modelo A</a>
+  <a href="#b">Modelo B</a>
+  <a href="#c">Modelo C</a>
+  <a href="#tabla">Comparar</a>
+</div>
+
+<!-- === ESCENARIO COMÚN === -->
+<div class="scenario">
+  <h2>📖 ESCENARIO PARA LOS 3 MOCKUPS</h2>
+  <p>Tienes <b>COL-13 ×3</b>: 1 pegada en el álbum + 2 repetidas sueltas.</p>
+  <p>Le prometiste <b>1 a Pedro</b> (que viene el sábado) y <b>1 al cuñado</b> (que iba a buscarla).</p>
+  <p>Quedan <b>0 disponibles</b> para nuevos intercambios.</p>
+  <p>Además: tienes <b>ARG-5 ×2</b> y <b>BRA-7 ×4</b> sin compromisos. Y te falta <b>MEX-1</b> que te trae Pedro.</p>
+</div>
+
+<!-- ============================================================== -->
+<!-- ============ MODELO A: Apartadas con contador =============== -->
+<!-- ============================================================== -->
+<div id="a">
+  <div class="mockup-label" style="margin-top:8px;"><b>🟢 MODELO A — Contador de apartadas</b><br>Cambio mínimo. Cada repetida se desglosa en "libres" vs "apartadas". No sabes a quién le apartaste.</div>
+  <div class="row">
+    <div class="phone">
+      <div class="header">
+        <h1>Panini 2026</h1>
+        <div class="subtitle">Compartido<span class="sync-dot">●</span></div>
+      </div>
+      <div class="tabs-mini">
+        <button class="tab-mini">¿La tengo?</button>
+        <button class="tab-mini active">Todos</button>
+        <button class="tab-mini">A</button>
+        <button class="tab-mini">B</button>
+        <button class="tab-mini">⇄</button>
+      </div>
+
+      <div class="section-title">Colombia (COL) · K — 14/20 · 4 rep</div>
+      <div class="grid-5">
+        <div class="card pegada"><div class="card-num">11</div><div class="card-controls"><button>−</button><button>+</button></div></div>
+        <div class="card pegada"><div class="card-num">12</div><div class="card-controls"><button>−</button><button>+</button></div></div>
+        <div class="card repetida" style="border:1px solid var(--blue);">
+          <div class="card-num">13<span class="qty-badge">+2</span></div>
+          <div class="card-detail"><span class="lib">0 lib</span> · <span class="apart">2 apart</span></div>
+          <div class="card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="card pegada"><div class="card-num">14</div><div class="card-controls"><button>−</button><button>+</button></div></div>
+        <div class="card pegada"><div class="card-num">15</div><div class="card-controls"><button>−</button><button>+</button></div></div>
+      </div>
+
+      <div class="section-title">Argentina (ARG) · J</div>
+      <div class="grid-5" style="grid-template-columns: repeat(5, 1fr);">
+        <div class="card pegada"><div class="card-num">4</div><div class="card-controls"><button>−</button><button>+</button></div></div>
+        <div class="card repetida">
+          <div class="card-num">5<span class="qty-badge">+1</span></div>
+          <div class="card-detail"><span class="lib">1 lib</span></div>
+          <div class="card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="card pegada"><div class="card-num">6</div><div class="card-controls"><button>−</button><button>+</button></div></div>
+        <div class="card falta"><div class="card-num">7</div><div class="card-controls"><button>−</button><button>+</button></div></div>
+        <div class="card pegada"><div class="card-num">8</div><div class="card-controls"><button>−</button><button>+</button></div></div>
+      </div>
+
+      <!-- Long-press menu mockup -->
+      <div style="font-size:11px;color:var(--text-3);text-align:center;margin:14px 0 8px;">
+        ↓ Al hacer long-press en <code>COL-13</code>:
+      </div>
+      <div class="modal-mock">
+        <div class="head">
+          <div class="preview">
+            <div class="card repetida">
+              <div class="card-num">13<span class="qty-badge">+2</span></div>
+              <div class="card-detail"><span class="apart">2 apart</span></div>
+            </div>
+          </div>
+          <div class="info">
+            <b>COL-13</b>
+            <span class="name">James Rodríguez · Grupo K</span>
+            <div class="breakdown">
+              Total: 3<br>
+              <span style="color:var(--green);">1 pegada</span> ·
+              <span style="color:var(--green);">0 disponibles</span> ·
+              <span style="color:var(--blue);">2 apartadas</span>
+            </div>
+          </div>
+        </div>
+        <div class="actions">
+          <button>+ Apartar 1 más (mover de disp. → apartada)</button>
+          <button>← Liberar 1 (volver de apartada → disp.)</button>
+          <button class="green">✓ Confirmar entrega de 1 (la di físicamente)</button>
+          <button class="danger">−1 directo (descartar / perdí una)</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="width:280px;font-size:12px;color:var(--text-2);line-height:1.7;">
+      <h3 style="font-size:13px;color:var(--text);margin:0 0 8px;">Lo que cambia</h3>
+      <ul style="padding-left:18px;margin:0;">
+        <li>Cada chip de repetida muestra abajo:<br>
+          <code style="font-size:11px;">N lib · M apart</code> en colores
+        </li>
+        <li>Borde azul si tiene apartadas</li>
+        <li>Long-press → menú nuevo con 4 acciones distintas</li>
+        <li><b>Cero campos de texto</b>. Cero nombres. Solo contadores.</li>
+      </ul>
+      <h3 style="font-size:13px;color:var(--text);margin:16px 0 8px;">Pega bien con</h3>
+      <ul style="padding-left:18px;margin:0;">
+        <li>Intercambian al instante (cara a cara)</li>
+        <li>No quieren llevar contabilidad de "quién te debe"</li>
+        <li>Solo necesitan saber "¿esta repetida está libre o ya prometida?"</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================== -->
+<!-- ============ MODELO B: Apartadas con persona =============== -->
+<!-- ============================================================== -->
+<div id="b">
+  <div class="mockup-label" style="margin-top:8px;"><b>🟡 MODELO B — Apartadas con nombre + pestaña Pendientes</b><br>Sabes a quién le apartaste. Nueva pestaña con la cuenta de cada socio.</div>
+  <div class="row">
+    <div class="phone">
+      <div class="header">
+        <h1>Panini 2026</h1>
+        <div class="subtitle">Compartido<span class="sync-dot">●</span></div>
+      </div>
+      <div class="tabs-mini">
+        <button class="tab-mini">¿La tengo?</button>
+        <button class="tab-mini">Todos</button>
+        <button class="tab-mini">A</button>
+        <button class="tab-mini">⇄</button>
+        <button class="tab-mini new active">🤝 Pendientes (3)</button>
+      </div>
+
+      <div class="pendientes-list">
+        <div class="person-card">
+          <div class="name">PEDRO 👤</div>
+          <div class="balance">Le debes 2 · Te debe 1 · neto: −1</div>
+          <div class="row-pendiente">
+            <span class="label">Le debes:</span>
+            <div>
+              <span class="chip le-debes">COL-13</span>
+              <span class="chip le-debes">ARG-5</span>
+            </div>
+          </div>
+          <div class="row-pendiente">
+            <span class="label">Te debe:</span>
+            <div>
+              <span class="chip te-debe">MEX-1</span>
+            </div>
+          </div>
+          <div class="actions">
+            <button>Editar</button>
+            <button class="primary">Cerrar trato</button>
+          </div>
+        </div>
+
+        <div class="person-card">
+          <div class="name">CUÑADO 👤</div>
+          <div class="balance">Le debes 1 · Te debe 0 · neto: −1</div>
+          <div class="row-pendiente">
+            <span class="label">Le debes:</span>
+            <div>
+              <span class="chip le-debes">COL-13</span>
+            </div>
+          </div>
+          <div class="actions">
+            <button>Editar</button>
+            <button class="primary">Cerrar trato</button>
+          </div>
+        </div>
+
+        <div class="person-card" style="background:rgba(29,158,117,0.05);border-color:rgba(29,158,117,0.3);">
+          <div class="name">TÍA MARÍA 👤 <span style="color:var(--green);font-size:11px;font-weight:400;">recientemente cerrado</span></div>
+          <div class="balance">Te dio 3 · Le diste 3 · ✓ saldado</div>
+          <div class="row-pendiente">
+            <span class="label">Hace 2 días:</span>
+            <div>
+              <span class="chip le-debes">BRA-3</span>
+              <span class="chip le-debes">FWC-9</span>
+              <span class="chip le-debes">ESP-7</span>
+              <span style="color:var(--text-3);margin: 0 4px;">↔</span>
+              <span class="chip te-debe">COL-13</span>
+              <span class="chip te-debe">ARG-12</span>
+              <span class="chip te-debe">URU-4</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="new-ticket-btn" style="background:var(--bg-3);color:var(--text);border:0.5px solid var(--border-2);font-weight:500;">+ Nueva persona</button>
+      </div>
+
+      <!-- Long-press de COL-13 en este modelo -->
+      <div style="font-size:11px;color:var(--text-3);text-align:center;margin:18px 0 8px;">
+        ↓ Long-press en <code>COL-13</code> en este modelo:
+      </div>
+      <div class="modal-mock">
+        <div class="head">
+          <div class="preview">
+            <div class="card repetida">
+              <div class="card-num">13<span class="qty-badge">+2</span></div>
+            </div>
+          </div>
+          <div class="info">
+            <b>COL-13</b>
+            <span class="name">Total: 3 · 0 disp · 2 apart</span>
+            <div class="breakdown" style="line-height:1.5;">
+              🔵 Apartada para <b>Pedro</b><br>
+              🔵 Apartada para <b>Cuñado</b>
+            </div>
+          </div>
+        </div>
+        <label>Apartar 1 más para...</label>
+        <input type="text" placeholder="Nombre o elegir socio existente">
+        <div class="actions">
+          <button class="primary">+ Apartar para esa persona</button>
+          <button class="green">✓ Entregar a Pedro (descontar 1)</button>
+          <button class="green">✓ Entregar a Cuñado (descontar 1)</button>
+          <button>+ / − directo (sin asignar)</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="width:280px;font-size:12px;color:var(--text-2);line-height:1.7;">
+      <h3 style="font-size:13px;color:var(--text);margin:0 0 8px;">Lo que agrega vs A</h3>
+      <ul style="padding-left:18px;margin:0;">
+        <li><b>Nueva pestaña 🤝 Pendientes</b> con balance por socio</li>
+        <li>Long-press incluye campo de nombre</li>
+        <li>Tooltip / detail muestra A QUIÉN le apartaste</li>
+        <li>"Cerrar trato" hace la transacción atómica:<br>
+          decrementa lo que le diste, suma lo que recibiste, marca cerrado.
+        </li>
+        <li>Historial de cierres recientes (gris)</li>
+      </ul>
+      <h3 style="font-size:13px;color:var(--text);margin:16px 0 8px;">Pega bien con</h3>
+      <ul style="padding-left:18px;margin:0;">
+        <li>2-5 socios habituales (Pedro, cuñado, vecina, etc.)</li>
+        <li>Reservas con días de adelanto</li>
+        <li>Quieren ver "¿quién me debe qué?" rápido</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================== -->
+<!-- ============ MODELO C: Tickets de intercambio =============== -->
+<!-- ============================================================== -->
+<div id="c">
+  <div class="mockup-label" style="margin-top:8px;"><b>🔴 MODELO C — Intercambios como tickets</b><br>Cada intercambio es un objeto formal con estado. Permite "negociando", "pendiente", "completado", historial completo.</div>
+  <div class="row">
+    <div class="phone">
+      <div class="header">
+        <h1>Panini 2026</h1>
+        <div class="subtitle">Compartido<span class="sync-dot">●</span></div>
+      </div>
+      <div class="tabs-mini">
+        <button class="tab-mini">¿La tengo?</button>
+        <button class="tab-mini">Todos</button>
+        <button class="tab-mini">A</button>
+        <button class="tab-mini">⇄</button>
+        <button class="tab-mini new active">📑 Intercambios (4)</button>
+      </div>
+
+      <div class="ticket-list">
+        <button class="new-ticket-btn">+ Crear nuevo intercambio</button>
+
+        <div class="section-title" style="margin-top:14px;">📌 ABIERTOS (3)</div>
+
+        <div class="ticket">
+          <div class="head">
+            <div class="who">Con Pedro</div>
+            <div class="estado pendiente">Pendiente</div>
+          </div>
+          <div class="lines">
+            <div class="row-x"><span class="label">Das:</span><span class="codes">COL-13, ARG-5</span></div>
+            <div class="row-x"><span class="label">Recibes:</span><span class="codes">MEX-1</span></div>
+          </div>
+          <div class="meta">Acordado 3/may · ven sábado a recoger</div>
+          <div class="actions">
+            <button>Editar</button>
+            <button class="primary">✓ Cerrar (aplicar)</button>
+          </div>
+        </div>
+
+        <div class="ticket">
+          <div class="head">
+            <div class="who">Con Cuñado</div>
+            <div class="estado pendiente">Pendiente</div>
+          </div>
+          <div class="lines">
+            <div class="row-x"><span class="label">Das:</span><span class="codes">COL-13</span></div>
+            <div class="row-x"><span class="label">Recibes:</span><span class="codes" style="color:var(--text-3);">— (regalo)</span></div>
+          </div>
+          <div class="meta">Acordado 1/may · viene cuando pueda</div>
+          <div class="actions">
+            <button>Editar</button>
+            <button class="primary">✓ Cerrar (aplicar)</button>
+          </div>
+        </div>
+
+        <div class="ticket">
+          <div class="head">
+            <div class="who">Con Vecina</div>
+            <div class="estado negociando">Negociando</div>
+          </div>
+          <div class="lines">
+            <div class="row-x"><span class="label">Das:</span><span class="codes">BRA-7, BRA-7, BRA-7</span></div>
+            <div class="row-x"><span class="label">Recibes:</span><span class="codes">¿GHA-3? ¿IRN-12?</span></div>
+          </div>
+          <div class="meta">Esperando confirmación de ella</div>
+          <div class="actions">
+            <button>Editar</button>
+            <button class="danger">Cancelar</button>
+          </div>
+        </div>
+
+        <div class="section-title" style="margin-top:14px;">✅ CERRADOS (1)</div>
+
+        <div class="ticket" style="opacity:0.7;">
+          <div class="head">
+            <div class="who">Con Tía María</div>
+            <div class="estado completado">Completado</div>
+          </div>
+          <div class="lines">
+            <div class="row-x"><span class="label">Diste:</span><span class="codes">COL-13, ARG-12, URU-4</span></div>
+            <div class="row-x"><span class="label">Recibiste:</span><span class="codes">BRA-3, FWC-9, ESP-7</span></div>
+          </div>
+          <div class="meta">2/may · 3 monas a 3</div>
+        </div>
+      </div>
+
+      <!-- Cómo se ve un sticker con tickets activos -->
+      <div style="font-size:11px;color:var(--text-3);text-align:center;margin:18px 0 8px;">
+        ↓ COL-13 en la grilla de equipos:
+      </div>
+      <div class="grid-5" style="grid-template-columns: repeat(5, 1fr);">
+        <div class="card pegada"><div class="card-num">11</div><div class="card-controls"><button>−</button><button>+</button></div></div>
+        <div class="card pegada"><div class="card-num">12</div><div class="card-controls"><button>−</button><button>+</button></div></div>
+        <div class="card repetida">
+          <span class="lock-mini">🔒2</span>
+          <div class="card-num">13<span class="qty-badge">+2</span></div>
+          <div class="card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <div class="card pegada"><div class="card-num">14</div><div class="card-controls"><button>−</button><button>+</button></div></div>
+        <div class="card pegada"><div class="card-num">15</div><div class="card-controls"><button>−</button><button>+</button></div></div>
+      </div>
+      <div style="font-size:11px;color:var(--text-3);text-align:center;">
+        🔒2 = 2 copias amarradas a tickets abiertos (Pedro + Cuñado)
+      </div>
+    </div>
+
+    <div style="width:280px;font-size:12px;color:var(--text-2);line-height:1.7;">
+      <h3 style="font-size:13px;color:var(--text);margin:0 0 8px;">Lo que agrega vs B</h3>
+      <ul style="padding-left:18px;margin:0;">
+        <li>Cada intercambio es un <b>ticket</b> con tres estados:<br>
+          🔵 Negociando · 🟡 Pendiente · 🟢 Completado
+        </li>
+        <li>Un mismo socio puede tener varios tickets a la vez</li>
+        <li>"Negociando" permite WIP sin afectar el saldo</li>
+        <li>Historial completo de cierres con fechas</li>
+        <li>Vista del sticker muestra 🔒N = en cuántos tickets está</li>
+      </ul>
+      <h3 style="font-size:13px;color:var(--text);margin:16px 0 8px;">Pega bien con</h3>
+      <ul style="padding-left:18px;margin:0;">
+        <li>Intercambios formales con varios socios simultáneos</li>
+        <li>Negociaciones largas (varios días)</li>
+        <li>Quieren historial mensual / por socio</li>
+        <li>Hay riesgo de "doble compromiso" (la misma lámina prometida 2 veces)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TABLA COMPARATIVA ============ -->
+<div id="tabla">
+<table class="compare">
+  <thead>
+    <tr>
+      <th></th>
+      <th>🟢 A · Apartadas</th>
+      <th>🟡 B · Apartadas + persona</th>
+      <th>🔴 C · Tickets</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Sabe que está apartada</td>
+      <td class="y">Sí</td>
+      <td class="y">Sí</td>
+      <td class="y">Sí</td>
+    </tr>
+    <tr>
+      <td>Sabe a QUIÉN está apartada</td>
+      <td class="n">No</td>
+      <td class="y">Sí</td>
+      <td class="y">Sí</td>
+    </tr>
+    <tr>
+      <td>Lleva balance "te debe / le debes"</td>
+      <td class="n">No</td>
+      <td class="y">Sí</td>
+      <td class="y">Sí</td>
+    </tr>
+    <tr>
+      <td>Soporta "negociando" sin reservar</td>
+      <td class="n">No</td>
+      <td class="partial">Limitado</td>
+      <td class="y">Sí (estado WIP)</td>
+    </tr>
+    <tr>
+      <td>Historial de intercambios cerrados</td>
+      <td class="n">No</td>
+      <td class="partial">Solo recientes</td>
+      <td class="y">Completo</td>
+    </tr>
+    <tr>
+      <td>Curva de uso (clicks por reserva)</td>
+      <td class="y">Mínima (1 click)</td>
+      <td class="partial">Pequeña (1 click + nombre)</td>
+      <td class="partial">Mayor (crear ticket)</td>
+    </tr>
+    <tr>
+      <td>Riesgo de doble compromiso</td>
+      <td class="n">Alto (no sabes si era de Pedro)</td>
+      <td class="partial">Medio</td>
+      <td class="y">Bajo (lock visible)</td>
+    </tr>
+    <tr>
+      <td>Cantidad de cambios al código actual</td>
+      <td class="y">Pequeña</td>
+      <td class="partial">Media</td>
+      <td class="n">Grande (nuevo modelo)</td>
+    </tr>
+    <tr>
+      <td>Tiempo estimado de implementación</td>
+      <td class="y">~1 hora</td>
+      <td class="partial">~2-3 horas</td>
+      <td class="n">~5+ horas</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div style="max-width:700px;text-align:center;color:var(--text-2);font-size:13px;line-height:1.7;margin-top:16px;">
+  <b style="color:var(--accent);">Mi recomendación honesta:</b><br>
+  Empezá con <b>Modelo B</b>. Te da el 90% del valor (saber a quién le debes qué) sin romper la simplicidad.<br>
+  Si después ves que hacen 5+ negociaciones simultáneas o quieren historial detallado, evolucionas a <b>C</b>.<br>
+  El <b>A</b> es muy lite — sirve si solo quieren marcar "ya prometida" sin más, pero pierdes el "con quién".
+</div>
+
+</body>
+</html>

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup · Colores de láminas</title>
+<style>
+  :root {
+    --bg: #000;
+    --bg-2: #1a1a1a;
+    --bg-3: #2a2a2a;
+    --border: #3a3a37;
+    --text: #f0eee6;
+    --text-2: #b8b6ae;
+    --text-3: #888780;
+    --green: #00D685;
+    --green-dark: #007F4E;
+    --amber: #EF9F27;
+    --amber-text: #412402;
+    --amber-dark: #BA7517;
+    --danger: #E24B4A;
+    --blue: #4A9EFF;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .page { max-width: 680px; margin: 0 auto; padding: 18px; }
+  h1 { font-size: 19px; margin: 0 0 4px; }
+  .lead { color: var(--text-3); font-size: 12px; margin-bottom: 22px; }
+  h2 {
+    font-size: 13px;
+    margin: 24px 0 4px;
+    color: var(--text);
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-weight: 700;
+  }
+  .variant-note { color: var(--text-3); font-size: 11px; margin: 0 0 10px; }
+
+  /* === Reusable: contenedor para mostrar las 4 cards en una fila === */
+  .row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .label-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    color: var(--text-3);
+    font-size: 10px;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  /* === Card base (estilo sticker) === */
+  .card {
+    aspect-ratio: 1.05;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 4px;
+    text-align: center;
+    border: 0.5px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .card .num {
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .card .lbl {
+    font-size: 9px;
+    color: rgba(255,255,255,0.7);
+    margin-top: 4px;
+  }
+
+  /* ──────────────────────────────────────────────────────────────────── */
+  /* V1 ACTUAL: filled solid                                              */
+  /* ──────────────────────────────────────────────────────────────────── */
+  .v1.falta    { background: var(--danger); border-color: var(--danger); }
+  .v1.suelta   { background: var(--blue);   border-color: var(--blue); }
+  .v1.pegada   { background: var(--green);  border-color: var(--green-dark); }
+  .v1.repetida { background: var(--amber);  border-color: var(--amber-dark); color: var(--amber-text); }
+  .v1.falta .num    { color: white; }
+  .v1.suelta .num   { color: white; }
+  .v1.pegada .num   { color: white; }
+  .v1.repetida .num { color: var(--amber-text); }
+
+  /* ──────────────────────────────────────────────────────────────────── */
+  /* V2 OUTLINE: estilo pill-de-home (transparente + borde + texto color) */
+  /* ──────────────────────────────────────────────────────────────────── */
+  .v2 { background: var(--bg-2); }
+  .v2.falta    { border: 0.5px solid var(--danger); }
+  .v2.suelta   { border: 0.5px solid var(--blue); }
+  .v2.pegada   { border: 0.5px solid var(--green); }
+  .v2.repetida { border: 0.5px solid var(--amber); }
+  .v2.falta    .num { color: var(--danger); }
+  .v2.suelta   .num { color: var(--blue); }
+  .v2.pegada   .num { color: var(--green); }
+  .v2.repetida .num { color: var(--amber); }
+
+  /* ──────────────────────────────────────────────────────────────────── */
+  /* V3 TINT: bg al 12% del color + borde + texto color (compromiso)      */
+  /* ──────────────────────────────────────────────────────────────────── */
+  .v3.falta    { background: rgba(226,75,74,0.12);  border: 0.5px solid rgba(226,75,74,0.5); }
+  .v3.suelta   { background: rgba(74,158,255,0.12); border: 0.5px solid rgba(74,158,255,0.5); }
+  .v3.pegada   { background: rgba(0,214,133,0.10);  border: 0.5px solid rgba(0,214,133,0.5); }
+  .v3.repetida { background: rgba(239,159,39,0.13); border: 0.5px solid rgba(239,159,39,0.5); }
+  .v3.falta    .num { color: var(--danger); }
+  .v3.suelta   .num { color: var(--blue); }
+  .v3.pegada   .num { color: var(--green); }
+  .v3.repetida .num { color: var(--amber); }
+
+  /* ──────────────────────────────────────────────────────────────────── */
+  /* V4 BARRA LATERAL: bg oscuro + barra de color a la izquierda           */
+  /* ──────────────────────────────────────────────────────────────────── */
+  .v4 { background: var(--bg-2); border: 0.5px solid var(--border); padding-left: 10px; }
+  .v4::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+  }
+  .v4.falta::before    { background: var(--danger); }
+  .v4.suelta::before   { background: var(--blue); }
+  .v4.pegada::before   { background: var(--green); }
+  .v4.repetida::before { background: var(--amber); }
+  .v4 .num { color: var(--text); }
+
+  /* ──────────────────────────────────────────────────────────────────── */
+  /* V5 RING: dark bg + número con anillo de color (status indicator)     */
+  /* ──────────────────────────────────────────────────────────────────── */
+  .v5 { background: var(--bg-2); border: 0.5px solid var(--border); }
+  .v5 .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 2px solid;
+    font-size: 14px;
+  }
+  .v5.falta    .num { color: var(--danger); border-color: var(--danger); }
+  .v5.suelta   .num { color: var(--blue);   border-color: var(--blue); }
+  .v5.pegada   .num { color: var(--green);  border-color: var(--green); }
+  .v5.repetida .num { color: var(--amber);  border-color: var(--amber); }
+
+  /* ──────────────────────────────────────────────────────────────────── */
+  /* V6 MINIMAL NEÓN: como las pills del home con glow                    */
+  /* ──────────────────────────────────────────────────────────────────── */
+  .v6 { background: var(--bg-2); border: 0.5px solid var(--border); }
+  .v6.falta    .num { color: var(--danger); text-shadow: 0 0 8px rgba(226,75,74,0.5), 0 0 16px rgba(226,75,74,0.3); }
+  .v6.suelta   .num { color: var(--blue);   text-shadow: 0 0 8px rgba(74,158,255,0.5), 0 0 16px rgba(74,158,255,0.3); }
+  .v6.pegada   .num { color: var(--green);  text-shadow: 0 0 8px rgba(0,214,133,0.6), 0 0 16px rgba(0,214,133,0.35); }
+  .v6.repetida .num { color: var(--amber);  text-shadow: 0 0 8px rgba(239,159,39,0.5), 0 0 16px rgba(239,159,39,0.3); }
+
+  /* ──────────────────────────────────────────────────────────────────── */
+  /* V7 DOT: dark bg + dot de color en esquina                            */
+  /* ──────────────────────────────────────────────────────────────────── */
+  .v7 { background: var(--bg-2); border: 0.5px solid var(--border); }
+  .v7::after {
+    content: '';
+    position: absolute;
+    top: 6px; right: 6px;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+  }
+  .v7.falta::after    { background: var(--danger); }
+  .v7.suelta::after   { background: var(--blue); }
+  .v7.pegada::after   { background: var(--green); }
+  .v7.repetida::after { background: var(--amber); }
+  .v7 .num { color: var(--text); }
+
+  /* Badge "+N" estilo común para variantes que lo necesitan */
+  .badge {
+    position: absolute;
+    top: 4px; right: 4px;
+    background: var(--bg);
+    color: var(--text-2);
+    border: 0.5px solid var(--border);
+    border-radius: 100px;
+    padding: 1px 5px;
+    font-size: 9px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+
+  /* Pequeño "donut" del home arriba para referencia */
+  .ref-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+    margin: 12px 0 24px;
+    padding: 10px;
+    background: var(--bg-2);
+    border-radius: 10px;
+    border: 0.5px solid var(--border);
+  }
+  .ref-pill {
+    text-align: center;
+    padding: 8px 4px;
+    background: var(--bg);
+    border-radius: 8px;
+  }
+  .ref-pill-blue   { box-shadow: 0 0 0 0.5px rgba(74,158,255,0.5)  inset; }
+  .ref-pill-red    { box-shadow: 0 0 0 0.5px rgba(226,75,74,0.5)   inset; }
+  .ref-pill-amber  { box-shadow: 0 0 0 0.5px rgba(239,159,39,0.5)  inset; }
+  .ref-pill .v { font-size: 22px; font-weight: 700; line-height: 1; }
+  .ref-pill .l { font-size: 11px; color: var(--text-2); margin-top: 4px; }
+  .ref-pill-blue .v   { color: var(--blue); }
+  .ref-pill-red .v    { color: var(--danger); }
+  .ref-pill-amber .v  { color: var(--amber); }
+</style>
+</head>
+<body>
+<div class="page">
+
+<h1>Colores de láminas en filtros</h1>
+<p class="lead">7 variantes para comparar contra los pills de la home. Cada variante muestra los 4 estados: <span style="color:var(--danger)">falta</span> · <span style="color:var(--blue)">suelta</span> · <span style="color:var(--green)">pegada</span> · <span style="color:var(--amber)">repetida</span>.</p>
+
+<div class="ref-row">
+  <div class="ref-pill ref-pill-blue"><div class="v">2</div><div class="l">Sueltas</div></div>
+  <div class="ref-pill ref-pill-red"><div class="v">972</div><div class="l">Faltantes</div></div>
+  <div class="ref-pill ref-pill-amber"><div class="v">2</div><div class="l">Repetidas</div></div>
+</div>
+<p class="variant-note">↑ Los pills del home (lo que te encanta). Las 4 cards de cada variante usan la misma paleta.</p>
+
+<h2>V1 · ACTUAL — sólido</h2>
+<p class="variant-note">Cards rellenas de color. Saturado, fácil de identificar pero "grita".</p>
+<div class="row">
+  <div class="card v1 falta"><div class="num">07</div></div>
+  <div class="card v1 suelta"><div class="num">07</div></div>
+  <div class="card v1 pegada"><div class="num">07</div></div>
+  <div class="card v1 repetida"><div class="num">07</div><div class="badge">+1</div></div>
+</div>
+<div class="label-row"><div>falta</div><div>suelta</div><div>pegada</div><div>repetida</div></div>
+
+<h2>V2 · OUTLINE — como los pills</h2>
+<p class="variant-note">Bg oscuro + borde + número en color. Match exacto con la estética de los pills del home.</p>
+<div class="row">
+  <div class="card v2 falta"><div class="num">07</div></div>
+  <div class="card v2 suelta"><div class="num">07</div></div>
+  <div class="card v2 pegada"><div class="num">07</div></div>
+  <div class="card v2 repetida"><div class="num">07</div><div class="badge">+1</div></div>
+</div>
+<div class="label-row"><div>falta</div><div>suelta</div><div>pegada</div><div>repetida</div></div>
+
+<h2>V3 · TINT — bg con tinte</h2>
+<p class="variant-note">Bg de color al 12% + borde + número en color. Compromiso: identificable a la vista pero menos saturado que V1.</p>
+<div class="row">
+  <div class="card v3 falta"><div class="num">07</div></div>
+  <div class="card v3 suelta"><div class="num">07</div></div>
+  <div class="card v3 pegada"><div class="num">07</div></div>
+  <div class="card v3 repetida"><div class="num">07</div><div class="badge">+1</div></div>
+</div>
+<div class="label-row"><div>falta</div><div>suelta</div><div>pegada</div><div>repetida</div></div>
+
+<h2>V4 · BARRA LATERAL</h2>
+<p class="variant-note">Bg oscuro + barra de 4px de color a la izquierda. Color como acento sutil; el número sigue siendo neutro.</p>
+<div class="row">
+  <div class="card v4 falta"><div class="num">07</div></div>
+  <div class="card v4 suelta"><div class="num">07</div></div>
+  <div class="card v4 pegada"><div class="num">07</div></div>
+  <div class="card v4 repetida"><div class="num">07</div><div class="badge">+1</div></div>
+</div>
+<div class="label-row"><div>falta</div><div>suelta</div><div>pegada</div><div>repetida</div></div>
+
+<h2>V5 · ANILLO ALREDEDOR DEL NÚMERO</h2>
+<p class="variant-note">Card oscura, número dentro de un círculo con borde de color. Recuerda al donut central.</p>
+<div class="row">
+  <div class="card v5 falta"><div class="num">07</div></div>
+  <div class="card v5 suelta"><div class="num">07</div></div>
+  <div class="card v5 pegada"><div class="num">07</div></div>
+  <div class="card v5 repetida"><div class="num">07</div><div class="badge">+1</div></div>
+</div>
+<div class="label-row"><div>falta</div><div>suelta</div><div>pegada</div><div>repetida</div></div>
+
+<h2>V6 · NEÓN</h2>
+<p class="variant-note">Card oscura + número con glow del color. Match con el donut "0.0%" en verde luminoso. Vibe arcade.</p>
+<div class="row">
+  <div class="card v6 falta"><div class="num">07</div></div>
+  <div class="card v6 suelta"><div class="num">07</div></div>
+  <div class="card v6 pegada"><div class="num">07</div></div>
+  <div class="card v6 repetida"><div class="num">07</div><div class="badge">+1</div></div>
+</div>
+<div class="label-row"><div>falta</div><div>suelta</div><div>pegada</div><div>repetida</div></div>
+
+<h2>V7 · PUNTITO</h2>
+<p class="variant-note">Card oscura + número blanco + punto de color en la esquina. Mínimo absoluto.</p>
+<div class="row">
+  <div class="card v7 falta"><div class="num">07</div></div>
+  <div class="card v7 suelta"><div class="num">07</div></div>
+  <div class="card v7 pegada"><div class="num">07</div></div>
+  <div class="card v7 repetida"><div class="num">07</div><div class="badge">+1</div></div>
+</div>
+<div class="label-row"><div>falta</div><div>suelta</div><div>pegada</div><div>repetida</div></div>
+
+<h2 style="margin-top: 40px;">Mi sugerencia</h2>
+<p class="variant-note" style="font-size: 12px; line-height: 1.6;">
+  <b style="color: var(--text);">V2 + V6 (combinadas)</b> = bg oscuro + borde sutil + número con glow del color. Esto es exactamente la estética de los pills del home (que te encantan) pero replicada en cada lámina. La grilla queda con look "panel oscuro con LED de colores" en vez de "rectángulos de colores rellenos".<br><br>
+  <b style="color: var(--text);">Alternativa más segura:</b> V3 (tint). Mantiene la rapidez de identificación de V1 pero con menos saturación.<br><br>
+  <b style="color: var(--text);">Para máximo minimalismo:</b> V7 (puntito). Pero pierdes mucha información de un vistazo.
+</p>
+
+</div>
+</body>
+</html>

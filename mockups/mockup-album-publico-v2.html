@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Mockup v2 · Álbum público compacto</title>
+<style>
+  :root {
+    --bg: #000000;
+    --bg-2: #1a1a1a;
+    --bg-3: #2a2a2a;
+    --border: #3a3a37;
+    --text: #f0eee6;
+    --text-2: #b8b6ae;
+    --text-3: #888780;
+    --green: #00D685;
+    --amber: #EF9F27;
+    --amber-text: #412402;
+    --danger: #E24B4A;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  .page {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 14px 14px 28px;
+  }
+
+  .hero { text-align: center; margin-bottom: 12px; }
+  .hero h1 { margin: 0 0 4px; font-size: 17px; font-weight: 600; }
+  .hero .subtitle { color: var(--text-3); font-size: 11px; margin: 0; }
+
+  .stats-mini {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .stat-pill {
+    flex: 1;
+    background: var(--bg-2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 8px;
+    text-align: center;
+  }
+  .stat-pill b {
+    display: block;
+    font-size: 18px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    line-height: 1;
+  }
+  .stat-pill small {
+    display: block;
+    color: var(--text-3);
+    font-size: 10px;
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .stat-pill.tengo b { color: var(--green); }
+  .stat-pill.rep b { color: var(--amber); }
+  .stat-pill.falta b { color: var(--danger); }
+
+  /* Lista grande: dos secciones (Me faltan / Repetidas) */
+  .big-section {
+    margin-bottom: 18px;
+  }
+  .big-section-title {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .big-section-title h2 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .big-section-title h2.falta { color: var(--danger); }
+  .big-section-title h2.rep { color: var(--amber); }
+  .big-section-title .total {
+    font-size: 13px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    color: var(--text-2);
+    font-weight: 700;
+  }
+
+  /* Bloque por equipo */
+  .team {
+    margin-bottom: 8px;
+    padding: 8px 10px;
+    background: var(--bg-2);
+    border-radius: var(--radius);
+  }
+  .team-name {
+    font-size: 11px;
+    color: var(--text-2);
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .team-count {
+    color: var(--text-3);
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-size: 10px;
+  }
+
+  /* Círculos súper chicos en línea */
+  .lam-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 8px;
+    align-items: center;
+  }
+  .lam-mini {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    position: relative;
+    user-select: none;
+    flex-shrink: 0;
+  }
+  .lam-mini.falta {
+    background: var(--danger);
+    color: #fff;
+  }
+  .lam-mini.rep {
+    background: var(--amber);
+    color: var(--amber-text);
+  }
+  .lam-mini .x {
+    position: absolute;
+    top: -5px;
+    right: -7px;
+    background: var(--bg);
+    color: var(--amber);
+    border: 1px solid var(--amber);
+    border-radius: 100px;
+    padding: 0 3px;
+    font-size: 8px;
+    font-weight: 700;
+    line-height: 1.4;
+    min-width: 14px;
+    text-align: center;
+  }
+
+  /* Para los IDs largos (FWC1...FWC19) el font tiene que ser más chico */
+  .lam-mini.long { font-size: 9px; letter-spacing: -0.5px; }
+
+  footer {
+    text-align: center;
+    color: var(--text-3);
+    font-size: 11px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 0.5px solid var(--border);
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="hero">
+    <h1>📒 Álbum Panini Mundial 2026</h1>
+    <p class="subtitle">66.2% · 649 / 980 · datos de ejemplo</p>
+  </div>
+
+  <div class="stats-mini">
+    <div class="stat-pill tengo"><b>649</b><small>Tengo</small></div>
+    <div class="stat-pill rep"><b>87</b><small>Repetidas</small></div>
+    <div class="stat-pill falta"><b>331</b><small>Faltan</small></div>
+  </div>
+
+  <!-- ======== ME FALTAN ======== -->
+  <div class="big-section">
+    <div class="big-section-title">
+      <h2 class="falta">🔴 Me faltan</h2>
+      <span class="total">331</span>
+    </div>
+
+    <div class="team">
+      <div class="team-name"><span>Intro · Logo, mascotas y anfitriones</span><span class="team-count">2 / 9</span></div>
+      <div class="lam-row">
+        <div class="lam-mini falta">00</div>
+        <div class="lam-mini falta long">FWC4</div>
+      </div>
+    </div>
+
+    <div class="team">
+      <div class="team-name"><span>1. México · A</span><span class="team-count">3 / 20</span></div>
+      <div class="lam-row">
+        <div class="lam-mini falta">5</div>
+        <div class="lam-mini falta">12</div>
+        <div class="lam-mini falta">17</div>
+      </div>
+    </div>
+
+    <div class="team">
+      <div class="team-name"><span>2. Sudáfrica · A</span><span class="team-count">8 / 20</span></div>
+      <div class="lam-row">
+        <div class="lam-mini falta">1</div>
+        <div class="lam-mini falta">4</div>
+        <div class="lam-mini falta">5</div>
+        <div class="lam-mini falta">8</div>
+        <div class="lam-mini falta">11</div>
+        <div class="lam-mini falta">12</div>
+        <div class="lam-mini falta">17</div>
+        <div class="lam-mini falta">20</div>
+      </div>
+    </div>
+
+    <div class="team">
+      <div class="team-name"><span>9. Brasil · C</span><span class="team-count">1 / 20</span></div>
+      <div class="lam-row">
+        <div class="lam-mini falta">17</div>
+      </div>
+    </div>
+
+    <div class="team">
+      <div class="team-name"><span>37. Argentina · J</span><span class="team-count">5 / 20</span></div>
+      <div class="lam-row">
+        <div class="lam-mini falta">2</div>
+        <div class="lam-mini falta">7</div>
+        <div class="lam-mini falta">11</div>
+        <div class="lam-mini falta">15</div>
+        <div class="lam-mini falta">19</div>
+      </div>
+    </div>
+
+    <div class="team">
+      <div class="team-name"><span>44. Colombia · K</span><span class="team-count">2 / 20</span></div>
+      <div class="lam-row">
+        <div class="lam-mini falta">8</div>
+        <div class="lam-mini falta">13</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== REPETIDAS ======== -->
+  <div class="big-section">
+    <div class="big-section-title">
+      <h2 class="rep">🟡 Tengo repetidas</h2>
+      <span class="total">87</span>
+    </div>
+
+    <div class="team">
+      <div class="team-name"><span>Intro · Logo, mascotas y anfitriones</span><span class="team-count">2 láminas</span></div>
+      <div class="lam-row">
+        <div class="lam-mini rep long">FWC2<span class="x">×2</span></div>
+        <div class="lam-mini rep long">FWC7<span class="x">×3</span></div>
+      </div>
+    </div>
+
+    <div class="team">
+      <div class="team-name"><span>1. México · A</span><span class="team-count">3 láminas · 8 copias</span></div>
+      <div class="lam-row">
+        <div class="lam-mini rep">3<span class="x">×2</span></div>
+        <div class="lam-mini rep">13<span class="x">×4</span></div>
+        <div class="lam-mini rep">19<span class="x">×2</span></div>
+      </div>
+    </div>
+
+    <div class="team">
+      <div class="team-name"><span>9. Brasil · C</span><span class="team-count">1 lámina · 5 copias</span></div>
+      <div class="lam-row">
+        <div class="lam-mini rep">3<span class="x">×5</span></div>
+      </div>
+    </div>
+
+    <div class="team">
+      <div class="team-name"><span>37. Argentina · J</span><span class="team-count">2 láminas · 5 copias</span></div>
+      <div class="lam-row">
+        <div class="lam-mini rep">8<span class="x">×3</span></div>
+        <div class="lam-mini rep">14<span class="x">×2</span></div>
+      </div>
+    </div>
+
+    <div class="team">
+      <div class="team-name"><span>44. Colombia · K</span><span class="team-count">4 láminas · 9 copias</span></div>
+      <div class="lam-row">
+        <div class="lam-mini rep">2<span class="x">×3</span></div>
+        <div class="lam-mini rep">7<span class="x">×2</span></div>
+        <div class="lam-mini rep">15<span class="x">×2</span></div>
+        <div class="lam-mini rep">20<span class="x">×2</span></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Vista pública · Solo lectura · Mockup con datos inventados
+  </footer>
+</div>
+</body>
+</html>

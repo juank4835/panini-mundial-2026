@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup v2 · Vista compacta con +/− visibles</title>
+<style>
+  :root {
+    --bg: #1a1a18;
+    --bg-2: #262624;
+    --bg-3: #333330;
+    --text: #f0eee6;
+    --text-2: #b4b2a9;
+    --text-3: #888780;
+    --border: rgba(240, 238, 230, 0.12);
+    --border-2: rgba(240, 238, 230, 0.25);
+    --accent: #FF8C1A;
+    --green: #1D9E75;
+    --green-dark: #0F6E56;
+    --amber: #EF9F27;
+    --amber-text: #412402;
+    --amber-dark: #BA7517;
+    --danger: #E24B4A;
+    --danger-dark: #A82B2A;
+    --radius: 8px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #0d0d0c;
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+  h1 { font-size: 16px; color: var(--text-2); margin: 0 0 4px; font-weight: 500; }
+  .mockup-label { font-size: 12px; color: var(--text-3); text-align: center; margin-bottom: 8px; max-width: 380px; }
+  .mockup-label b { color: var(--accent); }
+  .phone {
+    width: 390px;
+    background: var(--bg);
+    border-radius: 24px;
+    border: 1px solid var(--border-2);
+    padding: 16px 14px 28px;
+    overflow: hidden;
+  }
+  .header h1.title { font-size: 19px; color: var(--text); margin: 0 0 2px; }
+  .subtitle { font-size: 11px; color: var(--text-2); margin-bottom: 12px; }
+  .sync-dot { color: var(--green); font-size: 12px; margin-left: 6px; }
+  .stats-mini { display: flex; gap: 6px; margin-bottom: 12px; }
+  .stat-mini { flex: 1; background: var(--bg-2); border-radius: 6px; padding: 8px 6px; text-align: center; }
+  .stat-mini-label { font-size: 9px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat-mini-value { font-size: 17px; font-weight: 500; margin-top: 2px; }
+  .stat-mini-value.green { color: var(--green); }
+  .stat-mini-value.amber { color: var(--amber); }
+  .stat-mini-value.red { color: var(--danger); }
+  .tabs-mini { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 14px; }
+  .tab-mini { padding: 5px 9px; border-radius: 6px; border: 0.5px solid var(--border); background: transparent; color: var(--text-2); font-size: 11px; cursor: pointer; font-family: inherit; }
+  .tab-mini.active { background: var(--bg-2); color: var(--text); border-color: var(--border-2); font-weight: 500; }
+  .team-header-compact {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin: 14px 2px 8px;
+    padding-top: 12px;
+    border-top: 0.5px solid var(--border);
+  }
+  .team-header-compact:first-of-type { border-top: 0; padding-top: 0; }
+  .team-name-compact { font-size: 13px; font-weight: 500; }
+  .team-stats-compact { font-size: 10px; color: var(--text-2); font-family: "JetBrains Mono", Menlo, monospace; }
+
+  /* === OPCIÓN A: mini-cards (como desktop pero compactas) === */
+  .opt-a-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+  .opt-a-card {
+    border-radius: 6px;
+    overflow: hidden;
+    border: 0.5px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-2);
+    user-select: none;
+  }
+  .opt-a-num {
+    flex: 1;
+    text-align: center;
+    padding: 6px 0 4px;
+    font-size: 14px;
+    font-weight: 600;
+    position: relative;
+  }
+  .opt-a-card.falta .opt-a-num { background: rgba(226,75,74,0.12); color: var(--danger); }
+  .opt-a-card.pegada .opt-a-num { background: var(--green); color: white; }
+  .opt-a-card.repetida .opt-a-num { background: var(--amber); color: var(--amber-text); }
+  .opt-a-controls {
+    display: flex;
+    border-top: 0.5px solid var(--border);
+  }
+  .opt-a-controls button {
+    flex: 1;
+    padding: 4px 0;
+    background: var(--bg-2);
+    color: var(--text-2);
+    border: 0;
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1;
+    font-family: inherit;
+  }
+  .opt-a-controls button:first-child { border-right: 0.5px solid var(--border); }
+  .opt-a-controls button:hover { background: var(--bg-3); color: var(--text); }
+  .opt-a-num .qty {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: var(--text);
+    color: var(--bg);
+    font-size: 8px;
+    min-width: 14px;
+    height: 14px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    padding: 0 3px;
+    border: 1px solid var(--bg);
+  }
+
+  /* === OPCIÓN B: pills horizontales [- N +] === */
+  .opt-b-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+  .opt-b-pill {
+    display: flex;
+    height: 30px;
+    border-radius: 15px;
+    overflow: hidden;
+    border: 0.5px solid;
+    user-select: none;
+    position: relative;
+  }
+  .opt-b-pill.falta { background: rgba(226,75,74,0.12); border-color: rgba(226,75,74,0.3); color: var(--danger); }
+  .opt-b-pill.pegada { background: var(--green); border-color: var(--green-dark); color: white; }
+  .opt-b-pill.repetida { background: var(--amber); border-color: var(--amber-dark); color: var(--amber-text); }
+  .opt-b-pill button {
+    width: 22px;
+    background: rgba(0,0,0,0.15);
+    color: inherit;
+    border: 0;
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1;
+    font-family: inherit;
+    padding: 0;
+  }
+  .opt-b-pill button:hover { background: rgba(0,0,0,0.3); }
+  .opt-b-pill .num {
+    flex: 1;
+    text-align: center;
+    align-self: center;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+  }
+  .opt-b-pill .qty {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    background: var(--text);
+    color: var(--bg);
+    font-size: 8px;
+    min-width: 14px;
+    height: 14px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    padding: 0 3px;
+    border: 1px solid var(--bg);
+  }
+
+  /* === OPCIÓN C: círculos con zonas tap (− izq, + der) === */
+  .opt-c-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+  .opt-c-tap {
+    aspect-ratio: 1;
+    border-radius: 50%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    overflow: hidden;
+    border: 1px solid;
+  }
+  .opt-c-tap.falta { background: rgba(226,75,74,0.12); color: var(--danger); border-color: rgba(226,75,74,0.35); }
+  .opt-c-tap.pegada { background: var(--green); color: white; border-color: var(--green-dark); }
+  .opt-c-tap.repetida { background: var(--amber); color: var(--amber-text); border-color: var(--amber-dark); }
+  .opt-c-tap .zone {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 50%;
+    opacity: 0;
+    background: rgba(0,0,0,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    transition: opacity 0.1s;
+  }
+  .opt-c-tap .zone.left { left: 0; }
+  .opt-c-tap .zone.right { right: 0; }
+  .opt-c-tap:hover .zone { opacity: 1; }
+  .opt-c-tap .qty {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    background: var(--text);
+    color: var(--bg);
+    font-size: 8px;
+    min-width: 14px;
+    height: 14px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    padding: 0 3px;
+    border: 1px solid var(--bg);
+    z-index: 2;
+  }
+
+  .legend {
+    display: flex;
+    gap: 14px;
+    font-size: 10px;
+    color: var(--text-2);
+    padding: 8px 4px;
+    border-top: 0.5px solid var(--border);
+    border-bottom: 0.5px solid var(--border);
+    margin-bottom: 14px;
+    justify-content: center;
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; border: 1px solid; }
+  .legend-dot.falta { background: rgba(226,75,74,0.12); border-color: rgba(226,75,74,0.3); }
+  .legend-dot.pegada { background: var(--green); border-color: var(--green-dark); }
+  .legend-dot.repetida { background: var(--amber); border-color: var(--amber-dark); }
+  .touch-hint { font-size: 10px; color: var(--text-3); text-align: center; padding: 12px 0 0; line-height: 1.6; }
+  .row { display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; align-items: flex-start; }
+
+  /* Comparación al final */
+  .compare-table {
+    margin-top: 24px;
+    max-width: 900px;
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .compare-table th, .compare-table td {
+    border: 0.5px solid var(--border);
+    padding: 8px 12px;
+    text-align: left;
+  }
+  .compare-table th {
+    background: var(--bg-2);
+    color: var(--text);
+    font-weight: 500;
+  }
+  .compare-table td { color: var(--text-2); }
+  .compare-table .y { color: var(--green); }
+  .compare-table .n { color: var(--danger); }
+</style>
+</head>
+<body>
+
+<div>
+  <h1>Mockup v2 — Vista móvil con +/− siempre visibles</h1>
+  <div class="mockup-label">3 alternativas que reemplazan a la actual de "círculos puros con long-press"</div>
+</div>
+
+<div class="row">
+
+  <!-- ============ OPCIÓN A: mini-cards ============ -->
+  <div>
+    <div class="mockup-label"><b>OPCIÓN A — Mini-cards</b><br>Como la versión desktop pero al 50%. Número arriba, [-] [+] abajo.</div>
+    <div class="phone">
+      <div class="header">
+        <h1 class="title">Panini 2026</h1>
+        <div class="subtitle">Compartido<span class="sync-dot">●</span></div>
+      </div>
+      <div class="stats-mini">
+        <div class="stat-mini"><div class="stat-mini-label">Pegadas</div><div class="stat-mini-value green">649</div></div>
+        <div class="stat-mini"><div class="stat-mini-label">Faltan</div><div class="stat-mini-value red">331</div></div>
+        <div class="stat-mini"><div class="stat-mini-label">Rep</div><div class="stat-mini-value amber">306</div></div>
+      </div>
+      <div class="tabs-mini">
+        <button class="tab-mini">¿La tengo?</button>
+        <button class="tab-mini active">Todos</button>
+        <button class="tab-mini">A</button>
+        <button class="tab-mini">B</button>
+        <button class="tab-mini">…</button>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><span class="legend-dot falta"></span> Falta</div>
+        <div class="legend-item"><span class="legend-dot pegada"></span> Pegada</div>
+        <div class="legend-item"><span class="legend-dot repetida"></span> Repetida</div>
+      </div>
+
+      <div class="team-header-compact">
+        <span class="team-name-compact">México (MEX) · A</span>
+        <span class="team-stats-compact">17/20 · 4 rep</span>
+      </div>
+      <div class="opt-a-grid">
+        <div class="opt-a-card pegada"><div class="opt-a-num">1</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card pegada"><div class="opt-a-num">2</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card repetida"><div class="opt-a-num">3<span class="qty">+1</span></div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card pegada"><div class="opt-a-num">4</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card pegada"><div class="opt-a-num">5</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card pegada"><div class="opt-a-num">6</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card repetida"><div class="opt-a-num">7<span class="qty">+2</span></div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card pegada"><div class="opt-a-num">8</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card pegada"><div class="opt-a-num">9</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card pegada"><div class="opt-a-num">10</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card pegada"><div class="opt-a-num">11</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card falta"><div class="opt-a-num">12</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card pegada"><div class="opt-a-num">13</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card pegada"><div class="opt-a-num">14</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card pegada"><div class="opt-a-num">15</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card falta"><div class="opt-a-num">16</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card pegada"><div class="opt-a-num">17</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card repetida"><div class="opt-a-num">18<span class="qty">+1</span></div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card pegada"><div class="opt-a-num">19</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card falta"><div class="opt-a-num">20</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+      </div>
+
+      <div class="team-header-compact">
+        <span class="team-name-compact">Brasil (BRA) · C</span>
+        <span class="team-stats-compact">12/20 · 2 rep</span>
+      </div>
+      <div class="opt-a-grid">
+        <div class="opt-a-card pegada"><div class="opt-a-num">1</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card pegada"><div class="opt-a-num">2</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card falta"><div class="opt-a-num">3</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card pegada"><div class="opt-a-num">4</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card falta"><div class="opt-a-num">5</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card pegada"><div class="opt-a-num">6</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card repetida"><div class="opt-a-num">7<span class="qty">+1</span></div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card falta"><div class="opt-a-num">8</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card pegada"><div class="opt-a-num">9</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card pegada"><div class="opt-a-num">10</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card falta"><div class="opt-a-num">11</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card pegada"><div class="opt-a-num">12</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card falta"><div class="opt-a-num">13</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card pegada"><div class="opt-a-num">14</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card pegada"><div class="opt-a-num">15</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card repetida"><div class="opt-a-num">16<span class="qty">+1</span></div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card falta"><div class="opt-a-num">17</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card pegada"><div class="opt-a-num">18</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card falta"><div class="opt-a-num">19</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+        <div class="opt-a-card pegada"><div class="opt-a-num">20</div><div class="opt-a-controls"><button>−</button><button>+</button></div></div>
+      </div>
+
+      <div class="touch-hint">
+        Cada lámina = mini-card cuadrada con [-] [+] abajo<br>
+        Más legible. Cabe 1 equipo + medio sin scroll.
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ OPCIÓN B: pills horizontales ============ -->
+  <div>
+    <div class="mockup-label"><b>OPCIÓN B — Pills horizontales</b><br>Cada lámina es una pastilla con [-] N [+]. Muy ergonómico para pulgares.</div>
+    <div class="phone">
+      <div class="header">
+        <h1 class="title">Panini 2026</h1>
+        <div class="subtitle">Compartido<span class="sync-dot">●</span></div>
+      </div>
+      <div class="stats-mini">
+        <div class="stat-mini"><div class="stat-mini-label">Pegadas</div><div class="stat-mini-value green">649</div></div>
+        <div class="stat-mini"><div class="stat-mini-label">Faltan</div><div class="stat-mini-value red">331</div></div>
+        <div class="stat-mini"><div class="stat-mini-label">Rep</div><div class="stat-mini-value amber">306</div></div>
+      </div>
+      <div class="tabs-mini">
+        <button class="tab-mini">¿La tengo?</button>
+        <button class="tab-mini active">Todos</button>
+        <button class="tab-mini">A</button>
+        <button class="tab-mini">B</button>
+        <button class="tab-mini">…</button>
+      </div>
+
+      <div class="team-header-compact">
+        <span class="team-name-compact">México (MEX) · A</span>
+        <span class="team-stats-compact">17/20 · 4 rep</span>
+      </div>
+      <div class="opt-b-grid">
+        <div class="opt-b-pill pegada"><button>−</button><div class="num">1</div><button>+</button></div>
+        <div class="opt-b-pill pegada"><button>−</button><div class="num">2</div><button>+</button></div>
+        <div class="opt-b-pill repetida"><button>−</button><div class="num">3</div><button>+</button><span class="qty">+1</span></div>
+        <div class="opt-b-pill pegada"><button>−</button><div class="num">4</div><button>+</button></div>
+        <div class="opt-b-pill pegada"><button>−</button><div class="num">5</div><button>+</button></div>
+        <div class="opt-b-pill pegada"><button>−</button><div class="num">6</div><button>+</button></div>
+        <div class="opt-b-pill repetida"><button>−</button><div class="num">7</div><button>+</button><span class="qty">+2</span></div>
+        <div class="opt-b-pill pegada"><button>−</button><div class="num">8</div><button>+</button></div>
+        <div class="opt-b-pill pegada"><button>−</button><div class="num">9</div><button>+</button></div>
+        <div class="opt-b-pill pegada"><button>−</button><div class="num">10</div><button>+</button></div>
+        <div class="opt-b-pill pegada"><button>−</button><div class="num">11</div><button>+</button></div>
+        <div class="opt-b-pill falta"><button>−</button><div class="num">12</div><button>+</button></div>
+        <div class="opt-b-pill pegada"><button>−</button><div class="num">13</div><button>+</button></div>
+        <div class="opt-b-pill pegada"><button>−</button><div class="num">14</div><button>+</button></div>
+        <div class="opt-b-pill pegada"><button>−</button><div class="num">15</div><button>+</button></div>
+        <div class="opt-b-pill falta"><button>−</button><div class="num">16</div><button>+</button></div>
+        <div class="opt-b-pill pegada"><button>−</button><div class="num">17</div><button>+</button></div>
+        <div class="opt-b-pill repetida"><button>−</button><div class="num">18</div><button>+</button><span class="qty">+1</span></div>
+        <div class="opt-b-pill pegada"><button>−</button><div class="num">19</div><button>+</button></div>
+        <div class="opt-b-pill falta"><button>−</button><div class="num">20</div><button>+</button></div>
+      </div>
+
+      <div class="team-header-compact">
+        <span class="team-name-compact">Brasil (BRA) · C</span>
+        <span class="team-stats-compact">12/20 · 2 rep</span>
+      </div>
+      <div class="opt-b-grid">
+        <div class="opt-b-pill pegada"><button>−</button><div class="num">1</div><button>+</button></div>
+        <div class="opt-b-pill pegada"><button>−</button><div class="num">2</div><button>+</button></div>
+        <div class="opt-b-pill falta"><button>−</button><div class="num">3</div><button>+</button></div>
+        <div class="opt-b-pill pegada"><button>−</button><div class="num">4</div><button>+</button></div>
+        <div class="opt-b-pill falta"><button>−</button><div class="num">5</div><button>+</button></div>
+        <div class="opt-b-pill pegada"><button>−</button><div class="num">6</div><button>+</button></div>
+        <div class="opt-b-pill repetida"><button>−</button><div class="num">7</div><button>+</button><span class="qty">+1</span></div>
+        <div class="opt-b-pill falta"><button>−</button><div class="num">8</div><button>+</button></div>
+        <div class="opt-b-pill pegada"><button>−</button><div class="num">9</div><button>+</button></div>
+        <div class="opt-b-pill pegada"><button>−</button><div class="num">10</div><button>+</button></div>
+        <div class="opt-b-pill falta"><button>−</button><div class="num">11</div><button>+</button></div>
+        <div class="opt-b-pill pegada"><button>−</button><div class="num">12</div><button>+</button></div>
+        <div class="opt-b-pill falta"><button>−</button><div class="num">13</div><button>+</button></div>
+        <div class="opt-b-pill pegada"><button>−</button><div class="num">14</div><button>+</button></div>
+        <div class="opt-b-pill pegada"><button>−</button><div class="num">15</div><button>+</button></div>
+        <div class="opt-b-pill repetida"><button>−</button><div class="num">16</div><button>+</button><span class="qty">+1</span></div>
+        <div class="opt-b-pill falta"><button>−</button><div class="num">17</div><button>+</button></div>
+        <div class="opt-b-pill pegada"><button>−</button><div class="num">18</div><button>+</button></div>
+        <div class="opt-b-pill falta"><button>−</button><div class="num">19</div><button>+</button></div>
+        <div class="opt-b-pill pegada"><button>−</button><div class="num">20</div><button>+</button></div>
+      </div>
+
+      <div class="touch-hint">
+        4 pills por fila. Botones [-] y [+] integrados.<br>
+        Bordes sutiles, badge +N para repetidas.
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ OPCIÓN C: Tap zones (sin botones visibles) ============ -->
+  <div>
+    <div class="mockup-label"><b>OPCIÓN C — Tap zones invisibles</b><br>Círculos grandes. Tap mitad izquierda = −1, mitad derecha = +1. Visual oscuro al hover.</div>
+    <div class="phone">
+      <div class="header">
+        <h1 class="title">Panini 2026</h1>
+        <div class="subtitle">Compartido<span class="sync-dot">●</span></div>
+      </div>
+      <div class="stats-mini">
+        <div class="stat-mini"><div class="stat-mini-label">Pegadas</div><div class="stat-mini-value green">649</div></div>
+        <div class="stat-mini"><div class="stat-mini-label">Faltan</div><div class="stat-mini-value red">331</div></div>
+        <div class="stat-mini"><div class="stat-mini-label">Rep</div><div class="stat-mini-value amber">306</div></div>
+      </div>
+      <div class="tabs-mini">
+        <button class="tab-mini">¿La tengo?</button>
+        <button class="tab-mini active">Todos</button>
+        <button class="tab-mini">A</button>
+        <button class="tab-mini">B</button>
+        <button class="tab-mini">…</button>
+      </div>
+
+      <div class="team-header-compact">
+        <span class="team-name-compact">México (MEX) · A</span>
+        <span class="team-stats-compact">17/20 · 4 rep</span>
+      </div>
+      <div class="opt-c-grid">
+        <div class="opt-c-tap pegada">1<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap pegada">2<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap repetida">3<span class="qty">+1</span><span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap pegada">4<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap pegada">5<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap pegada">6<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap repetida">7<span class="qty">+2</span><span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap pegada">8<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap pegada">9<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap pegada">10<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap pegada">11<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap falta">12<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap pegada">13<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap pegada">14<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap pegada">15<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap falta">16<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap pegada">17<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap repetida">18<span class="qty">+1</span><span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap pegada">19<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap falta">20<span class="zone left">−</span><span class="zone right">+</span></div>
+      </div>
+
+      <div class="team-header-compact">
+        <span class="team-name-compact">Brasil (BRA) · C</span>
+        <span class="team-stats-compact">12/20 · 2 rep</span>
+      </div>
+      <div class="opt-c-grid">
+        <div class="opt-c-tap pegada">1<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap pegada">2<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap falta">3<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap pegada">4<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap falta">5<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap pegada">6<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap repetida">7<span class="qty">+1</span><span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap falta">8<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap pegada">9<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap pegada">10<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap falta">11<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap pegada">12<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap falta">13<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap pegada">14<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap pegada">15<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap repetida">16<span class="qty">+1</span><span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap falta">17<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap pegada">18<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap falta">19<span class="zone left">−</span><span class="zone right">+</span></div>
+        <div class="opt-c-tap pegada">20<span class="zone left">−</span><span class="zone right">+</span></div>
+      </div>
+
+      <div class="touch-hint">
+        Pasa el mouse sobre un círculo arriba ↑ para ver las zonas.<br>
+        Sin clutter visual. Aprendizaje 5 segundos.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Tabla comparativa -->
+<table class="compare-table">
+  <thead>
+    <tr>
+      <th></th>
+      <th>OPCIÓN A · Mini-cards</th>
+      <th>OPCIÓN B · Pills horizontales</th>
+      <th>OPCIÓN C · Tap zones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>+1 visible</td>
+      <td class="y">Sí, botón inferior derecho</td>
+      <td class="y">Sí, botón derecho integrado</td>
+      <td>Solo al hover/tap (tooltip)</td>
+    </tr>
+    <tr>
+      <td>−1 visible</td>
+      <td class="y">Sí, botón inferior izquierdo</td>
+      <td class="y">Sí, botón izquierdo integrado</td>
+      <td>Solo al hover/tap (tooltip)</td>
+    </tr>
+    <tr>
+      <td>Tamaño objetivo táctil</td>
+      <td>~28px (justito)</td>
+      <td>~22px botones (compacto pero alcanza)</td>
+      <td class="y">~50px (excelente)</td>
+    </tr>
+    <tr>
+      <td>Compacidad vertical</td>
+      <td>5 cols × 4 rows = altura media</td>
+      <td>4 cols × 5 rows = más alto</td>
+      <td>5 cols × 4 rows = altura media</td>
+    </tr>
+    <tr>
+      <td>Riesgo de tap accidental</td>
+      <td>Bajo (botones separados del número)</td>
+      <td>Bajo (botones separados)</td>
+      <td>Medio (toda el área es accionable)</td>
+    </tr>
+    <tr>
+      <td>Estética</td>
+      <td>Estilo desktop conocido</td>
+      <td>Moderno, parecido a iOS</td>
+      <td>Más limpio, menos elementos</td>
+    </tr>
+    <tr>
+      <td>Curva de aprendizaje</td>
+      <td class="y">Cero — visible todo</td>
+      <td class="y">Cero — visible todo</td>
+      <td>5 seg (necesitas saber el truco)</td>
+    </tr>
+  </tbody>
+</table>
+
+</body>
+</html>

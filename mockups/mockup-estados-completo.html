@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup · Estado completo (con láminas sueltas)</title>
+<style>
+  :root {
+    --bg: #1a1a18;
+    --bg-2: #262624;
+    --bg-3: #333330;
+    --text: #f0eee6;
+    --text-2: #b4b2a9;
+    --text-3: #888780;
+    --border: rgba(240, 238, 230, 0.12);
+    --border-2: rgba(240, 238, 230, 0.25);
+    --accent: #FF8C1A;
+    --green: #1D9E75;
+    --green-dark: #0F6E56;
+    --amber: #EF9F27;
+    --amber-text: #412402;
+    --amber-dark: #BA7517;
+    --danger: #E24B4A;
+    --blue: #4A9EFF;
+    --blue-dark: #2570CC;
+    --purple: #8B5CF6;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #0d0d0c;
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 24px 16px 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+  h1 { font-size: 20px; color: var(--text); margin: 0 0 4px; font-weight: 500; text-align: center; }
+  .label { font-size: 12px; color: var(--text-3); text-align: center; max-width: 600px; }
+  .label b { color: var(--accent); }
+
+  .lifecycle {
+    background: var(--bg-2);
+    border-radius: var(--radius-lg);
+    padding: 20px 24px;
+    max-width: 800px;
+    border: 0.5px solid var(--border-2);
+  }
+  .lifecycle h2 { font-size: 14px; margin: 0 0 14px; color: var(--accent); font-weight: 500; }
+  .states-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .state-block {
+    flex: 1;
+    text-align: center;
+    padding: 12px 8px;
+    border-radius: var(--radius);
+    border: 1px solid;
+    font-size: 12px;
+  }
+  .state-block .icon { font-size: 20px; margin-bottom: 4px; }
+  .state-block .name { font-weight: 600; font-size: 13px; margin-bottom: 2px; }
+  .state-block .desc { font-size: 10px; color: var(--text-3); line-height: 1.3; }
+  .state-block.faltante { background: rgba(226,75,74,0.08); border-color: rgba(226,75,74,0.4); color: var(--danger); }
+  .state-block.suelta { background: rgba(74,158,255,0.1); border-color: var(--blue); color: var(--blue); }
+  .state-block.pegada { background: rgba(29,158,117,0.15); border-color: var(--green); color: var(--green); }
+  .state-block.repetida { background: rgba(239,159,39,0.15); border-color: var(--amber); color: var(--amber); }
+  .state-block.apartada { background: rgba(139,92,246,0.15); border-color: var(--purple); color: var(--purple); }
+  .arrow {
+    color: var(--text-3);
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .transitions {
+    margin-top: 14px;
+    font-size: 11px;
+    color: var(--text-2);
+    line-height: 1.7;
+  }
+  .transitions code {
+    background: var(--bg-3);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 10px;
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .phone {
+    width: 380px;
+    background: var(--bg);
+    border-radius: 24px;
+    border: 1px solid var(--border-2);
+    padding: 16px 14px 28px;
+  }
+  .phone .header h1 { font-size: 18px; margin: 0; }
+  .phone .subtitle { font-size: 11px; color: var(--text-2); margin-bottom: 12px; }
+  .sync-dot { color: var(--green); font-size: 12px; margin-left: 6px; }
+  .stats-mini { display: flex; gap: 6px; margin-bottom: 12px; }
+  .stat-mini { flex: 1; background: var(--bg-2); border-radius: 6px; padding: 8px 6px; text-align: center; }
+  .stat-mini-label { font-size: 9px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat-mini-value { font-size: 17px; font-weight: 500; margin-top: 2px; }
+  .stat-mini-value.green { color: var(--green); }
+  .stat-mini-value.blue { color: var(--blue); }
+  .stat-mini-value.amber { color: var(--amber); }
+  .stat-mini-value.red { color: var(--danger); }
+  .tabs-mini { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 12px; }
+  .tab-mini { padding: 5px 9px; border-radius: 6px; border: 0.5px solid var(--border); background: transparent; color: var(--text-2); font-size: 11px; cursor: pointer; font-family: inherit; }
+  .tab-mini.active { background: var(--bg-2); color: var(--text); border-color: var(--border-2); font-weight: 500; }
+  .tab-mini.new { background: rgba(74,158,255,0.15); border-color: var(--blue); color: var(--blue); }
+
+  .section-title {
+    font-size: 11px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 14px 0 8px;
+  }
+
+  .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 12px; }
+  .card {
+    border-radius: 6px; overflow: hidden;
+    border: 0.5px solid var(--border);
+    display: flex; flex-direction: column;
+    background: var(--bg-2);
+    user-select: none;
+    position: relative;
+  }
+  .card-num {
+    text-align: center;
+    padding: 6px 0 4px;
+    font-size: 14px;
+    font-weight: 600;
+    position: relative;
+    line-height: 1.1;
+  }
+  .card.falta .card-num { background: rgba(226,75,74,0.12); color: var(--danger); }
+  .card.suelta .card-num { background: rgba(74,158,255,0.18); color: var(--blue); }
+  .card.pegada .card-num { background: var(--green); color: white; }
+  .card.repetida .card-num { background: var(--amber); color: var(--amber-text); }
+  /* Combinado pegada + suelta = degradado */
+  .card.combo .card-num {
+    background: linear-gradient(90deg, var(--green) 0%, var(--green) 50%, rgba(74,158,255,0.4) 50%, rgba(74,158,255,0.4) 100%);
+    color: white;
+  }
+  .card-controls { display: flex; border-top: 0.5px solid var(--border); }
+  .card-controls button {
+    flex: 1;
+    padding: 4px 0;
+    background: var(--bg-2);
+    color: var(--text-2);
+    border: 0;
+    font-size: 13px;
+    font-family: inherit;
+  }
+  .card-controls button:first-child { border-right: 0.5px solid var(--border); }
+  .card-mini-detail {
+    font-size: 8px;
+    text-align: center;
+    color: var(--text-3);
+    padding: 1px 0;
+    border-top: 0.5px solid var(--border);
+    background: var(--bg);
+    line-height: 1.2;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .qty-badge {
+    position: absolute;
+    top: -2px; right: -2px;
+    background: var(--text);
+    color: var(--bg);
+    font-size: 8px;
+    min-width: 14px; height: 14px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    padding: 0 3px;
+    border: 1px solid var(--bg);
+  }
+
+  /* Pegar pop-up */
+  .modal-mock {
+    background: var(--bg-2);
+    border-radius: var(--radius-lg);
+    border: 0.5px solid var(--border-2);
+    padding: 14px;
+    margin-top: 14px;
+  }
+  .modal-mock .head {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
+  }
+  .modal-mock .preview {
+    width: 56px;
+    border-radius: 6px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .modal-mock .preview .card-num {
+    padding: 8px 0;
+    font-size: 16px;
+  }
+  .modal-mock .info b {
+    display: block; font-size: 14px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .modal-mock .info .name { font-size: 12px; color: var(--text-2); }
+  .modal-mock .info .breakdown {
+    font-size: 11px;
+    color: var(--text-3);
+    margin-top: 4px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    line-height: 1.5;
+  }
+  .modal-mock .actions { display: flex; flex-direction: column; gap: 6px; }
+  .modal-mock .actions button {
+    padding: 9px 12px;
+    background: var(--bg-3);
+    color: var(--text);
+    border: 0.5px solid var(--border-2);
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    text-align: left;
+  }
+  .modal-mock .actions button.primary { background: var(--green); color: white; border-color: var(--green-dark); font-weight: 500; }
+  .modal-mock .actions button.blue { background: var(--blue); color: white; border-color: var(--blue-dark); font-weight: 500; }
+  .modal-mock .actions button.danger { color: var(--danger); border-color: var(--danger); }
+
+  /* Tab "Sueltas" mockup */
+  .sueltas-list {
+    background: var(--bg-2);
+    border-radius: var(--radius-lg);
+    padding: 14px;
+  }
+  .sueltas-list .pinta-todas {
+    width: 100%;
+    padding: 10px;
+    background: var(--green);
+    color: white;
+    border: 0;
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 12px;
+  }
+  .sueltas-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 4px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .sueltas-row:last-child { border-bottom: 0; }
+  .sueltas-mini {
+    width: 36px; height: 36px;
+    border-radius: 4px;
+    background: rgba(74,158,255,0.18);
+    border: 1px solid var(--blue);
+    color: var(--blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .sueltas-row .info { flex: 1; min-width: 0; }
+  .sueltas-row .info b { display: block; font-size: 12px; font-family: "JetBrains Mono", Menlo, monospace; }
+  .sueltas-row .info span { font-size: 11px; color: var(--text-2); }
+  .sueltas-row button {
+    padding: 6px 10px;
+    background: var(--green);
+    color: white;
+    border: 0;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 11px;
+    cursor: pointer;
+  }
+
+  .legend-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 14px;
+    padding: 10px 12px;
+    background: var(--bg-2);
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border);
+    font-size: 10px;
+    color: var(--text-2);
+  }
+  .legend-row .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    border: 1px solid;
+    display: inline-block;
+    margin-right: 4px;
+    vertical-align: middle;
+  }
+  .legend-row .dot.f { background: rgba(226,75,74,0.12); border-color: rgba(226,75,74,0.4); }
+  .legend-row .dot.s { background: rgba(74,158,255,0.18); border-color: var(--blue); }
+  .legend-row .dot.p { background: var(--green); border-color: var(--green-dark); }
+  .legend-row .dot.r { background: var(--amber); border-color: var(--amber-dark); }
+</style>
+</head>
+<body>
+
+<h1>Estado completo: Faltante · Suelta · Pegada · Repetida</h1>
+<div class="label">Hoy la app conflate "tengo" con "pegada". Acá agregamos el estado <b>🔵 Suelta</b> que cierra el hueco.</div>
+
+<!-- ============ DIAGRAMA DE ESTADOS ============ -->
+<div class="lifecycle">
+  <h2>📊 CICLO DE VIDA DE UNA LÁMINA</h2>
+  <div class="states-row">
+    <div class="state-block faltante">
+      <div class="icon">❌</div>
+      <div class="name">FALTANTE</div>
+      <div class="desc">No la tienes</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="state-block suelta">
+      <div class="icon">🔵</div>
+      <div class="name">SUELTA</div>
+      <div class="desc">La tienes pero no la pegaste<br><b>(este es el nuevo estado)</b></div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="state-block pegada">
+      <div class="icon">🟢</div>
+      <div class="name">PEGADA</div>
+      <div class="desc">En el álbum</div>
+    </div>
+    <div class="arrow">+</div>
+    <div class="state-block repetida">
+      <div class="icon">🟡</div>
+      <div class="name">REPETIDA</div>
+      <div class="desc">Pegada + N sueltas extra</div>
+    </div>
+  </div>
+  <div class="transitions">
+    <b>Transiciones:</b><br>
+    • <code>+1</code> de faltante → <b>queda como suelta</b> (no asume que ya pegaste)<br>
+    • <code>Pegar al álbum</code> de suelta → <b>se vuelve pegada</b><br>
+    • <code>+1</code> de pegada → <b>queda 1 pegada + 1 suelta extra</b> (la extra puede apartarse para alguien)<br>
+    • <code>−1</code> resta primero de las sueltas; si no hay, baja la pegada<br>
+    • <code>Quitar todo</code> vuelve a faltante
+  </div>
+</div>
+
+<!-- ============ MOCKUP PRINCIPAL: GRILLA CON ESTADOS NUEVOS ============ -->
+<div class="row">
+  <div>
+    <div class="label" style="margin-bottom:8px;"><b>VISTA MÓVIL — Grilla con el estado nuevo</b></div>
+    <div class="phone">
+      <div class="header">
+        <h1>Panini 2026</h1>
+        <div class="subtitle">Compartido<span class="sync-dot">●</span></div>
+      </div>
+
+      <div class="stats-mini">
+        <div class="stat-mini"><div class="stat-mini-label">Pegadas</div><div class="stat-mini-value green">623</div></div>
+        <div class="stat-mini"><div class="stat-mini-label">Sueltas</div><div class="stat-mini-value blue">26</div></div>
+        <div class="stat-mini"><div class="stat-mini-label">Faltan</div><div class="stat-mini-value red">331</div></div>
+        <div class="stat-mini"><div class="stat-mini-label">Rep</div><div class="stat-mini-value amber">280</div></div>
+      </div>
+
+      <div class="tabs-mini">
+        <button class="tab-mini">¿La tengo?</button>
+        <button class="tab-mini active">Todos</button>
+        <button class="tab-mini new">🔵 Sueltas (26)</button>
+        <button class="tab-mini">⇄</button>
+      </div>
+
+      <div class="legend-row">
+        <span><span class="dot f"></span>Falta</span>
+        <span><span class="dot s"></span>Suelta (sin pegar)</span>
+        <span><span class="dot p"></span>Pegada</span>
+        <span><span class="dot r"></span>Repetida</span>
+      </div>
+
+      <div class="section-title">Colombia (COL) · K — Variedad de estados</div>
+      <div class="grid-5">
+        <!-- Pegada -->
+        <div class="card pegada"><div class="card-num">11</div><div class="card-controls"><button>−</button><button>+</button></div></div>
+        <!-- Pegada -->
+        <div class="card pegada"><div class="card-num">12</div><div class="card-controls"><button>−</button><button>+</button></div></div>
+        <!-- Pegada + 2 sueltas extra (repetida con desglose) -->
+        <div class="card repetida">
+          <div class="card-num">13<span class="qty-badge">+2</span></div>
+          <div class="card-mini-detail">1🟢 + 2🔵</div>
+          <div class="card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <!-- Suelta sola, sin pegar -->
+        <div class="card suelta">
+          <div class="card-num">14</div>
+          <div class="card-mini-detail" style="color:var(--blue);">🔵 sin pegar</div>
+          <div class="card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <!-- Pegada -->
+        <div class="card pegada"><div class="card-num">15</div><div class="card-controls"><button>−</button><button>+</button></div></div>
+        <!-- Faltante -->
+        <div class="card falta"><div class="card-num">16</div><div class="card-controls"><button>−</button><button>+</button></div></div>
+        <!-- 2 sueltas, ninguna pegada (caso raro pero posible) -->
+        <div class="card suelta">
+          <div class="card-num">17<span class="qty-badge">+1</span></div>
+          <div class="card-mini-detail" style="color:var(--blue);">2🔵 (0 pegada)</div>
+          <div class="card-controls"><button>−</button><button>+</button></div>
+        </div>
+        <!-- Pegada -->
+        <div class="card pegada"><div class="card-num">18</div><div class="card-controls"><button>−</button><button>+</button></div></div>
+        <!-- Pegada -->
+        <div class="card pegada"><div class="card-num">19</div><div class="card-controls"><button>−</button><button>+</button></div></div>
+        <!-- Faltante -->
+        <div class="card falta"><div class="card-num">20</div><div class="card-controls"><button>−</button><button>+</button></div></div>
+      </div>
+
+      <div class="label" style="font-size:11px;text-align:left;margin-top:8px;">
+        Nota visual: la línea pequeña abajo del número aparece <b>solo cuando hay diferencias</b>.
+        Una pegada limpia (1 pegada + 0 sueltas) se ve igual que hoy.
+      </div>
+    </div>
+
+    <div style="width:380px;text-align:center;color:var(--text-2);font-size:11px;margin-top:12px;line-height:1.6;">
+      <b style="color:var(--blue);">Pestaña nueva 🔵 Sueltas</b>: lista todas las que tienes encima de la mesa, lista para sentarte y pegarlas.<br>
+      Stats arriba ahora distinguen <b style="color:var(--green);">Pegadas (623)</b> vs <b style="color:var(--blue);">Sueltas (26)</b>.
+    </div>
+  </div>
+
+  <!-- Long-press de COL-13 con desglose completo -->
+  <div>
+    <div class="label" style="margin-bottom:8px;"><b>LONG-PRESS — Vista detallada</b></div>
+    <div style="width:380px;">
+    <div class="modal-mock">
+      <div class="head">
+        <div class="preview">
+          <div class="card repetida">
+            <div class="card-num">13<span class="qty-badge">+2</span></div>
+          </div>
+        </div>
+        <div class="info">
+          <b>COL-13</b>
+          <span class="name">James Rodríguez · Grupo K</span>
+          <div class="breakdown">
+            <span style="color:var(--green);">🟢 1 pegada</span><br>
+            <span style="color:var(--blue);">🔵 2 sueltas</span> (en la mesa)
+          </div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="primary">+1 (sumar otra suelta)</button>
+        <button class="blue">📌 Pegar 1 suelta al álbum (mover 🔵 → 🟢)</button>
+        <button>− Quitar 1 (regalar/perder)</button>
+        <button class="danger">🗑️ Borrar todas (volver a faltante)</button>
+      </div>
+    </div>
+
+    <div class="modal-mock" style="margin-top:14px;">
+      <div class="head">
+        <div class="preview">
+          <div class="card suelta">
+            <div class="card-num">14</div>
+          </div>
+        </div>
+        <div class="info">
+          <b>COL-14</b>
+          <span class="name">Juan F. Quintero · Grupo K</span>
+          <div class="breakdown">
+            <span style="color:var(--blue);">🔵 1 suelta</span> · sin pegar
+          </div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="blue">📌 Pegar al álbum (mover 🔵 → 🟢)</button>
+        <button>+1 (otra suelta)</button>
+        <button>− Quitar (regalar/perder)</button>
+      </div>
+    </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PESTAÑA SUELTAS ============ -->
+<div>
+  <div class="label" style="margin-bottom:8px;"><b>PESTAÑA NUEVA 🔵 Sueltas</b> — Te las lista para que las pegues de un saque</div>
+  <div class="phone">
+    <div class="header">
+      <h1>Panini 2026</h1>
+      <div class="subtitle">Compartido<span class="sync-dot">●</span></div>
+    </div>
+    <div class="tabs-mini">
+      <button class="tab-mini">¿La tengo?</button>
+      <button class="tab-mini">Todos</button>
+      <button class="tab-mini new active">🔵 Sueltas (26)</button>
+      <button class="tab-mini">⇄</button>
+    </div>
+
+    <div class="sueltas-list">
+      <button class="pinta-todas">📌 Pegar TODAS las sueltas (26 → al álbum)</button>
+
+      <div class="section-title">Por equipo</div>
+
+      <div class="sueltas-row">
+        <div class="sueltas-mini">14</div>
+        <div class="info"><b>COL-14</b><span>Juan F. Quintero · Colombia</span></div>
+        <button>📌 Pegar</button>
+      </div>
+      <div class="sueltas-row">
+        <div class="sueltas-mini">17<span class="qty-badge">+1</span></div>
+        <div class="info"><b>COL-17 (×2)</b><span>2 sueltas, ninguna pegada</span></div>
+        <button>📌 Pegar 1</button>
+      </div>
+      <div class="sueltas-row">
+        <div class="sueltas-mini">3</div>
+        <div class="info"><b>BRA-3</b><span>Vinicius Jr · Brasil</span></div>
+        <button>📌 Pegar</button>
+      </div>
+      <div class="sueltas-row">
+        <div class="sueltas-mini">7</div>
+        <div class="info"><b>BRA-7</b><span>Rodrygo · Brasil</span></div>
+        <button>📌 Pegar</button>
+      </div>
+      <div class="sueltas-row">
+        <div class="sueltas-mini">5</div>
+        <div class="info"><b>ARG-5</b><span>Lautaro Martínez · Argentina</span></div>
+        <button>📌 Pegar</button>
+      </div>
+      <div class="sueltas-row" style="opacity:0.6;">
+        <div class="sueltas-mini">…</div>
+        <div class="info"><i style="color:var(--text-3);font-size:11px;">21 más…</i></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ DETALLES DE IMPLEMENTACIÓN ============ -->
+<div style="max-width:700px;color:var(--text-2);font-size:13px;line-height:1.7;background:var(--bg-2);border-radius:var(--radius-lg);padding:18px 22px;border:0.5px solid var(--border-2);">
+  <h2 style="font-size:15px;color:var(--accent);margin:0 0 10px;font-weight:500;">🔧 Cambios en el modelo de datos</h2>
+  <p style="margin:0 0 8px;"><b>Antes (hoy):</b></p>
+  <pre style="background:var(--bg);padding:10px;border-radius:6px;font-size:11px;color:var(--text);overflow-x:auto;margin:0 0 10px;">estado["COL-13"] = 3   // total en posesión, ambiguo</pre>
+
+  <p style="margin:0 0 8px;"><b>Después (con Suelta):</b></p>
+  <pre style="background:var(--bg);padding:10px;border-radius:6px;font-size:11px;color:var(--text);overflow-x:auto;margin:0 0 10px;">estado["COL-13"] = {
+  pegada: 1,    // 0 o 1
+  sueltas: 2    // copias en posesión sin pegar
+}
+// Total = pegada + sueltas
+// Repetida cuando total > 1</pre>
+
+  <p style="margin:0 0 8px;"><b>Migración del estado actual al nuevo:</b></p>
+  <ul style="margin:0 0 10px;padding-left:20px;">
+    <li>Si <code>count = 0</code> → <code>{pegada:0, sueltas:0}</code></li>
+    <li>Si <code>count = 1</code> → <code>{pegada:1, sueltas:0}</code> (asumimos lo de hoy)</li>
+    <li>Si <code>count ≥ 2</code> → <code>{pegada:1, sueltas:count-1}</code></li>
+  </ul>
+  <p style="margin:0;color:var(--text-3);font-size:12px;">
+    Una vez migrado, ustedes pueden ir corrigiendo "ah no, esa todavía no la pegué" mediante long-press → "Mover a suelta", a su ritmo, sin perder data.
+  </p>
+</div>
+
+<!-- ============ POR QUÉ IMPORTA ============ -->
+<div style="max-width:700px;color:var(--text-2);font-size:13px;line-height:1.7;text-align:center;">
+  <h2 style="font-size:15px;color:var(--accent);margin:0 0 10px;font-weight:500;">🎯 Por qué este estado importa para los intercambios</h2>
+  Cuando hablamos de los <b>3 modelos de intercambio</b> (Apartadas / Apartadas+persona / Tickets), la pregunta era:
+  "¿de dónde sale la lámina que aparto/intercambio?"<br><br>
+  <b style="color:var(--blue);">→ De las sueltas, no de la pegada.</b><br>
+  Una pegada está en el álbum, no se da. Solo las <b>sueltas</b> son apartables/intercambiables.<br><br>
+  Por eso, este estado debería ir <b>primero</b>; los modelos de intercambio se construyen encima.
+</div>
+
+</body>
+</html>

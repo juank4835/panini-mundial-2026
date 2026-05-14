@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Mockup v6 · Heatmap denso</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg-2: #161b22;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-2: #7d8590;
+    --text-3: #484f58;
+    --green: #00D685;
+    --amber: #EF9F27;
+    --amber-text: #412402;
+    --danger: #E24B4A;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    font-size: 13px;
+  }
+  .page { max-width: 920px; margin: 0 auto; padding: 16px; }
+  .hero { text-align: center; margin-bottom: 14px; }
+  .hero h1 { margin: 0 0 4px; font-size: 18px; font-weight: 600; }
+  .hero p { margin: 0; color: var(--text-3); font-size: 12px; }
+
+  .stats-mini {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .stat-pill {
+    flex: 1;
+    background: var(--bg-2);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+  }
+  .stat-pill b {
+    display: block;
+    font-size: 18px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .stat-pill small {
+    color: var(--text-3);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .stat-pill.tengo b { color: var(--green); }
+  .stat-pill.rep b { color: var(--amber); }
+  .stat-pill.falta b { color: var(--danger); }
+
+  .legend {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+    font-size: 11px;
+    color: var(--text-2);
+    margin-bottom: 14px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-cell {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+  }
+  .legend-cell.tengo { background: rgba(0,214,133,0.4); }
+  .legend-cell.falta { background: var(--danger); }
+  .legend-cell.rep   { background: var(--amber); }
+
+  /* Una fila por equipo. Etiqueta a la izquierda + 20 micro-cells. */
+  .heatmap {
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 4px 10px;
+    align-items: center;
+  }
+  .group-divider {
+    grid-column: 1 / -1;
+    color: var(--amber);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 8px 0 2px;
+    border-bottom: 0.5px solid var(--border);
+    margin-bottom: 2px;
+  }
+  .team-label {
+    font-size: 11px;
+    color: var(--text-2);
+    font-family: "JetBrains Mono", Menlo, monospace;
+    text-align: right;
+    padding-right: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .team-label .pct {
+    font-size: 9px;
+    color: var(--text-3);
+    margin-left: 4px;
+  }
+  .team-row {
+    display: grid;
+    grid-template-columns: repeat(20, 1fr);
+    gap: 2px;
+  }
+  .cell {
+    aspect-ratio: 1;
+    background: var(--bg-2);
+    border-radius: 2px;
+    position: relative;
+  }
+  .cell.tengo { background: rgba(0,214,133,0.35); }
+  .cell.falta { background: var(--danger); }
+  .cell.rep   { background: var(--amber); }
+  .cell.rep::after {
+    content: '';
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    width: 4px;
+    height: 4px;
+    background: #000;
+    border-radius: 50%;
+  }
+
+  footer {
+    text-align: center;
+    color: var(--text-3);
+    font-size: 11px;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 0.5px solid var(--border);
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="hero">
+    <h1>📒 Álbum Panini Mundial 2026 — v6 Heatmap denso</h1>
+    <p>Una fila micro por equipo · 20 mini-celdas · escaneás todo el álbum de un vistazo</p>
+  </div>
+
+  <div class="stats-mini">
+    <div class="stat-pill tengo"><b>649</b><small>Tengo</small></div>
+    <div class="stat-pill rep"><b>87</b><small>Repetidas</small></div>
+    <div class="stat-pill falta"><b>331</b><small>Faltan</small></div>
+  </div>
+
+  <div class="legend">
+    <span class="legend-item"><span class="legend-cell tengo"></span> Tengo</span>
+    <span class="legend-item"><span class="legend-cell rep"></span> Repetida</span>
+    <span class="legend-item"><span class="legend-cell falta"></span> Falta</span>
+  </div>
+
+  <div class="heatmap">
+
+    <div class="group-divider">Intro & History</div>
+    <div class="team-label">Intro <span class="pct">7/9</span></div>
+    <div class="team-row" style="grid-template-columns: repeat(9, 1fr);">
+      <div class="cell falta"></div><div class="cell tengo"></div><div class="cell rep"></div>
+      <div class="cell tengo"></div><div class="cell falta"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell rep"></div><div class="cell tengo"></div>
+    </div>
+    <div class="team-label">History <span class="pct">9/11</span></div>
+    <div class="team-row" style="grid-template-columns: repeat(11, 1fr);">
+      <div class="cell tengo"></div><div class="cell falta"></div><div class="cell tengo"></div>
+      <div class="cell rep"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell falta"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div>
+    </div>
+
+    <div class="group-divider">Grupo A</div>
+    <div class="team-label">MEX <span class="pct">17/20</span></div>
+    <div class="team-row">
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell rep"></div>
+      <div class="cell tengo"></div><div class="cell falta"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell falta"></div>
+      <div class="cell rep"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell falta"></div><div class="cell tengo"></div>
+      <div class="cell rep"></div><div class="cell tengo"></div>
+    </div>
+    <div class="team-label">RSA <span class="pct">12/20</span></div>
+    <div class="team-row">
+      <div class="cell falta"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell falta"></div><div class="cell falta"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell falta"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell falta"></div><div class="cell falta"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell falta"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell falta"></div>
+    </div>
+    <div class="team-label">KOR <span class="pct">19/20</span></div>
+    <div class="team-row">
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell falta"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell rep"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div>
+    </div>
+    <div class="team-label">CZE <span class="pct">15/20</span></div>
+    <div class="team-row">
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell falta"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell rep"></div><div class="cell tengo"></div><div class="cell falta"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell falta"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell falta"></div>
+      <div class="cell tengo"></div><div class="cell falta"></div>
+    </div>
+
+    <div class="group-divider">Grupo B</div>
+    <div class="team-label">CAN <span class="pct">19/20</span></div>
+    <div class="team-row">
+      <div class="cell tengo"></div><div class="cell falta"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div>
+    </div>
+    <div class="team-label">BIH <span class="pct">15/20</span></div>
+    <div class="team-row">
+      <div class="cell falta"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell falta"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell falta"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell falta"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell falta"></div><div class="cell tengo"></div>
+    </div>
+    <div class="team-label">QAT <span class="pct">18/20</span></div>
+    <div class="team-row">
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell falta"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell falta"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div>
+    </div>
+    <div class="team-label">SUI <span class="pct">16/20</span></div>
+    <div class="team-row">
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell falta"></div><div class="cell tengo"></div><div class="cell falta"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell falta"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell falta"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div>
+    </div>
+
+    <div class="group-divider">Grupo C</div>
+    <div class="team-label">BRA <span class="pct">19/20</span></div>
+    <div class="team-row">
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell rep"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell falta"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div>
+    </div>
+    <div class="team-label">MAR <span class="pct">18/20</span></div>
+    <div class="team-row">
+      <div class="cell tengo"></div><div class="cell falta"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell falta"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div>
+    </div>
+    <div class="team-label">HAI <span class="pct">19/20</span></div>
+    <div class="team-row">
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell falta"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div>
+    </div>
+    <div class="team-label">SCO <span class="pct">18/20</span></div>
+    <div class="team-row">
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell rep"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell falta"></div><div class="cell tengo"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div><div class="cell falta"></div>
+      <div class="cell tengo"></div><div class="cell tengo"></div>
+    </div>
+
+  </div>
+
+  <footer>
+    Vista pública · v6 estilo heatmap denso · Datos inventados
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,986 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup · 3 opciones para compacta + filtro</title>
+<style>
+  /* Variables exactas del app */
+  :root {
+    --bg: #000000;
+    --bg-2: #1a1a1a;
+    --bg-3: #2a2a2a;
+    --text: #f0eee6;
+    --text-2: #b4b2a9;
+    --text-3: #888780;
+    --border: rgba(240, 238, 230, 0.12);
+    --amber: #EF9F27;
+    --blue: #4A9EFF;
+    --green: #00D685;
+    --danger: #E24B4A;
+    --accent: #FF8C1A;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: #050505;
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif;
+    font-size: 14px;
+  }
+  .page { max-width: 1300px; margin: 0 auto; padding: 24px 16px 80px; }
+  .page-title { font-size: 20px; font-weight: 600; margin: 0 0 4px; }
+  .page-sub { color: var(--text-2); font-size: 13px; margin: 0 0 24px; max-width: 800px; }
+  .row {
+    display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start; justify-content: center;
+  }
+  .col { display: flex; flex-direction: column; align-items: center; }
+  .opt-title {
+    color: var(--amber);
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0 0 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .opt-sub {
+    color: var(--text-3);
+    font-size: 11px;
+    margin: 0 0 14px;
+    max-width: 380px;
+    text-align: center;
+    line-height: 1.4;
+  }
+  .phone {
+    width: 380px;
+    background: var(--bg);
+    border-radius: 36px;
+    border: 1px solid #1f1f1f;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  }
+  .phone-status {
+    height: 28px;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0 22px;
+    font-size: 13px; color: var(--text); font-weight: 600;
+  }
+  .phone-status .right { font-size: 10px; color: var(--text-2); letter-spacing: 1px; }
+
+  /* Header (real) */
+  .app { padding: 0 12px 14px; }
+  .page-header {
+    display: flex; align-items: center; justify-content: space-between; gap: 6px;
+    background: var(--bg);
+    padding: 10px 0 6px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .page-header h1 {
+    margin: 0; flex: 1; min-width: 0;
+    font-size: 16px; font-weight: 500;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .header-actions { display: flex; gap: 0; flex-shrink: 0; }
+  .header-icon-btn {
+    background: none; border: 0; color: var(--bg-3);
+    padding: 5px;
+  }
+  .header-icon-btn svg { width: 18px; height: 18px; display: block; }
+  .subtitle { color: var(--text-3); font-size: 10px; margin: 6px 0 10px; }
+
+  /* Hero compacto con toggle */
+  .hero-with-toggle {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin: 4px 0 12px;
+  }
+  .donut-wrap {
+    position: relative; width: 180px; height: 180px;
+    flex-shrink: 0;
+  }
+  .donut-svg { width: 100%; height: 100%; display: block; }
+  .donut-track { stroke: var(--bg-3); stroke-width: 14; fill: none; }
+  .donut-fill {
+    stroke: var(--green); stroke-width: 14; fill: none;
+    stroke-linecap: round;
+    transform: rotate(-90deg); transform-origin: 100px 100px;
+    filter: drop-shadow(0 0 4px rgba(0,214,133,0.8)) drop-shadow(0 0 12px rgba(0,214,133,0.45));
+  }
+  .donut-text {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .donut-pct {
+    font-size: 30px; font-weight: 700;
+    color: var(--green); line-height: 1; letter-spacing: -1px;
+    text-shadow: 0 0 8px rgba(0,214,133,0.7), 0 0 16px rgba(0,214,133,0.5), 0 0 28px rgba(0,214,133,0.3);
+  }
+  .donut-frac {
+    font-size: 13px; color: var(--green);
+    margin-top: 4px; font-family: "JetBrains Mono", Menlo, monospace;
+    text-shadow: 0 0 6px rgba(0,214,133,0.55), 0 0 12px rgba(0,214,133,0.3);
+  }
+  .donut-label {
+    font-size: 9px; color: var(--text-3);
+    text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;
+  }
+  .hero-toggle {
+    display: inline-flex; flex-direction: column;
+    background: var(--bg-2);
+    border: 0.5px solid var(--border); border-radius: 12px;
+    padding: 3px; gap: 2px;
+  }
+  .hero-toggle button {
+    background: transparent; border: 0; color: var(--text-3);
+    padding: 7px 6px; border-radius: 9px;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    font-size: 9px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    width: 50px;
+  }
+  .hero-toggle button svg { width: 14px; height: 14px; stroke-width: 2; }
+  .hero-toggle button.active {
+    background: var(--bg-3); color: var(--amber);
+    box-shadow: 0 0 0 0.5px var(--amber) inset;
+    text-shadow: 0 0 4px rgba(239,159,39,0.45);
+  }
+
+  /* Pills */
+  .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .stat-pill {
+    background: var(--bg-2); border-radius: var(--radius);
+    padding: 8px 6px; text-align: center;
+    border: 1px solid transparent;
+  }
+  .stat-pill-blue   { border-color: rgba(74,158,255,0.55); }
+  .stat-pill-red    { border-color: rgba(226,75,74,0.55); }
+  .stat-pill-amber  { border-color: rgba(239,159,39,0.55); }
+  .stat-pill-value { font-size: 18px; font-weight: 700; line-height: 1; }
+  .stat-pill-label { font-size: 10px; color: var(--text-2); margin-top: 4px; }
+  .stat-pill-sub { font-size: 9px; color: var(--text-3); margin-top: 3px; }
+  .stat-pill-blue .stat-pill-value {
+    color: var(--blue);
+    text-shadow: 0 0 6px rgba(74,158,255,0.7), 0 0 14px rgba(74,158,255,0.4);
+  }
+  .stat-pill-red .stat-pill-value {
+    color: var(--danger);
+    text-shadow: 0 0 6px rgba(226,75,74,0.7), 0 0 14px rgba(226,75,74,0.4);
+  }
+  .stat-pill-amber .stat-pill-value {
+    color: var(--amber);
+    text-shadow: 0 0 6px rgba(239,159,39,0.7), 0 0 14px rgba(239,159,39,0.4);
+  }
+  .stat-pill.home-filter-on.stat-pill-red {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 1px var(--danger), 0 0 14px rgba(226,75,74,0.35);
+    background: rgba(226,75,74,0.08);
+  }
+  .stat-pill.home-filter-on.stat-pill-amber {
+    border-color: var(--amber);
+    box-shadow: 0 0 0 1px var(--amber), 0 0 14px rgba(239,159,39,0.35);
+    background: rgba(239,159,39,0.08);
+  }
+
+  /* Bulk panel collapsed */
+  .home-bulk-panel {
+    background: var(--bg-2); border-radius: var(--radius);
+    margin: 10px 0 8px; overflow: hidden;
+  }
+  .home-bulk-panel.falta { border: 0.5px solid rgba(226,75,74,0.5); }
+  .home-bulk-panel.repetida { border: 0.5px solid rgba(239,159,39,0.5); }
+  .home-bulk-panel.vender { border: 0.5px solid rgba(0,214,133,0.5); }
+  .home-bulk-head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px;
+  }
+  .home-bulk-icon {
+    width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%; font-size: 11px; font-weight: 700; flex-shrink: 0;
+  }
+  .home-bulk-panel.falta .home-bulk-icon { background: rgba(226,75,74,0.18); color: var(--danger); }
+  .home-bulk-panel.repetida .home-bulk-icon { background: rgba(239,159,39,0.18); color: var(--amber); }
+  .home-bulk-panel.vender .home-bulk-icon { background: rgba(0,214,133,0.18); color: var(--green); }
+  .home-bulk-text { flex: 1; font-size: 11px; font-weight: 700; }
+  .home-bulk-panel.falta .home-bulk-text { color: var(--danger); }
+  .home-bulk-panel.repetida .home-bulk-text { color: var(--amber); }
+  .home-bulk-panel.vender .home-bulk-text { color: var(--green); }
+  .home-bulk-toggle { color: var(--text-3); font-size: 12px; }
+
+  /* === BASE: tabla compacta sin filtro (para comparar) === */
+  .home-compact-tabla {
+    display: grid;
+    grid-template-columns: 44px repeat(10, 1fr);
+    gap: 3px;
+    margin: 0 0 10px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .home-compact-tabla .group-row {
+    grid-column: 1 / -1;
+    background: var(--bg-2);
+    color: var(--amber);
+    padding: 5px 10px;
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.8px;
+    margin-top: 6px; border-radius: 4px;
+  }
+  .home-compact-tabla .team-name {
+    padding: 2px 4px;
+    background: var(--bg-2); border-radius: 4px;
+    color: var(--text-2); font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+    grid-row: span 2;
+  }
+  .home-compact-tabla .cell {
+    aspect-ratio: 1;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 11px;
+    border-radius: 50%;
+    position: relative;
+    line-height: 1; color: #fff;
+  }
+  .home-compact-tabla .cell.pegada   { background: var(--green); }
+  .home-compact-tabla .cell.falta    { background: var(--danger); }
+  .home-compact-tabla .cell.suelta   { background: var(--blue); flex-direction: column; gap: 0; }
+  .home-compact-tabla .cell.repetida { background: var(--amber); flex-direction: column; gap: 0; }
+  .home-compact-tabla .cell .x { font-size: 7px; font-weight: 700; line-height: 1; opacity: 0.85; }
+  .home-compact-tabla .cell .x::before { content: '×'; opacity: 0.7; }
+
+
+  /* ====== OPCIÓN A: pills con prefijo de equipo ====== */
+  .opt-a-flow {
+    display: flex; flex-wrap: wrap; gap: 4px;
+    padding: 8px 0;
+  }
+  .opt-a-group-row {
+    flex-basis: 100%;
+    background: var(--bg-2);
+    color: var(--amber);
+    padding: 5px 10px;
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.8px;
+    margin-top: 6px; border-radius: 4px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .opt-a-pill {
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-size: 11px; font-weight: 700;
+    padding: 4px 9px;
+    border-radius: 100px;
+    border: 0.5px solid;
+    line-height: 1.2;
+    display: inline-flex; align-items: center; gap: 3px;
+  }
+  .opt-a-pill.falta {
+    color: var(--danger); border-color: var(--danger);
+    background: rgba(226,75,74,0.12);
+    text-shadow: 0 0 4px rgba(226,75,74,0.4);
+  }
+  .opt-a-pill.suelta {
+    color: var(--blue); border-color: var(--blue);
+    background: rgba(74,158,255,0.12);
+    text-shadow: 0 0 4px rgba(74,158,255,0.4);
+  }
+  .opt-a-pill.repetida {
+    color: var(--amber); border-color: var(--amber);
+    background: rgba(239,159,39,0.12);
+    text-shadow: 0 0 4px rgba(239,159,39,0.4);
+  }
+  .opt-a-pill .x {
+    font-size: 9px; opacity: 0.7;
+  }
+
+
+  /* ====== OPCIÓN B: header de equipo + chips horizontales ====== */
+  .opt-b-tabla {
+    display: flex; flex-direction: column; gap: 6px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .opt-b-group-row {
+    background: var(--bg-2);
+    color: var(--amber);
+    padding: 5px 10px;
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.8px;
+    margin-top: 6px; border-radius: 4px;
+  }
+  .opt-b-team-row {
+    display: flex; align-items: center; gap: 6px;
+    padding: 4px 0;
+  }
+  .opt-b-team-name {
+    width: 44px;
+    flex-shrink: 0;
+    padding: 4px 4px;
+    background: var(--bg-2); border-radius: 4px;
+    color: var(--text-2); font-weight: 600;
+    text-align: center;
+    font-size: 10px;
+    align-self: stretch;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .opt-b-cells {
+    display: flex; flex-wrap: wrap; gap: 4px;
+    flex: 1; min-width: 0;
+  }
+  .opt-b-cell {
+    width: 30px; height: 30px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 11px;
+    border-radius: 50%;
+    position: relative;
+    color: #fff; line-height: 1;
+  }
+  .opt-b-cell.falta    { background: var(--danger); }
+  .opt-b-cell.suelta   { background: var(--blue); flex-direction: column; gap: 0; }
+  .opt-b-cell.repetida { background: var(--amber); flex-direction: column; gap: 0; }
+  .opt-b-cell .x { font-size: 7px; font-weight: 700; line-height: 1; opacity: 0.85; }
+  .opt-b-cell .x::before { content: '×'; opacity: 0.7; }
+
+
+  /* ====== OPCIÓN D: como C pero comprimida (KOR junto a MEX) ====== */
+  /* Misma grilla 44px + 10×1fr (mismo tamaño de círculo). El team-name del
+     1er equipo de cada fila ocupa el col 1 de 44px; los equipos
+     subsiguientes que CABEN en la misma fila reciben un marker cell-sized
+     entre cellas (col de 1fr, mismo ancho que las láminas). Group-row
+     más compacto para que más contenido entre en pantalla. */
+  .opt-d-tabla {
+    display: grid;
+    grid-template-columns: 44px repeat(10, 1fr);
+    gap: 3px; margin: 0 0 10px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .opt-d-tabla .group-row {
+    grid-column: 1 / -1;
+    background: var(--bg-2);
+    color: var(--amber);
+    padding: 3px 10px;          /* más chico vs global */
+    font-size: 9px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.8px;
+    margin-top: 4px; border-radius: 4px;
+  }
+  .opt-d-tabla .team-name {
+    /* Team-name del 1er equipo de la fila, ancho 44px (col 1) */
+    grid-column: 1;
+    padding: 2px 4px;
+    background: var(--bg-2); border-radius: 4px;
+    color: var(--text-2); font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+  }
+  .opt-d-tabla .team-marker {
+    /* Marker inline — mismo formato visual que .team-name (rectángulo
+       bg-2 con bordes redondeados). La diferencia con la team-name
+       principal es sólo el ancho: la principal ocupa col 1 (44px) y
+       el marker inline ocupa 1 col de 1fr (cell-sized). El alto se
+       estira a la altura de la fila (que la fija aspect-ratio:1 del
+       cell de al lado). Mismo bg, mismo color, misma rounded — sólo
+       el font-size un poco menor para que quepa en col más angosta. */
+    background: var(--bg-2);
+    border-radius: 4px;
+    color: var(--text-2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 600;
+    padding: 2px 2px;
+  }
+  .opt-d-tabla .cell {
+    aspect-ratio: 1;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 11px;
+    border-radius: 50%; position: relative;
+    line-height: 1; color: #fff;
+  }
+  .opt-d-tabla .cell.falta    { background: var(--danger); }
+  .opt-d-tabla .cell.suelta   { background: var(--blue); flex-direction: column; gap: 0; }
+  .opt-d-tabla .cell.repetida { background: var(--amber); flex-direction: column; gap: 0; }
+  .opt-d-tabla .cell .x { font-size: 7px; font-weight: 700; line-height: 1; opacity: 0.85; }
+  .opt-d-tabla .cell .x::before { content: '×'; opacity: 0.7; }
+
+
+  /* ====== OPCIÓN C: misma grilla del global, adaptiva ====== */
+  .opt-c-tabla {
+    display: grid;
+    grid-template-columns: 44px repeat(10, 1fr);
+    gap: 3px; margin: 0 0 10px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .opt-c-tabla .group-row {
+    grid-column: 1 / -1;
+    background: var(--bg-2);
+    color: var(--amber);
+    padding: 5px 10px;
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.8px;
+    margin-top: 6px; border-radius: 4px;
+  }
+  .opt-c-tabla .team-name {
+    padding: 2px 4px;
+    background: var(--bg-2); border-radius: 4px;
+    color: var(--text-2); font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+    grid-column: 1;
+  }
+  .opt-c-tabla .cell {
+    aspect-ratio: 1;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 11px;
+    border-radius: 50%; position: relative;
+    line-height: 1; color: #fff;
+  }
+  .opt-c-tabla .cell.falta    { background: var(--danger); }
+  .opt-c-tabla .cell.suelta   { background: var(--blue); flex-direction: column; gap: 0; }
+  .opt-c-tabla .cell.repetida { background: var(--amber); flex-direction: column; gap: 0; }
+  .opt-c-tabla .cell .x { font-size: 7px; font-weight: 700; line-height: 1; opacity: 0.85; }
+  .opt-c-tabla .cell .x::before { content: '×'; opacity: 0.7; }
+
+
+  /* Annotation */
+  .callout {
+    margin: 28px auto 0;
+    max-width: 900px;
+    background: rgba(239,159,39,0.06);
+    border: 0.5px solid rgba(239,159,39,0.4);
+    border-radius: 12px;
+    padding: 14px 16px;
+    color: var(--text-2);
+    font-size: 13px; line-height: 1.55;
+  }
+  .callout b { color: var(--amber); }
+  .grid-tradeoffs {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+    margin-top: 18px; max-width: 1240px;
+    margin-left: auto; margin-right: auto;
+  }
+  .tradeoff {
+    background: var(--bg-2);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+  }
+  .tradeoff h4 {
+    margin: 0 0 6px; font-size: 12px; color: var(--amber);
+    text-transform: uppercase; letter-spacing: 0.5px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .tradeoff p { margin: 0 0 6px; font-size: 12px; color: var(--text-2); line-height: 1.55; }
+  .tradeoff .pros, .tradeoff .cons {
+    font-size: 11px; line-height: 1.5;
+  }
+  .tradeoff .pros { color: var(--green); }
+  .tradeoff .cons { color: var(--danger); }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1 class="page-title">Compacta + filtro: 4 opciones</h1>
+  <p class="page-sub">Mismos datos en los 4 (filtro Faltantes activo, varios grupos). <b>Opción D</b> es la nueva: como C pero comprimida — equipos consecutivos comparten fila cuando caben, y el group-row es más chico (adaptativo).</p>
+
+  <div class="row">
+
+    <!-- ============ OPCIÓN A: pills con prefijo ============ -->
+    <div class="col">
+      <h3 class="opt-title">A · Pills con prefijo</h3>
+      <p class="opt-sub">Cada match es una pill <code>MEX-1</code>. Sin team-name aparte. Densidad máxima.</p>
+      <div class="phone">
+        <div class="phone-status"><span>3:42</span><span class="right">●●● ⌃ █</span></div>
+        <div class="app">
+          <div class="page-header">
+            <h1>Álbum Panini Mundial 2026</h1>
+            <div class="header-actions">
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h14"/><path d="M14 4l4 4-4 4"/><path d="M20 16H6"/><path d="M10 12l-4 4 4 4"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13c0-3.5 3.5-6 8-6 1 0 2 .2 3 .5l3-2v3.5c1.5 1 2.5 2.5 2.5 4 0 1.5-1 3-2.5 4l-.5 2h-2l-.5-1H8.5L8 19H6l-.5-2C4 16 3 14.5 3 13z"/><circle cx="14" cy="12" r="0.7" fill="currentColor"/><line x1="9" y1="9" x2="12" y2="9"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M3 3h7v7H3V3zm2 2h3v3H5V5z"/><path fill="currentColor" fill-rule="evenodd" d="M14 3h7v7h-7V3zm2 2h3v3h-3V5z"/><path fill="currentColor" fill-rule="evenodd" d="M3 14h7v7H3v-7zm2 2h3v3H5v-3z"/><path fill="currentColor" d="M13 13h2v2h-2zM16 13h2v2h-2zM19 13h2v2h-2zM13 16h2v2h-2zM16 16h2v2h-2zM19 16h2v2h-2zM13 19h2v2h-2zM16 19h2v2h-2zM19 19h2v2h-2z"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
+            </div>
+          </div>
+          <p class="subtitle">Tracker colaborativo · pegadas, repetidas, faltantes</p>
+
+          <div class="hero-with-toggle">
+            <div class="donut-wrap">
+              <svg viewBox="0 0 200 200" class="donut-svg">
+                <circle class="donut-track" cx="100" cy="100" r="85"></circle>
+                <circle class="donut-fill" cx="100" cy="100" r="85" stroke-dasharray="534.07" stroke-dashoffset="331.12"></circle>
+              </svg>
+              <div class="donut-text">
+                <div class="donut-pct">38.0%</div>
+                <div class="donut-frac">372 / 980</div>
+                <div class="donut-label">pegadas</div>
+              </div>
+            </div>
+            <div class="hero-toggle">
+              <button class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="3"/><rect x="3" y="10" width="18" height="3"/><rect x="3" y="16" width="18" height="3"/></svg>Comp</button>
+              <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Exp</button>
+            </div>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-pill stat-pill-blue"><div class="stat-pill-value">52</div><div class="stat-pill-label">Sueltas</div><div class="stat-pill-sub">64 copias</div></div>
+            <div class="stat-pill stat-pill-red home-filter-on"><div class="stat-pill-value">556</div><div class="stat-pill-label">Faltantes</div><div class="stat-pill-sub">por conseguir</div></div>
+            <div class="stat-pill stat-pill-amber"><div class="stat-pill-value">673</div><div class="stat-pill-label">Repetidas</div><div class="stat-pill-sub">673 monas</div></div>
+          </div>
+
+          <div class="home-bulk-panel falta">
+            <div class="home-bulk-head">
+              <div class="home-bulk-icon">+</div>
+              <div class="home-bulk-text">Registrar láminas que tengo</div>
+              <div class="home-bulk-toggle">▾</div>
+            </div>
+          </div>
+
+          <div class="opt-a-flow">
+            <div class="opt-a-group-row">Grupo A · 9 faltantes</div>
+            <span class="opt-a-pill falta">MEX-1</span>
+            <span class="opt-a-pill falta">MEX-3</span>
+            <span class="opt-a-pill falta">MEX-15</span>
+            <span class="opt-a-pill falta">MEX-16</span>
+            <span class="opt-a-pill falta">MEX-19</span>
+            <span class="opt-a-pill falta">KOR-9</span>
+            <span class="opt-a-pill falta">KOR-11</span>
+            <span class="opt-a-pill falta">KOR-17</span>
+            <span class="opt-a-pill falta">CZE-4</span>
+
+            <div class="opt-a-group-row">Grupo C · 9 faltantes</div>
+            <span class="opt-a-pill falta">BRA-4</span>
+            <span class="opt-a-pill falta">BRA-12</span>
+            <span class="opt-a-pill falta">MAR-10</span>
+            <span class="opt-a-pill falta">MAR-12</span>
+            <span class="opt-a-pill falta">MAR-13</span>
+            <span class="opt-a-pill falta">MAR-18</span>
+            <span class="opt-a-pill falta">HAI-7</span>
+            <span class="opt-a-pill falta">SCO-4</span>
+            <span class="opt-a-pill falta">SCO-13</span>
+
+            <div class="opt-a-group-row">Grupo D · 9 faltantes</div>
+            <span class="opt-a-pill falta">USA-8</span>
+            <span class="opt-a-pill falta">USA-14</span>
+            <span class="opt-a-pill falta">USA-19</span>
+            <span class="opt-a-pill falta">PAR-2</span>
+            <span class="opt-a-pill falta">PAR-11</span>
+            <span class="opt-a-pill falta">AUS-5</span>
+            <span class="opt-a-pill falta">AUS-9</span>
+            <span class="opt-a-pill falta">AUS-16</span>
+            <span class="opt-a-pill falta">AUS-20</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ============ OPCIÓN B: header equipo + chips ============ -->
+    <div class="col">
+      <h3 class="opt-title">B · Header equipo + círculos</h3>
+      <p class="opt-sub">Team-name a la izquierda + círculos que fluyen al lado. Cada equipo ocupa sólo el alto que necesita.</p>
+      <div class="phone">
+        <div class="phone-status"><span>3:42</span><span class="right">●●● ⌃ █</span></div>
+        <div class="app">
+          <div class="page-header">
+            <h1>Álbum Panini Mundial 2026</h1>
+            <div class="header-actions">
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h14"/><path d="M14 4l4 4-4 4"/><path d="M20 16H6"/><path d="M10 12l-4 4 4 4"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13c0-3.5 3.5-6 8-6 1 0 2 .2 3 .5l3-2v3.5c1.5 1 2.5 2.5 2.5 4 0 1.5-1 3-2.5 4l-.5 2h-2l-.5-1H8.5L8 19H6l-.5-2C4 16 3 14.5 3 13z"/><circle cx="14" cy="12" r="0.7" fill="currentColor"/><line x1="9" y1="9" x2="12" y2="9"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M3 3h7v7H3V3zm2 2h3v3H5V5z"/><path fill="currentColor" fill-rule="evenodd" d="M14 3h7v7h-7V3zm2 2h3v3h-3V5z"/><path fill="currentColor" fill-rule="evenodd" d="M3 14h7v7H3v-7zm2 2h3v3H5v-3z"/><path fill="currentColor" d="M13 13h2v2h-2zM16 13h2v2h-2zM19 13h2v2h-2zM13 16h2v2h-2zM16 16h2v2h-2zM19 16h2v2h-2zM13 19h2v2h-2zM16 19h2v2h-2zM19 19h2v2h-2z"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
+            </div>
+          </div>
+          <p class="subtitle">Tracker colaborativo · pegadas, repetidas, faltantes</p>
+
+          <div class="hero-with-toggle">
+            <div class="donut-wrap">
+              <svg viewBox="0 0 200 200" class="donut-svg">
+                <circle class="donut-track" cx="100" cy="100" r="85"></circle>
+                <circle class="donut-fill" cx="100" cy="100" r="85" stroke-dasharray="534.07" stroke-dashoffset="331.12"></circle>
+              </svg>
+              <div class="donut-text">
+                <div class="donut-pct">38.0%</div>
+                <div class="donut-frac">372 / 980</div>
+                <div class="donut-label">pegadas</div>
+              </div>
+            </div>
+            <div class="hero-toggle">
+              <button class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="3"/><rect x="3" y="10" width="18" height="3"/><rect x="3" y="16" width="18" height="3"/></svg>Comp</button>
+              <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Exp</button>
+            </div>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-pill stat-pill-blue"><div class="stat-pill-value">52</div><div class="stat-pill-label">Sueltas</div><div class="stat-pill-sub">64 copias</div></div>
+            <div class="stat-pill stat-pill-red home-filter-on"><div class="stat-pill-value">556</div><div class="stat-pill-label">Faltantes</div><div class="stat-pill-sub">por conseguir</div></div>
+            <div class="stat-pill stat-pill-amber"><div class="stat-pill-value">673</div><div class="stat-pill-label">Repetidas</div><div class="stat-pill-sub">673 monas</div></div>
+          </div>
+
+          <div class="home-bulk-panel falta">
+            <div class="home-bulk-head">
+              <div class="home-bulk-icon">+</div>
+              <div class="home-bulk-text">Registrar láminas que tengo</div>
+              <div class="home-bulk-toggle">▾</div>
+            </div>
+          </div>
+
+          <div class="opt-b-tabla">
+            <div class="opt-b-group-row">Grupo A</div>
+            <div class="opt-b-team-row">
+              <div class="opt-b-team-name">MEX</div>
+              <div class="opt-b-cells">
+                <div class="opt-b-cell falta">1</div>
+                <div class="opt-b-cell falta">3</div>
+                <div class="opt-b-cell falta">15</div>
+                <div class="opt-b-cell falta">16</div>
+                <div class="opt-b-cell falta">19</div>
+              </div>
+            </div>
+            <div class="opt-b-team-row">
+              <div class="opt-b-team-name">KOR</div>
+              <div class="opt-b-cells">
+                <div class="opt-b-cell falta">9</div>
+                <div class="opt-b-cell falta">11</div>
+                <div class="opt-b-cell falta">17</div>
+              </div>
+            </div>
+            <div class="opt-b-team-row">
+              <div class="opt-b-team-name">CZE</div>
+              <div class="opt-b-cells">
+                <div class="opt-b-cell falta">4</div>
+              </div>
+            </div>
+
+            <div class="opt-b-group-row">Grupo C</div>
+            <div class="opt-b-team-row">
+              <div class="opt-b-team-name">BRA</div>
+              <div class="opt-b-cells">
+                <div class="opt-b-cell falta">4</div>
+                <div class="opt-b-cell falta">12</div>
+              </div>
+            </div>
+            <div class="opt-b-team-row">
+              <div class="opt-b-team-name">MAR</div>
+              <div class="opt-b-cells">
+                <div class="opt-b-cell falta">10</div>
+                <div class="opt-b-cell falta">12</div>
+                <div class="opt-b-cell falta">13</div>
+                <div class="opt-b-cell falta">18</div>
+              </div>
+            </div>
+            <div class="opt-b-team-row">
+              <div class="opt-b-team-name">HAI</div>
+              <div class="opt-b-cells">
+                <div class="opt-b-cell falta">7</div>
+              </div>
+            </div>
+            <div class="opt-b-team-row">
+              <div class="opt-b-team-name">SCO</div>
+              <div class="opt-b-cells">
+                <div class="opt-b-cell falta">4</div>
+                <div class="opt-b-cell falta">13</div>
+              </div>
+            </div>
+
+            <div class="opt-b-group-row">Grupo D</div>
+            <div class="opt-b-team-row">
+              <div class="opt-b-team-name">USA</div>
+              <div class="opt-b-cells">
+                <div class="opt-b-cell falta">8</div>
+                <div class="opt-b-cell falta">14</div>
+                <div class="opt-b-cell falta">19</div>
+              </div>
+            </div>
+            <div class="opt-b-team-row">
+              <div class="opt-b-team-name">PAR</div>
+              <div class="opt-b-cells">
+                <div class="opt-b-cell falta">2</div>
+                <div class="opt-b-cell falta">11</div>
+              </div>
+            </div>
+            <div class="opt-b-team-row">
+              <div class="opt-b-team-name">AUS</div>
+              <div class="opt-b-cells">
+                <div class="opt-b-cell falta">5</div>
+                <div class="opt-b-cell falta">9</div>
+                <div class="opt-b-cell falta">16</div>
+                <div class="opt-b-cell falta">20</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ============ OPCIÓN C: misma grilla del global, adaptiva ============ -->
+    <div class="col">
+      <h3 class="opt-title">C · Grilla global, adaptiva</h3>
+      <p class="opt-sub">Misma grilla 10-col del global. Cada equipo ocupa sólo las filas que necesita (1 si ≤10, 2 si >10). Sin spacers.</p>
+      <div class="phone">
+        <div class="phone-status"><span>3:42</span><span class="right">●●● ⌃ █</span></div>
+        <div class="app">
+          <div class="page-header">
+            <h1>Álbum Panini Mundial 2026</h1>
+            <div class="header-actions">
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h14"/><path d="M14 4l4 4-4 4"/><path d="M20 16H6"/><path d="M10 12l-4 4 4 4"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13c0-3.5 3.5-6 8-6 1 0 2 .2 3 .5l3-2v3.5c1.5 1 2.5 2.5 2.5 4 0 1.5-1 3-2.5 4l-.5 2h-2l-.5-1H8.5L8 19H6l-.5-2C4 16 3 14.5 3 13z"/><circle cx="14" cy="12" r="0.7" fill="currentColor"/><line x1="9" y1="9" x2="12" y2="9"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M3 3h7v7H3V3zm2 2h3v3H5V5z"/><path fill="currentColor" fill-rule="evenodd" d="M14 3h7v7h-7V3zm2 2h3v3h-3V5z"/><path fill="currentColor" fill-rule="evenodd" d="M3 14h7v7H3v-7zm2 2h3v3H5v-3z"/><path fill="currentColor" d="M13 13h2v2h-2zM16 13h2v2h-2zM19 13h2v2h-2zM13 16h2v2h-2zM16 16h2v2h-2zM19 16h2v2h-2zM13 19h2v2h-2zM16 19h2v2h-2zM19 19h2v2h-2z"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
+            </div>
+          </div>
+          <p class="subtitle">Tracker colaborativo · pegadas, repetidas, faltantes</p>
+
+          <div class="hero-with-toggle">
+            <div class="donut-wrap">
+              <svg viewBox="0 0 200 200" class="donut-svg">
+                <circle class="donut-track" cx="100" cy="100" r="85"></circle>
+                <circle class="donut-fill" cx="100" cy="100" r="85" stroke-dasharray="534.07" stroke-dashoffset="331.12"></circle>
+              </svg>
+              <div class="donut-text">
+                <div class="donut-pct">38.0%</div>
+                <div class="donut-frac">372 / 980</div>
+                <div class="donut-label">pegadas</div>
+              </div>
+            </div>
+            <div class="hero-toggle">
+              <button class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="3"/><rect x="3" y="10" width="18" height="3"/><rect x="3" y="16" width="18" height="3"/></svg>Comp</button>
+              <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Exp</button>
+            </div>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-pill stat-pill-blue"><div class="stat-pill-value">52</div><div class="stat-pill-label">Sueltas</div><div class="stat-pill-sub">64 copias</div></div>
+            <div class="stat-pill stat-pill-red home-filter-on"><div class="stat-pill-value">556</div><div class="stat-pill-label">Faltantes</div><div class="stat-pill-sub">por conseguir</div></div>
+            <div class="stat-pill stat-pill-amber"><div class="stat-pill-value">673</div><div class="stat-pill-label">Repetidas</div><div class="stat-pill-sub">673 monas</div></div>
+          </div>
+
+          <div class="home-bulk-panel falta">
+            <div class="home-bulk-head">
+              <div class="home-bulk-icon">+</div>
+              <div class="home-bulk-text">Registrar láminas que tengo</div>
+              <div class="home-bulk-toggle">▾</div>
+            </div>
+          </div>
+
+          <div class="opt-c-tabla">
+            <div class="group-row">Grupo A</div>
+            <div class="team-name">MEX</div>
+            <div class="cell falta">1</div>
+            <div class="cell falta">3</div>
+            <div class="cell falta">15</div>
+            <div class="cell falta">16</div>
+            <div class="cell falta">19</div>
+
+            <div class="team-name">KOR</div>
+            <div class="cell falta">9</div>
+            <div class="cell falta">11</div>
+            <div class="cell falta">17</div>
+
+            <div class="team-name">CZE</div>
+            <div class="cell falta">4</div>
+
+            <div class="group-row">Grupo C</div>
+            <div class="team-name">BRA</div>
+            <div class="cell falta">4</div>
+            <div class="cell falta">12</div>
+
+            <div class="team-name">MAR</div>
+            <div class="cell falta">10</div>
+            <div class="cell falta">12</div>
+            <div class="cell falta">13</div>
+            <div class="cell falta">18</div>
+
+            <div class="team-name">HAI</div>
+            <div class="cell falta">7</div>
+
+            <div class="team-name">SCO</div>
+            <div class="cell falta">4</div>
+            <div class="cell falta">13</div>
+
+            <div class="group-row">Grupo D</div>
+            <div class="team-name">USA</div>
+            <div class="cell falta">8</div>
+            <div class="cell falta">14</div>
+            <div class="cell falta">19</div>
+
+            <div class="team-name">PAR</div>
+            <div class="cell falta">2</div>
+            <div class="cell falta">11</div>
+
+            <div class="team-name">AUS</div>
+            <div class="cell falta">5</div>
+            <div class="cell falta">9</div>
+            <div class="cell falta">16</div>
+            <div class="cell falta">20</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ============ OPCIÓN D: C comprimida (KOR junto a MEX si cabe) ============ -->
+    <div class="col">
+      <h3 class="opt-title" style="color: var(--green);">D · Comprimida (NUEVA)</h3>
+      <p class="opt-sub">Como C pero equipos comparten fila si caben. Círculo del mismo tamaño; group-row más chico.</p>
+      <div class="phone">
+        <div class="phone-status"><span>3:42</span><span class="right">●●● ⌃ █</span></div>
+        <div class="app">
+          <div class="page-header">
+            <h1>Álbum Panini Mundial 2026</h1>
+            <div class="header-actions">
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h14"/><path d="M14 4l4 4-4 4"/><path d="M20 16H6"/><path d="M10 12l-4 4 4 4"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13c0-3.5 3.5-6 8-6 1 0 2 .2 3 .5l3-2v3.5c1.5 1 2.5 2.5 2.5 4 0 1.5-1 3-2.5 4l-.5 2h-2l-.5-1H8.5L8 19H6l-.5-2C4 16 3 14.5 3 13z"/><circle cx="14" cy="12" r="0.7" fill="currentColor"/><line x1="9" y1="9" x2="12" y2="9"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M3 3h7v7H3V3zm2 2h3v3H5V5z"/><path fill="currentColor" fill-rule="evenodd" d="M14 3h7v7h-7V3zm2 2h3v3h-3V5z"/><path fill="currentColor" fill-rule="evenodd" d="M3 14h7v7H3v-7zm2 2h3v3H5v-3z"/><path fill="currentColor" d="M13 13h2v2h-2zM16 13h2v2h-2zM19 13h2v2h-2zM13 16h2v2h-2zM16 16h2v2h-2zM19 16h2v2h-2zM13 19h2v2h-2zM16 19h2v2h-2zM19 19h2v2h-2z"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
+            </div>
+          </div>
+          <p class="subtitle">Tracker colaborativo · pegadas, repetidas, faltantes</p>
+
+          <div class="hero-with-toggle">
+            <div class="donut-wrap">
+              <svg viewBox="0 0 200 200" class="donut-svg">
+                <circle class="donut-track" cx="100" cy="100" r="85"></circle>
+                <circle class="donut-fill" cx="100" cy="100" r="85" stroke-dasharray="534.07" stroke-dashoffset="331.12"></circle>
+              </svg>
+              <div class="donut-text">
+                <div class="donut-pct">38.0%</div>
+                <div class="donut-frac">372 / 980</div>
+                <div class="donut-label">pegadas</div>
+              </div>
+            </div>
+            <div class="hero-toggle">
+              <button class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="3"/><rect x="3" y="10" width="18" height="3"/><rect x="3" y="16" width="18" height="3"/></svg>Comp</button>
+              <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Exp</button>
+            </div>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-pill stat-pill-blue"><div class="stat-pill-value">52</div><div class="stat-pill-label">Sueltas</div><div class="stat-pill-sub">64 copias</div></div>
+            <div class="stat-pill stat-pill-red home-filter-on"><div class="stat-pill-value">556</div><div class="stat-pill-label">Faltantes</div><div class="stat-pill-sub">por conseguir</div></div>
+            <div class="stat-pill stat-pill-amber"><div class="stat-pill-value">673</div><div class="stat-pill-label">Repetidas</div><div class="stat-pill-sub">673 monas</div></div>
+          </div>
+
+          <div class="home-bulk-panel falta">
+            <div class="home-bulk-head">
+              <div class="home-bulk-icon">+</div>
+              <div class="home-bulk-text">Registrar láminas que tengo</div>
+              <div class="home-bulk-toggle">▾</div>
+            </div>
+          </div>
+
+          <!-- Grupo A: MEX(5) + KOR(3) = 9 cells + 1 inline marker = 10 → cabe en 1 fila
+                       CZE(1) = 1 cell → fila 2: empieza con CZE en col 1 (44px) -->
+          <div class="opt-d-tabla">
+            <div class="group-row">Grupo A · 9 faltantes</div>
+            <div class="team-name">MEX</div>
+            <div class="cell falta">1</div>
+            <div class="cell falta">3</div>
+            <div class="cell falta">15</div>
+            <div class="cell falta">16</div>
+            <div class="cell falta">19</div>
+            <div class="team-marker">KOR</div>
+            <div class="cell falta">9</div>
+            <div class="cell falta">11</div>
+            <div class="cell falta">17</div>
+
+            <div class="team-name">CZE</div>
+            <div class="cell falta">4</div>
+
+            <!-- Grupo C: BRA(2) + MAR(4) + HAI(1) + SCO(2) = 9 cells + 3 inline markers = 12 → necesita >1 fila
+                          Fila 1: BRA(name 44px) + 2 cells + MAR(marker) + 4 cells + HAI(marker) + 1 cell = 9 items en cols 1-9 (col 10-11 vacíos? no, contemos: 1+2+1+4+1+1 = 10 items, ocupa cols 1-10, col 11 vacío)
+                          Fila 2: SCO(name 44px) + 2 cells = 3 items -->
+            <div class="group-row">Grupo C · 9 faltantes</div>
+            <div class="team-name">BRA</div>
+            <div class="cell falta">4</div>
+            <div class="cell falta">12</div>
+            <div class="team-marker">MAR</div>
+            <div class="cell falta">10</div>
+            <div class="cell falta">12</div>
+            <div class="cell falta">13</div>
+            <div class="cell falta">18</div>
+            <div class="team-marker">HAI</div>
+            <div class="cell falta">7</div>
+
+            <div class="team-name">SCO</div>
+            <div class="cell falta">4</div>
+            <div class="cell falta">13</div>
+
+            <!-- Grupo D: USA(3) + PAR(2) + AUS(4) = 9 cells + 2 inline markers = 11 ocupa cols 1-11 fila 1 -->
+            <div class="group-row">Grupo D · 9 faltantes</div>
+            <div class="team-name">USA</div>
+            <div class="cell falta">8</div>
+            <div class="cell falta">14</div>
+            <div class="cell falta">19</div>
+            <div class="team-marker">PAR</div>
+            <div class="cell falta">2</div>
+            <div class="cell falta">11</div>
+            <div class="team-marker">AUS</div>
+            <div class="cell falta">5</div>
+            <div class="cell falta">9</div>
+
+            <div class="team-name">AUS</div>
+            <div class="cell falta">16</div>
+            <div class="cell falta">20</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="grid-tradeoffs">
+    <div class="tradeoff">
+      <h4>A · Pills con prefijo</h4>
+      <p>Cada match es <code>EQUIPO-N</code>. Sin team-name aparte ni grilla.</p>
+      <div class="pros">+ Densidad máxima — entran muchísimas en una pantalla</div>
+      <div class="pros">+ Lectura natural ("me falta MEX-1, MEX-3...")</div>
+      <div class="pros">+ Fácil compartir como texto</div>
+      <div class="cons">− Pierdes la sensación de "estoy viendo el álbum"</div>
+      <div class="cons">− Más lectura: el cerebro lee el código en cada pill</div>
+    </div>
+    <div class="tradeoff">
+      <h4>B · Header + círculos</h4>
+      <p>Team-name a la izquierda, círculos del mismo tamaño al lado, fluyen como chips.</p>
+      <div class="pros">+ Densidad media, mantiene contexto de equipo</div>
+      <div class="pros">+ Sin desperdicio vertical — cada team toma lo que necesita</div>
+      <div class="pros">+ Los círculos son del mismo tamaño que la global (30px)</div>
+      <div class="cons">− Distinto al global: no hay grilla 10-col</div>
+      <div class="cons">− Team-name de altura variable según matches</div>
+    </div>
+    <div class="tradeoff">
+      <h4>C · Grilla global adaptiva</h4>
+      <p>Igual a la global pero cada equipo ocupa sólo las filas que necesita.</p>
+      <div class="pros">+ Mismo lenguaje visual que la global</div>
+      <div class="pros">+ Tamaño de círculo y team-name idénticos al global</div>
+      <div class="cons">− Equipos con pocos matches dejan media fila vacía</div>
+      <div class="cons">− Team-name se adapta verticalmente: BRA (1 fila) más bajo que MAR (2 filas)</div>
+    </div>
+    <div class="tradeoff" style="border-color: var(--green);">
+      <h4 style="color: var(--green);">D · C comprimida</h4>
+      <p>Equipos consecutivos comparten fila si caben. KOR aparece como marker inline (círculo gris cell-sized) entre las cellas de MEX.</p>
+      <div class="pros">+ Mismo tamaño de círculo que la global (no se toca)</div>
+      <div class="pros">+ Densidad alta — el ejemplo cabe en 5 filas vs 9 de la opción C</div>
+      <div class="pros">+ Group-row más chico: 3px de padding vs 5px (adaptativo)</div>
+      <div class="cons">− Team-name del 1er equipo de cada fila es 44px, los inline son cell-sized: dos estilos de label</div>
+      <div class="cons">− La distribución por fila depende de un algoritmo (no trivial implementarlo bien)</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <b>Mi recomendación actualizada: opción D</b> — captura lo mejor de C (mismo tamaño de círculo que el global, mismo "lenguaje visual") + la densidad de B (equipos comparten fila cuando caben, sin desperdicio vertical). El group-row más chico es un detalle pequeño pero suma — escaneás más contenido sin perder contexto.
+    <br><br>
+    El precio: el algoritmo para decidir "¿KOR cabe junto a MEX?" no es trivial. Hay que ir contando items por fila e insertar marker inline o team-name ancho según corresponda. Vale la pena para el resultado visual.
+    <br><br>
+    Si lo que más quieres es <b>compartir texto</b> ("oye, me falta MEX-1, KOR-3..."), <b>A</b> sigue ganando — pero podría ser una segunda capa accesible desde un botón "Compartir lista" en lugar de la vista por defecto.
+  </div>
+
+</div>
+</body>
+</html>

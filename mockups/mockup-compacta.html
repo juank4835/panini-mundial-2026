@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup · Vista compacta móvil</title>
+<style>
+  :root {
+    --bg: #1a1a18;
+    --bg-2: #262624;
+    --bg-3: #333330;
+    --text: #f0eee6;
+    --text-2: #b4b2a9;
+    --text-3: #888780;
+    --border: rgba(240, 238, 230, 0.12);
+    --border-2: rgba(240, 238, 230, 0.25);
+    --accent: #FF8C1A;
+    --green: #1D9E75;
+    --green-dark: #0F6E56;
+    --amber: #EF9F27;
+    --amber-text: #412402;
+    --amber-dark: #BA7517;
+    --danger: #E24B4A;
+    --danger-dark: #A82B2A;
+    --radius: 8px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #0d0d0c;
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+  h1 { font-size: 16px; color: var(--text-2); margin: 0 0 4px; font-weight: 500; }
+  .mockup-label { font-size: 12px; color: var(--text-3); text-align: center; margin-bottom: 8px; }
+  /* Frame de teléfono — fija el ancho a 390px (iPhone) */
+  .phone {
+    width: 390px;
+    background: var(--bg);
+    border-radius: 24px;
+    border: 1px solid var(--border-2);
+    padding: 16px 14px 28px;
+    overflow: hidden;
+  }
+  .phone-narrow { width: 360px; }
+  .phone-wide { width: 480px; }
+
+  /* Encabezado */
+  .header h1.title { font-size: 19px; color: var(--text); margin: 0 0 2px; }
+  .subtitle {
+    font-size: 11px;
+    color: var(--text-2);
+    margin-bottom: 12px;
+  }
+  .sync-dot {
+    color: var(--green);
+    font-size: 12px;
+    margin-left: 6px;
+  }
+
+  /* Stats compactas */
+  .stats-mini {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .stat-mini {
+    flex: 1;
+    background: var(--bg-2);
+    border-radius: 6px;
+    padding: 8px 6px;
+    text-align: center;
+  }
+  .stat-mini-label {
+    font-size: 9px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .stat-mini-value {
+    font-size: 17px;
+    font-weight: 500;
+    margin-top: 2px;
+  }
+  .stat-mini-value.green { color: var(--green); }
+  .stat-mini-value.amber { color: var(--amber); }
+  .stat-mini-value.red { color: var(--danger); }
+
+  /* Toggle vista */
+  .view-toggle {
+    display: flex;
+    gap: 4px;
+    background: var(--bg-2);
+    border-radius: 6px;
+    padding: 3px;
+    margin-bottom: 12px;
+    font-size: 11px;
+  }
+  .view-toggle button {
+    flex: 1;
+    padding: 6px;
+    background: transparent;
+    color: var(--text-2);
+    border: 0;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .view-toggle button.active {
+    background: var(--bg-3);
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  /* Tabs (más compacto que el de escritorio) */
+  .tabs-mini {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 14px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .tab-mini {
+    padding: 5px 9px;
+    border-radius: 6px;
+    border: 0.5px solid var(--border);
+    background: transparent;
+    color: var(--text-2);
+    font-size: 11px;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+  .tab-mini.active {
+    background: var(--bg-2);
+    color: var(--text);
+    border-color: var(--border-2);
+    font-weight: 500;
+  }
+
+  /* === VISTA COMPACTA: equipos con círculos === */
+  .team-compact {
+    margin-bottom: 16px;
+    padding: 10px 0;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .team-compact:last-child { border-bottom: 0; }
+  .team-header-compact {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+    padding: 0 2px;
+  }
+  .team-name-compact {
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .team-stats-compact {
+    font-size: 10px;
+    color: var(--text-2);
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .circles-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 6px;
+  }
+  .circle {
+    aspect-ratio: 1;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    border: 1px solid;
+    transition: transform 0.05s;
+  }
+  .circle:active { transform: scale(0.92); }
+
+  /* Estados */
+  .circle.falta {
+    background: rgba(226, 75, 74, 0.12);
+    color: var(--danger);
+    border-color: rgba(226, 75, 74, 0.3);
+  }
+  .circle.pegada {
+    background: var(--green);
+    color: white;
+    border-color: var(--green-dark);
+  }
+  .circle.repetida {
+    background: var(--amber);
+    color: var(--amber-text);
+    border-color: var(--amber-dark);
+  }
+  .circle .badge {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    background: var(--text);
+    color: var(--bg);
+    font-size: 8px;
+    min-width: 14px;
+    height: 14px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    padding: 0 3px;
+    border: 1px solid var(--bg);
+  }
+  .circle .name-tooltip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 4px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-3);
+    color: var(--text);
+    font-size: 10px;
+    padding: 3px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+    z-index: 10;
+    pointer-events: none;
+    font-weight: 400;
+  }
+  .circle:hover .name-tooltip { display: block; }
+
+  /* Variante 5 columnas (más espaciada) */
+  .grid-5col { grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .grid-5col .circle { font-size: 13px; }
+
+  /* Variante de tamaños */
+  .grid-tight { gap: 4px; }
+
+  /* Leyenda */
+  .legend {
+    display: flex;
+    gap: 14px;
+    font-size: 10px;
+    color: var(--text-2);
+    padding: 8px 4px;
+    border-top: 0.5px solid var(--border);
+    border-bottom: 0.5px solid var(--border);
+    margin-bottom: 14px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 1px solid;
+  }
+  .legend-dot.falta { background: rgba(226, 75, 74, 0.12); border-color: rgba(226, 75, 74, 0.3); }
+  .legend-dot.pegada { background: var(--green); border-color: var(--green-dark); }
+  .legend-dot.repetida { background: var(--amber); border-color: var(--amber-dark); }
+
+  /* Hint inferior con instrucciones touch */
+  .touch-hint {
+    font-size: 10px;
+    color: var(--text-3);
+    text-align: center;
+    padding: 12px 0 0;
+    line-height: 1.6;
+  }
+
+  /* Comparación con la vista actual */
+  .comparison-label {
+    font-size: 11px;
+    color: var(--text-2);
+    margin-top: 2px;
+  }
+
+  /* Modal mockup (para mostrar interacción al hacer long-press) */
+  .modal-mockup {
+    background: var(--bg-2);
+    border: 0.5px solid var(--border-2);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin-top: 14px;
+  }
+  .modal-mockup-title {
+    font-size: 12px;
+    color: var(--text-2);
+    margin-bottom: 8px;
+  }
+  .modal-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .modal-circle {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+  }
+  .modal-info {
+    flex: 1;
+    font-size: 12px;
+  }
+  .modal-info b { display: block; font-size: 14px; }
+  .modal-info span { color: var(--text-2); }
+  .modal-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .modal-actions button {
+    flex: 1;
+    padding: 8px;
+    background: var(--bg-3);
+    color: var(--text);
+    border: 0.5px solid var(--border-2);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .modal-actions button.primary {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+    font-weight: 500;
+  }
+
+  /* Layout side-by-side de mockups */
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    justify-content: center;
+    align-items: flex-start;
+  }
+</style>
+</head>
+<body>
+
+<div>
+  <h1>Mockup — Vista compacta para móvil</h1>
+  <div class="mockup-label">Comparación: 3 layouts diferentes</div>
+</div>
+
+<div class="row">
+
+  <!-- ============ MOCKUP 1: 10 columnas (más comprimido) ============ -->
+  <div>
+    <div class="mockup-label"><b>OPCIÓN A — 10 cols (ultra compacto)</b><br>Caben 2 equipos completos sin scroll en móvil</div>
+    <div class="phone">
+      <div class="header">
+        <h1 class="title">Álbum Panini Mundial 2026</h1>
+        <div class="subtitle">Tracker colaborativo<span class="sync-dot">●</span></div>
+      </div>
+
+      <div class="stats-mini">
+        <div class="stat-mini">
+          <div class="stat-mini-label">Pegadas</div>
+          <div class="stat-mini-value green">649</div>
+        </div>
+        <div class="stat-mini">
+          <div class="stat-mini-label">Faltan</div>
+          <div class="stat-mini-value red">331</div>
+        </div>
+        <div class="stat-mini">
+          <div class="stat-mini-label">Repetidas</div>
+          <div class="stat-mini-value amber">306</div>
+        </div>
+      </div>
+
+      <div class="view-toggle">
+        <button>Completa</button>
+        <button class="active">Compacta</button>
+      </div>
+
+      <div class="tabs-mini">
+        <button class="tab-mini">¿La tengo?</button>
+        <button class="tab-mini active">Todos</button>
+        <button class="tab-mini">A</button>
+        <button class="tab-mini">B</button>
+        <button class="tab-mini">C</button>
+        <button class="tab-mini">D</button>
+        <button class="tab-mini">…</button>
+      </div>
+
+      <div class="legend">
+        <div class="legend-item"><span class="legend-dot falta"></span> Falta</div>
+        <div class="legend-item"><span class="legend-dot pegada"></span> Pegada</div>
+        <div class="legend-item"><span class="legend-dot repetida"></span> Repetida</div>
+      </div>
+
+      <!-- Equipo 1: México (mayoría pegadas, algunas repetidas) -->
+      <div class="team-compact">
+        <div class="team-header-compact">
+          <span class="team-name-compact">México (MEX) · A</span>
+          <span class="team-stats-compact">17/20 · 4 rep</span>
+        </div>
+        <div class="circles-grid">
+          <div class="circle pegada">1</div>
+          <div class="circle pegada">2</div>
+          <div class="circle repetida">3<span class="badge">+1</span></div>
+          <div class="circle pegada">4</div>
+          <div class="circle pegada">5</div>
+          <div class="circle pegada">6</div>
+          <div class="circle repetida">7<span class="badge">+2</span></div>
+          <div class="circle pegada">8</div>
+          <div class="circle pegada">9</div>
+          <div class="circle pegada">10</div>
+          <div class="circle pegada">11</div>
+          <div class="circle falta">12</div>
+          <div class="circle pegada">13</div>
+          <div class="circle pegada">14</div>
+          <div class="circle pegada">15</div>
+          <div class="circle falta">16</div>
+          <div class="circle pegada">17</div>
+          <div class="circle repetida">18<span class="badge">+1</span></div>
+          <div class="circle pegada">19</div>
+          <div class="circle falta">20</div>
+        </div>
+      </div>
+
+      <!-- Equipo 2: Brasil (mixto) -->
+      <div class="team-compact">
+        <div class="team-header-compact">
+          <span class="team-name-compact">Brasil (BRA) · C</span>
+          <span class="team-stats-compact">12/20 · 2 rep</span>
+        </div>
+        <div class="circles-grid">
+          <div class="circle pegada">1</div>
+          <div class="circle pegada">2</div>
+          <div class="circle falta">3</div>
+          <div class="circle pegada">4</div>
+          <div class="circle falta">5</div>
+          <div class="circle pegada">6</div>
+          <div class="circle repetida">7<span class="badge">+1</span></div>
+          <div class="circle falta">8</div>
+          <div class="circle pegada">9</div>
+          <div class="circle pegada">10</div>
+          <div class="circle falta">11</div>
+          <div class="circle pegada">12</div>
+          <div class="circle falta">13</div>
+          <div class="circle pegada">14</div>
+          <div class="circle pegada">15</div>
+          <div class="circle repetida">16<span class="badge">+1</span></div>
+          <div class="circle falta">17</div>
+          <div class="circle pegada">18</div>
+          <div class="circle falta">19</div>
+          <div class="circle pegada">20</div>
+        </div>
+      </div>
+
+      <!-- Equipo 3: Colombia (faltan muchos) -->
+      <div class="team-compact">
+        <div class="team-header-compact">
+          <span class="team-name-compact">Colombia (COL) · K</span>
+          <span class="team-stats-compact">7/20 · 0 rep</span>
+        </div>
+        <div class="circles-grid">
+          <div class="circle pegada">1</div>
+          <div class="circle falta">2</div>
+          <div class="circle pegada">3</div>
+          <div class="circle falta">4</div>
+          <div class="circle falta">5</div>
+          <div class="circle pegada">6</div>
+          <div class="circle falta">7</div>
+          <div class="circle falta">8</div>
+          <div class="circle pegada">9</div>
+          <div class="circle falta">10</div>
+          <div class="circle falta">11</div>
+          <div class="circle pegada">12</div>
+          <div class="circle falta">13</div>
+          <div class="circle pegada">14</div>
+          <div class="circle falta">15</div>
+          <div class="circle falta">16</div>
+          <div class="circle falta">17</div>
+          <div class="circle pegada">18</div>
+          <div class="circle falta">19</div>
+          <div class="circle pegada">20</div>
+        </div>
+      </div>
+
+      <div class="touch-hint">
+        Tap = +1 · Long-press para abrir +/− y ver nombre
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MOCKUP 2: 5 columnas (intermedio, números más grandes) ============ -->
+  <div>
+    <div class="mockup-label"><b>OPCIÓN B — 5 cols (intermedio)</b><br>Mejor para tocar con dedo, números más grandes</div>
+    <div class="phone phone-narrow">
+      <div class="header">
+        <h1 class="title">Panini 2026</h1>
+        <div class="subtitle">Compartido<span class="sync-dot">●</span></div>
+      </div>
+
+      <div class="stats-mini">
+        <div class="stat-mini">
+          <div class="stat-mini-label">Pegadas</div>
+          <div class="stat-mini-value green">649</div>
+        </div>
+        <div class="stat-mini">
+          <div class="stat-mini-label">Faltan</div>
+          <div class="stat-mini-value red">331</div>
+        </div>
+        <div class="stat-mini">
+          <div class="stat-mini-label">Repetidas</div>
+          <div class="stat-mini-value amber">306</div>
+        </div>
+      </div>
+
+      <div class="view-toggle">
+        <button>Completa</button>
+        <button class="active">Compacta</button>
+      </div>
+
+      <div class="tabs-mini">
+        <button class="tab-mini">¿La tengo?</button>
+        <button class="tab-mini active">Todos</button>
+        <button class="tab-mini">A</button>
+        <button class="tab-mini">B</button>
+        <button class="tab-mini">…</button>
+      </div>
+
+      <div class="team-compact">
+        <div class="team-header-compact">
+          <span class="team-name-compact">México (MEX) · A</span>
+          <span class="team-stats-compact">17/20 · 4 rep</span>
+        </div>
+        <div class="circles-grid grid-5col">
+          <div class="circle pegada">1</div>
+          <div class="circle pegada">2</div>
+          <div class="circle repetida">3<span class="badge">+1</span></div>
+          <div class="circle pegada">4</div>
+          <div class="circle pegada">5</div>
+          <div class="circle pegada">6</div>
+          <div class="circle repetida">7<span class="badge">+2</span></div>
+          <div class="circle pegada">8</div>
+          <div class="circle pegada">9</div>
+          <div class="circle pegada">10</div>
+          <div class="circle pegada">11</div>
+          <div class="circle falta">12</div>
+          <div class="circle pegada">13</div>
+          <div class="circle pegada">14</div>
+          <div class="circle pegada">15</div>
+          <div class="circle falta">16</div>
+          <div class="circle pegada">17</div>
+          <div class="circle repetida">18<span class="badge">+1</span></div>
+          <div class="circle pegada">19</div>
+          <div class="circle falta">20</div>
+        </div>
+      </div>
+
+      <div class="team-compact">
+        <div class="team-header-compact">
+          <span class="team-name-compact">Brasil (BRA) · C</span>
+          <span class="team-stats-compact">12/20 · 2 rep</span>
+        </div>
+        <div class="circles-grid grid-5col">
+          <div class="circle pegada">1</div>
+          <div class="circle pegada">2</div>
+          <div class="circle falta">3</div>
+          <div class="circle pegada">4</div>
+          <div class="circle falta">5</div>
+          <div class="circle pegada">6</div>
+          <div class="circle repetida">7<span class="badge">+1</span></div>
+          <div class="circle falta">8</div>
+          <div class="circle pegada">9</div>
+          <div class="circle pegada">10</div>
+          <div class="circle falta">11</div>
+          <div class="circle pegada">12</div>
+          <div class="circle falta">13</div>
+          <div class="circle pegada">14</div>
+          <div class="circle pegada">15</div>
+          <div class="circle repetida">16<span class="badge">+1</span></div>
+          <div class="circle falta">17</div>
+          <div class="circle pegada">18</div>
+          <div class="circle falta">19</div>
+          <div class="circle pegada">20</div>
+        </div>
+      </div>
+
+      <div class="touch-hint">
+        Tap = +1 · Long-press = menú
+      </div>
+
+      <!-- Mockup del modal que aparecería al long-press -->
+      <div class="modal-mockup">
+        <div class="modal-mockup-title">📱 Long-press abre este menú:</div>
+        <div class="modal-content">
+          <div class="circle repetida modal-circle">7<span class="badge">+2</span></div>
+          <div class="modal-info">
+            <b>MEX-7</b>
+            <span>Edson Álvarez · Grupo A</span><br>
+            <span>Tienes <b>3</b> (1 pegada + 2 repetidas)</span>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button>−1</button>
+          <button class="primary">+1</button>
+          <button>Quitar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MOCKUP 3: 5 columnas + nombres pequeños ============ -->
+  <div>
+    <div class="mockup-label"><b>OPCIÓN C — 5 cols con nombres</b><br>Híbrido: ahorra espacio pero mantiene nombres visibles</div>
+    <div class="phone phone-narrow">
+      <div class="header">
+        <h1 class="title">Panini 2026</h1>
+        <div class="subtitle">Compartido<span class="sync-dot">●</span></div>
+      </div>
+
+      <div class="stats-mini">
+        <div class="stat-mini">
+          <div class="stat-mini-label">Pegadas</div>
+          <div class="stat-mini-value green">649</div>
+        </div>
+        <div class="stat-mini">
+          <div class="stat-mini-label">Faltan</div>
+          <div class="stat-mini-value red">331</div>
+        </div>
+        <div class="stat-mini">
+          <div class="stat-mini-label">Repetidas</div>
+          <div class="stat-mini-value amber">306</div>
+        </div>
+      </div>
+
+      <div class="view-toggle">
+        <button>Completa</button>
+        <button class="active">Compacta</button>
+      </div>
+
+      <div class="team-compact">
+        <div class="team-header-compact">
+          <span class="team-name-compact">Colombia (COL) · K</span>
+          <span class="team-stats-compact">12/20 · 1 rep</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;">
+          <!-- Solo Colombia tiene nombres, los demás son números -->
+          <div style="text-align:center;">
+            <div class="circle pegada" style="margin:0 auto;width:34px;height:34px;">1</div>
+            <div style="font-size:8px;color:var(--text-3);margin-top:3px;line-height:1.1;">Vargas</div>
+          </div>
+          <div style="text-align:center;">
+            <div class="circle pegada" style="margin:0 auto;width:34px;height:34px;">2</div>
+            <div style="font-size:8px;color:var(--text-3);margin-top:3px;line-height:1.1;">Ospina</div>
+          </div>
+          <div style="text-align:center;">
+            <div class="circle falta" style="margin:0 auto;width:34px;height:34px;">3</div>
+            <div style="font-size:8px;color:var(--text-3);margin-top:3px;line-height:1.1;">Sánchez</div>
+          </div>
+          <div style="text-align:center;">
+            <div class="circle pegada" style="margin:0 auto;width:34px;height:34px;">4</div>
+            <div style="font-size:8px;color:var(--text-3);margin-top:3px;line-height:1.1;">Mina</div>
+          </div>
+          <div style="text-align:center;">
+            <div class="circle pegada" style="margin:0 auto;width:34px;height:34px;">5</div>
+            <div style="font-size:8px;color:var(--text-3);margin-top:3px;line-height:1.1;">Muñoz</div>
+          </div>
+          <div style="text-align:center;">
+            <div class="circle falta" style="margin:0 auto;width:34px;height:34px;">6</div>
+            <div style="font-size:8px;color:var(--text-3);margin-top:3px;line-height:1.1;">Mojica</div>
+          </div>
+          <div style="text-align:center;">
+            <div class="circle pegada" style="margin:0 auto;width:34px;height:34px;">7</div>
+            <div style="font-size:8px;color:var(--text-3);margin-top:3px;line-height:1.1;">Lucumí</div>
+          </div>
+          <div style="text-align:center;">
+            <div class="circle pegada" style="margin:0 auto;width:34px;height:34px;">8</div>
+            <div style="font-size:8px;color:var(--text-3);margin-top:3px;line-height:1.1;">Arias</div>
+          </div>
+          <div style="text-align:center;">
+            <div class="circle pegada" style="margin:0 auto;width:34px;height:34px;">9</div>
+            <div style="font-size:8px;color:var(--text-3);margin-top:3px;line-height:1.1;">Lerma</div>
+          </div>
+          <div style="text-align:center;">
+            <div class="circle pegada" style="margin:0 auto;width:34px;height:34px;">10</div>
+            <div style="font-size:8px;color:var(--text-3);margin-top:3px;line-height:1.1;">Escudo</div>
+          </div>
+          <div style="text-align:center;">
+            <div class="circle falta" style="margin:0 auto;width:34px;height:34px;">11</div>
+            <div style="font-size:8px;color:var(--text-3);margin-top:3px;line-height:1.1;">Castaño</div>
+          </div>
+          <div style="text-align:center;">
+            <div class="circle pegada" style="margin:0 auto;width:34px;height:34px;">12</div>
+            <div style="font-size:8px;color:var(--text-3);margin-top:3px;line-height:1.1;">Ríos</div>
+          </div>
+          <div style="text-align:center;">
+            <div class="circle repetida" style="margin:0 auto;width:34px;height:34px;">13<span class="badge">+1</span></div>
+            <div style="font-size:8px;color:var(--text-3);margin-top:3px;line-height:1.1;">James</div>
+          </div>
+          <div style="text-align:center;">
+            <div class="circle pegada" style="margin:0 auto;width:34px;height:34px;">14</div>
+            <div style="font-size:8px;color:var(--text-3);margin-top:3px;line-height:1.1;">Quintero</div>
+          </div>
+          <div style="text-align:center;">
+            <div class="circle falta" style="margin:0 auto;width:34px;height:34px;">15</div>
+            <div style="font-size:8px;color:var(--text-3);margin-top:3px;line-height:1.1;">Carrascal</div>
+          </div>
+          <div style="text-align:center;">
+            <div class="circle pegada" style="margin:0 auto;width:34px;height:34px;">16</div>
+            <div style="font-size:8px;color:var(--text-3);margin-top:3px;line-height:1.1;">J.Arias</div>
+          </div>
+          <div style="text-align:center;">
+            <div class="circle falta" style="margin:0 auto;width:34px;height:34px;">17</div>
+            <div style="font-size:8px;color:var(--text-3);margin-top:3px;line-height:1.1;">Córdoba</div>
+          </div>
+          <div style="text-align:center;">
+            <div class="circle pegada" style="margin:0 auto;width:34px;height:34px;">18</div>
+            <div style="font-size:8px;color:var(--text-3);margin-top:3px;line-height:1.1;">Suárez</div>
+          </div>
+          <div style="text-align:center;">
+            <div class="circle pegada" style="margin:0 auto;width:34px;height:34px;">19</div>
+            <div style="font-size:8px;color:var(--text-3);margin-top:3px;line-height:1.1;">Díaz</div>
+          </div>
+          <div style="text-align:center;">
+            <div class="circle falta" style="margin:0 auto;width:34px;height:34px;">20</div>
+            <div style="font-size:8px;color:var(--text-3);margin-top:3px;line-height:1.1;">Equipo</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="touch-hint">
+        Solo Colombia muestra nombres; otros equipos solo número
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="max-width:600px;text-align:center;color:var(--text-3);font-size:12px;line-height:1.6;margin-top:8px;">
+  <b>Para escoger:</b><br>
+  • <b>OPCIÓN A</b> es la más comprimida — ves más equipos sin scroll, pero los círculos son más pequeños (~28px). Funciona en pantallas medianas.<br>
+  • <b>OPCIÓN B</b> tiene círculos grandes (~50px) cómodos para tocar con el dedo. Vista más legible. Long-press abre menú con +/− y nombre.<br>
+  • <b>OPCIÓN C</b> es como B pero solo Colombia muestra nombres bajo el círculo (los demás son solo número porque no son tan importantes). Buen balance.
+</div>
+
+</body>
+</html>

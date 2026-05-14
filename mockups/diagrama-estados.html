@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estados de láminas · Panini 2026</title>
+<style>
+  :root {
+    --bg: #000;
+    --bg-2: #1a1a1a;
+    --bg-3: #2a2a2a;
+    --border: #3a3a37;
+    --text: #f0eee6;
+    --text-2: #b8b6ae;
+    --text-3: #888780;
+    --green: #00D685;
+    --green-dark: #007F4E;
+    --amber: #EF9F27;
+    --amber-text: #412402;
+    --amber-dark: #BA7517;
+    --danger: #E24B4A;
+    --blue: #4A9EFF;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .page { max-width: 980px; margin: 0 auto; padding: 24px; }
+  h1 { font-size: 22px; margin: 0 0 6px; }
+  h2 { font-size: 16px; margin: 32px 0 12px; color: var(--text-2); }
+  .subtitle { color: var(--text-3); font-size: 12px; margin-bottom: 24px; }
+
+  .diagram {
+    background: var(--bg-2);
+    border-radius: 12px;
+    padding: 16px;
+    border: 0.5px solid var(--border);
+    margin-bottom: 24px;
+  }
+  svg { width: 100%; height: auto; display: block; }
+
+  .state-bg-falta    { fill: var(--danger); }
+  .state-bg-suelta   { fill: var(--blue); }
+  .state-bg-pegada   { fill: var(--green); }
+  .state-bg-repetida { fill: var(--amber); }
+
+  text.state-label {
+    font-size: 14px; font-weight: 700; text-anchor: middle;
+    font-family: "Inter", -apple-system, sans-serif;
+    fill: #fff;
+  }
+  text.state-coords {
+    font-size: 11px; text-anchor: middle;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    fill: rgba(255,255,255,0.85);
+  }
+  text.state-coords-amber { fill: var(--amber-text); opacity: 0.85; }
+
+  .arrow { fill: none; stroke-width: 1.8; }
+  .arrow-tap-falta    { stroke: var(--danger); }
+  .arrow-tap-suelta   { stroke: var(--blue); }
+  .arrow-tap-repetida { stroke: var(--amber); }
+  .arrow-pegar        { stroke: var(--green); }
+  .arrow-despegar     { stroke: var(--text-2); stroke-dasharray: 4 3; }
+  .arrow-destruct     { stroke: var(--danger); stroke-dasharray: 5 3; }
+  .arrow-loop         { stroke: var(--text-3); }
+
+  text.arrow-label {
+    font-size: 11px; font-weight: 600;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  text.label-falta    { fill: var(--danger); }
+  text.label-suelta   { fill: var(--blue); }
+  text.label-repetida { fill: var(--amber); }
+  text.label-pegar    { fill: var(--green); }
+  text.label-despegar { fill: var(--text-2); }
+  text.label-destruct { fill: var(--danger); }
+  text.label-loop     { fill: var(--text-3); }
+
+  .legend {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+    background: var(--bg-2);
+    padding: 14px;
+    border-radius: 12px;
+    border: 0.5px solid var(--border);
+    margin-bottom: 24px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+  .legend-line { width: 28px; height: 2px; flex-shrink: 0; }
+  .legend-line.tap-falta    { background: var(--danger); }
+  .legend-line.tap-suelta   { background: var(--blue); }
+  .legend-line.tap-repetida { background: var(--amber); }
+  .legend-line.pegar { background: var(--green); }
+  .legend-line.despegar { background: repeating-linear-gradient(90deg, var(--text-2) 0 4px, transparent 4px 7px); }
+  .legend-line.destruct { background: repeating-linear-gradient(90deg, var(--danger) 0 5px, transparent 5px 8px); }
+  .legend-line.loop { background: var(--text-3); }
+
+  .behavior-table {
+    background: var(--bg-2);
+    border-radius: 12px;
+    border: 0.5px solid var(--border);
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  .behavior-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .behavior-table th, .behavior-table td {
+    padding: 10px 14px;
+    border-bottom: 0.5px solid var(--border);
+    text-align: left;
+    vertical-align: top;
+  }
+  .behavior-table th {
+    background: var(--bg-3);
+    font-weight: 700;
+    color: var(--text-2);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+  .behavior-table td.state {
+    font-weight: 700;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .state-pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .state-pill.falta    { background: var(--danger); }
+  .state-pill.suelta   { background: var(--blue); }
+  .state-pill.pegada   { background: var(--green); }
+  .state-pill.repetida { background: var(--amber); color: var(--amber-text); }
+
+  .key {
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-size: 12px;
+    background: var(--bg-3);
+    padding: 1px 6px;
+    border-radius: 3px;
+    color: var(--text-2);
+  }
+
+  .filter-card {
+    background: var(--bg-2);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin: 10px 0;
+  }
+  .filter-card h3 {
+    margin: 0 0 6px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .filter-card.global   h3 { color: var(--text); }
+  .filter-card.pegada   h3 { color: var(--green); }
+  .filter-card.suelta   h3 { color: var(--blue); }
+  .filter-card.falta    h3 { color: var(--danger); }
+  .filter-card.repetida h3 { color: var(--amber); }
+  .filter-card p, .filter-card ul { margin: 4px 0; font-size: 12px; color: var(--text-2); }
+  .filter-card ul { padding-left: 18px; }
+
+  .flow-card {
+    background: linear-gradient(180deg, rgba(74,158,255,0.06), rgba(0,214,133,0.06));
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
+  }
+  .flow-card h3 { margin: 0 0 10px; font-size: 14px; }
+  .flow-step {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0;
+    font-size: 13px;
+  }
+  .flow-step .num {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--bg-3);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; flex-shrink: 0;
+    font-size: 11px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <h1>Estados de las láminas · modelo estricto</h1>
+  <p class="subtitle">Cada filtro tiene UNA responsabilidad. El tap+ en Faltantes habilita la lámina a la vez en Sueltas y Repetidas, así puedes empezar a contar repetidas desde la primera copia extra sin tener que pegarla primero.</p>
+
+  <h2>Modelo de estados</h2>
+
+  <div class="diagram">
+    <svg viewBox="0 0 800 540" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="ar-tap-falta"    viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#E24B4A"/></marker>
+        <marker id="ar-tap-suelta"   viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4A9EFF"/></marker>
+        <marker id="ar-tap-repetida" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#EF9F27"/></marker>
+        <marker id="ar-pegar"        viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#00D685"/></marker>
+        <marker id="ar-despegar"     viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b8b6ae"/></marker>
+        <marker id="ar-destruct"     viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#E24B4A"/></marker>
+        <marker id="ar-loop"         viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#888780"/></marker>
+      </defs>
+
+      <!-- Nodos -->
+      <circle cx="160" cy="120" r="60" class="state-bg-falta"/>
+      <text x="160" y="115" class="state-label">FALTANTES</text>
+      <text x="160" y="138" class="state-coords">p=0 · s=0</text>
+      <text x="160" y="200" class="arrow-label" text-anchor="middle" fill="#888780">no la tienes</text>
+
+      <circle cx="640" cy="120" r="60" class="state-bg-suelta"/>
+      <text x="640" y="115" class="state-label">SUELTAS</text>
+      <text x="640" y="138" class="state-coords">p=0 · s ≥ 1</text>
+      <text x="640" y="200" class="arrow-label" text-anchor="middle" fill="#888780">en mano sin pegar</text>
+
+      <circle cx="160" cy="420" r="60" class="state-bg-pegada"/>
+      <text x="160" y="415" class="state-label">PEGADAS</text>
+      <text x="160" y="438" class="state-coords">p=1 · s=0</text>
+      <text x="160" y="498" class="arrow-label" text-anchor="middle" fill="#888780">en el álbum</text>
+
+      <circle cx="640" cy="420" r="60" class="state-bg-repetida"/>
+      <text x="640" y="415" class="state-label" style="fill: #412402;">REPETIDAS</text>
+      <text x="640" y="438" class="state-coords state-coords-amber">p=1 · s ≥ 1</text>
+      <text x="640" y="498" class="arrow-label" text-anchor="middle" fill="#888780">pegada + extras</text>
+
+      <!-- Flechas TAP coloreadas por filtro donde se dispara -->
+
+      <!-- Falta → Suelta : tap+ en filtro Faltantes (rojo) -->
+      <path d="M 220,100 L 580,100" class="arrow arrow-tap-falta" marker-end="url(#ar-tap-falta)"/>
+      <text x="400" y="92" class="arrow-label label-falta" text-anchor="middle">tap + (filtro Faltantes)</text>
+
+      <!-- Falta → Repetida (DOBLE EFECTO): el mismo tap+ en Faltantes activa la lámina en Repetidas -->
+      <path d="M 217,164 L 587,376" class="arrow arrow-tap-falta" marker-end="url(#ar-tap-falta)" style="stroke-dasharray: 5 4;"/>
+      <text x="305" y="232" class="arrow-label label-falta" text-anchor="middle" transform="rotate(29.6 305 232)">mismo tap + activa también Repetidas</text>
+      <text x="305" y="246" class="arrow-label label-falta" text-anchor="middle" transform="rotate(29.6 305 246)" style="font-size:9px;">(s ≥ 1 → la lámina cuenta como repetible)</text>
+
+      <!-- Suelta → Pegada (tap+ en filtro Sueltas = pegar) -->
+      <path d="M 605,180 L 195,360" class="arrow arrow-pegar" marker-end="url(#ar-pegar)"/>
+      <text x="495" y="318" class="arrow-label label-pegar" transform="rotate(-23 495 318)">tap + (filtro Sueltas) = pegar</text>
+
+      <!-- Pegada → Repetida : tap+ desde Pegada (vista global / menú) -->
+      <path d="M 220,400 L 580,400" class="arrow arrow-despegar" marker-end="url(#ar-despegar)"/>
+      <text x="400" y="392" class="arrow-label label-despegar" text-anchor="middle">long-press menú: +1 suelta más</text>
+
+      <!-- Repetida → Pegada : tap- en filtro Repetidas (s=1) -->
+      <path d="M 580,440 L 220,440" class="arrow arrow-tap-repetida" marker-end="url(#ar-tap-repetida)"/>
+      <text x="400" y="458" class="arrow-label label-repetida" text-anchor="middle">tap − (filtro Repetidas, s=1)</text>
+
+      <!-- Repetida self-loop (filtro Repetidas tap+) -->
+      <path d="M 700,380 C 770,355 770,435 715,418" class="arrow arrow-tap-repetida" marker-end="url(#ar-tap-repetida)"/>
+      <text x="775" y="380" class="arrow-label label-repetida">tap + ⟲</text>
+      <text x="775" y="398" class="arrow-label label-repetida" style="font-size:9px;">filtro Repetidas</text>
+
+      <!-- Pegada → Suelta (despegar) -->
+      <path d="M 195,360 L 605,180" class="arrow arrow-despegar" marker-end="url(#ar-despegar)"/>
+      <text x="455" y="295" class="arrow-label label-despegar" transform="rotate(-23 455 295)">menú: despegar</text>
+
+      <!-- Repetida → Suelta (despegar) -->
+      <path d="M 605,360 L 605,180" class="arrow arrow-despegar" marker-end="url(#ar-despegar)"/>
+      <text x="590" y="280" class="arrow-label label-despegar" text-anchor="end">menú: despegar</text>
+
+      <!-- Pegada → Falta (destructivo) -->
+      <path d="M 130,360 L 130,180" class="arrow arrow-destruct" marker-end="url(#ar-destruct)"/>
+      <text x="118" y="270" class="arrow-label label-destruct" text-anchor="end">menú: quitar</text>
+      <text x="118" y="285" class="arrow-label label-destruct" text-anchor="end" style="font-size:9px;">(lámina dañada)</text>
+
+    </svg>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><span class="legend-line tap-falta"></span><span><b style="color:var(--danger)">tap + filtro Faltantes</b> → activa la lámina en <b>Sueltas y Repetidas</b> a la vez</span></div>
+    <div class="legend-item"><span class="legend-line pegar"></span><span><b style="color:var(--green)">tap + filtro Sueltas = pegar</b> → mueve s a p (no acumula)</span></div>
+    <div class="legend-item"><span class="legend-line tap-repetida"></span><span><b style="color:var(--amber)">tap +/− filtro Repetidas</b> → único lugar donde se ajustan extras</span></div>
+    <div class="legend-item"><span class="legend-line despegar"></span><span><b style="color:var(--text-2)">long-press menú</b>: despegar / +1 suelta más</span></div>
+    <div class="legend-item"><span class="legend-line destruct"></span><span><b style="color:var(--danger)">menú: quitar</b> (lámina dañada)</span></div>
+    <div class="legend-item"><span class="legend-line loop"></span><span>self-loop: acumula extras (solo Repetidas)</span></div>
+  </div>
+
+  <h2>Flujo natural Falta → Repetida</h2>
+
+  <div class="flow-card">
+    <h3>Flujo natural (cada filtro hace UNA cosa)</h3>
+    <div class="flow-step">
+      <div class="num" style="background:var(--danger); color:#fff;">1</div>
+      <div>Filtro <span class="state-pill falta">FALTA</span> → tap <span class="key">+</span> → la lámina pasa a <span class="state-pill suelta">SUELTA</span> (s=1) <b>y aparece también en filtro <span class="state-pill repetida">REPETIDAS</span></b></div>
+    </div>
+    <div class="flow-step">
+      <div class="num" style="background:var(--amber); color:var(--amber-text);">2a</div>
+      <div>¿Tienes más copias en mano de la misma? → filtro <span class="state-pill repetida">REPETIDAS</span> → tap <span class="key">+</span> ⟲ por cada copia extra</div>
+    </div>
+    <div class="flow-step">
+      <div class="num" style="background:var(--blue); color:#fff;">2b</div>
+      <div>Cuando vayas a pegarla: filtro <span class="state-pill suelta">SUELTAS</span> → tap <span class="key">+</span> = <b>pegar</b> → ahora es <span class="state-pill pegada">PEGADA</span> (los extras quedan como Repetida con p=1)</div>
+    </div>
+    <div class="flow-step">
+      <div class="num" style="background:var(--text-3); color:#fff;">⟳</div>
+      <div>Después de pegada, aún puedes ajustar extras desde filtro <span class="state-pill repetida">REPETIDAS</span> con <span class="key">+</span>/<span class="key">−</span></div>
+    </div>
+  </div>
+
+  <h2>Comportamiento por estado en cada vista</h2>
+
+  <div class="behavior-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Estado</th>
+          <th>Vista global<br><small>(sin filtro)</small></th>
+          <th>Filtro propio</th>
+          <th>Filtro Pegadas</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="state"><span class="state-pill falta">FALTA</span></td>
+          <td>círculo rojo · sin botones · long-press menú</td>
+          <td>círculo rojo · solo <span class="key">+</span> → suelta</td>
+          <td>oculta (no es match)</td>
+        </tr>
+        <tr>
+          <td class="state"><span class="state-pill suelta">SUELTA</span></td>
+          <td>círculo azul · sin botones · long-press = <b>pegar</b></td>
+          <td>en filtro <b>Sueltas</b>: azul · solo <span class="key">+</span> = <b>pegar</b> (no <span class="key">−</span>)<br>en filtro <b>Repetidas</b>: ámbar · <span class="key">+</span>/<span class="key">−</span> ajusta extras</td>
+          <td>oculta (no es match)</td>
+        </tr>
+        <tr>
+          <td class="state"><span class="state-pill pegada">PEGADA</span></td>
+          <td>círculo verde · sin botones · long-press menú</td>
+          <td>círculo verde · sin botones · long-press menú</td>
+          <td>círculo verde · sin botones · long-press menú</td>
+        </tr>
+        <tr>
+          <td class="state"><span class="state-pill repetida">REPETIDA</span></td>
+          <td>círculo ámbar <small>(+N)</small> · long-press menú</td>
+          <td>círculo ámbar <small>(+N)</small> · <span class="key">+</span> y <span class="key">−</span></td>
+          <td>círculo verde <small>(sin +N)</small> · sin botones · long-press menú</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Comportamiento por filtro</h2>
+
+  <div class="filter-card global">
+    <h3>SIN FILTRO (vista global)</h3>
+    <p>Layout: <b>tabla compacta</b> — 1 fila por equipo con 20 círculos en 2 sub-filas (10 + 10).</p>
+    <ul>
+      <li>Read-only: tap = no-op para evitar modificar por accidente.</li>
+      <li>Long-press en cualquier celda → menú con todas las acciones según el estado.</li>
+      <li>Colores sólidos: rojo / azul / verde / ámbar.</li>
+    </ul>
+  </div>
+
+  <div class="filter-card falta">
+    <h3>Filtro FALTANTES (pill roja)</h3>
+    <p>Layout: cards de 5 columnas. Solo p=0, s=0.</p>
+    <ul>
+      <li>Solo botón <span class="key">+</span> → mueve a Suelta.</li>
+      <li>Panel colapsable arriba: <b>"+ Registrar láminas que tengo"</b> para pegar lista de códigos en bulk.</li>
+    </ul>
+  </div>
+
+  <div class="filter-card suelta">
+    <h3>Filtro SUELTAS (pill azul)</h3>
+    <p>Layout: cards de 5 columnas. Solo p=0, s≥1.</p>
+    <ul>
+      <li>Solo botón <span class="key">+</span> = <b>pegar</b> al álbum (mueve s→p).</li>
+      <li>Sin botón <span class="key">−</span>: el modelo no permite "deshacer" desde sueltas con tap.</li>
+      <li>Long-press = pegar (mismo gesto consistente).</li>
+      <li>Botón "Pegar todas las sueltas" por equipo.</li>
+    </ul>
+  </div>
+
+  <div class="filter-card pegada">
+    <h3>Filtro PEGADAS (donut)</h3>
+    <p>Layout: cards de 5 columnas. Pegadas + repetidas (todas las que tienen una en el álbum).</p>
+    <ul>
+      <li>Repetidas se pintan <b>verdes sin badge +N</b> — la idea es "qué tengo en el álbum".</li>
+      <li>Sin botones (verde es sagrado). Long-press abre menú.</li>
+    </ul>
+  </div>
+
+  <div class="filter-card repetida">
+    <h3>Filtro REPETIDAS (pill ámbar)</h3>
+    <p>Layout: cards de 5 columnas. Incluye <b>cualquier lámina con s ≥ 1</b> — ya sea pegada con extras <i>(p=1, s≥1)</i> o suelta sin pegar <i>(p=0, s≥1)</i>.</p>
+    <ul>
+      <li>Botones <span class="key">+</span> (suma extra) y <span class="key">−</span> (resta extra).</li>
+      <li>Es el ÚNICO lugar donde se "suman repetidas" con tap.</li>
+      <li>La lámina entra acá apenas hace tap+ en Faltantes, para poder empezar a contar repetidas desde la primera copia adicional.</li>
+      <li>Panel colapsable arriba: <b>"▸ Pegar varias para sacar"</b> con preview en vivo.</li>
+    </ul>
+  </div>
+
+  <h2>Reglas clave del modelo estricto</h2>
+  <ul>
+    <li><b>Cada filtro tiene UNA responsabilidad</b>:
+      <ul>
+        <li>Faltantes → registrar lámina nueva (a suelta)</li>
+        <li>Sueltas → pegar al álbum</li>
+        <li>Repetidas → ajustar cantidad de extras</li>
+        <li>Pegadas → ver y consultar (sagrado, solo long-press)</li>
+      </ul>
+    </li>
+    <li><b>Lo verde es sagrado</b>: una pegada nunca se modifica con tap. Solo via long-press → menú.</li>
+    <li><b>Vista global = solo lectura</b>: para evitar modificar por accidente.</li>
+    <li><b>Auto-tab "Todos"</b>: al activar cualquier filtro, automáticamente vas a Todos los equipos. Selector de grupos se oculta.</li>
+    <li><b>Long-press</b>: puerta universal a las acciones secundarias (despegar, +1 suelta más, quitar, etc.).</li>
+    <li><b>Tap −1 sobre pegada</b> (via menú): salto a Falta. La lámina se considera dañada al despegarla.</li>
+  </ul>
+
+</div>
+</body>
+</html>

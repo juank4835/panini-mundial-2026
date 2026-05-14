@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup · Cruce de listas redesign</title>
+<style>
+  :root {
+    --bg: #000;
+    --bg-2: #1a1a1a;
+    --bg-3: #2a2a2a;
+    --border: #3a3a37;
+    --text: #f0eee6;
+    --text-2: #b8b6ae;
+    --text-3: #888780;
+    --green: #00D685;
+    --green-dark: #007F4E;
+    --amber: #EF9F27;
+    --amber-text: #412402;
+    --amber-dark: #BA7517;
+    --danger: #E24B4A;
+    --blue: #4A9EFF;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* Container móvil */
+  .phone {
+    max-width: 414px;
+    margin: 12px auto 100px;
+    padding: 14px;
+    border: 0.5px solid var(--border);
+    border-radius: 18px;
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
+  }
+  .phone-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0 12px;
+    border-bottom: 0.5px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .phone-title { font-size: 16px; font-weight: 700; }
+  .phone-close {
+    background: none;
+    border: 0;
+    color: var(--text-3);
+    cursor: pointer;
+    font-size: 22px;
+  }
+
+  /* === Balance indicator === */
+  .cx-balance {
+    background: var(--bg-2);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 14px 12px;
+    margin-bottom: 12px;
+  }
+  .cx-balance-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-size: 12px;
+  }
+  .cx-balance-l { color: var(--amber); font-weight: 700; }
+  .cx-balance-r { color: var(--blue);  font-weight: 700; }
+  .cx-balance-bar {
+    display: flex;
+    height: 8px;
+    border-radius: 100px;
+    overflow: hidden;
+    background: var(--bg-3);
+    margin-bottom: 8px;
+  }
+  .cx-balance-bar .das    { background: var(--amber); transition: flex 0.3s ease; }
+  .cx-balance-bar .recibes { background: var(--blue);  transition: flex 0.3s ease; }
+  .cx-balance-hint {
+    font-size: 11px;
+    color: var(--text-3);
+    text-align: center;
+  }
+  .cx-balance-hint.ok    { color: var(--green); }
+  .cx-balance-hint.warn  { color: var(--amber); }
+  .cx-balance-hint.bad   { color: var(--danger); }
+
+  /* === Section (give / receive) === */
+  .cx-section {
+    background: var(--bg-2);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 12px 14px;
+    margin-bottom: 12px;
+  }
+  .cx-section.give    { border-color: rgba(239,159,39,0.45); }
+  .cx-section.receive { border-color: rgba(74,158,255,0.45); }
+  .cx-section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .cx-section-title {
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .cx-section.give    .cx-section-title { color: var(--amber); }
+  .cx-section.receive .cx-section-title { color: var(--blue); }
+  .cx-section-count {
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-size: 12px;
+    background: var(--bg);
+    padding: 1px 8px;
+    border-radius: 100px;
+    border: 0.5px solid currentColor;
+  }
+  .cx-section-clear {
+    background: none;
+    border: 0;
+    color: var(--text-3);
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .cx-section-clear:hover { color: var(--text-2); background: var(--bg-3); }
+
+  /* === Team block === */
+  .cx-team {
+    margin-bottom: 12px;
+  }
+  .cx-team:last-child { margin-bottom: 0; }
+  .cx-team-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    font-size: 11px;
+    color: var(--text-2);
+  }
+  .cx-team-label {
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .cx-team-x {
+    background: none;
+    border: 0;
+    color: var(--text-3);
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    padding: 4px 8px;
+    border-radius: 6px;
+  }
+  .cx-team-x:hover { color: var(--danger); background: rgba(226,75,74,0.1); }
+  .cx-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .cx-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 100px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-size: 12px;
+    font-weight: 700;
+    border: 0.5px solid;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+    user-select: none;
+  }
+  .cx-chip:active { transform: scale(0.94); }
+  .cx-section.give    .cx-chip {
+    background: rgba(239,159,39,0.13);
+    color: var(--amber);
+    border-color: rgba(239,159,39,0.55);
+  }
+  .cx-section.receive .cx-chip {
+    background: rgba(74,158,255,0.13);
+    color: var(--blue);
+    border-color: rgba(74,158,255,0.55);
+  }
+  .cx-chip-x {
+    margin-left: 6px;
+    opacity: 0.6;
+    font-size: 10px;
+  }
+  .cx-chip.discarded {
+    opacity: 0.3;
+    text-decoration: line-through;
+  }
+
+  /* === Empty state === */
+  .cx-empty {
+    text-align: center;
+    color: var(--text-3);
+    padding: 18px 12px;
+    font-size: 12px;
+    font-style: italic;
+  }
+
+  /* === Sticky action bar === */
+  .cx-sticky {
+    position: sticky;
+    bottom: 0;
+    margin: 14px -14px -14px;
+    padding: 12px 14px calc(14px + env(safe-area-inset-bottom, 0px));
+    background: rgba(0,0,0,0.92);
+    backdrop-filter: blur(10px);
+    border-top: 0.5px solid var(--border);
+    display: flex;
+    gap: 8px;
+  }
+  .cx-btn {
+    flex: 1;
+    padding: 13px;
+    border-radius: 8px;
+    background: var(--bg-2);
+    border: 0.5px solid var(--border);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+  }
+  .cx-btn:active { transform: scale(0.98); }
+  .cx-btn.secondary {
+    color: var(--text-2);
+    flex: 0 0 auto;
+    padding: 13px 18px;
+  }
+  .cx-btn.primary {
+    color: var(--amber);
+    border-color: var(--amber);
+    text-shadow: 0 0 6px rgba(239,159,39,0.45), 0 0 12px rgba(239,159,39,0.25);
+    flex: 1;
+  }
+
+  /* Hint */
+  .lead {
+    color: var(--text-3);
+    font-size: 12px;
+    text-align: center;
+    margin-bottom: 14px;
+  }
+  h2 {
+    font-size: 14px;
+    margin: 28px 0 8px;
+    color: var(--text);
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+</style>
+</head>
+<body>
+
+<div style="max-width:414px; margin:18px auto; padding: 0 14px; color: var(--text-3); font-size: 12px;">
+  Mockup del cruce de listas con el redesign propuesto. Tap en chips para descartar (visual).
+</div>
+
+<!-- ============== ESCENARIO 1: trato favorable ============== -->
+<div class="phone">
+  <div class="phone-header">
+    <div class="phone-title">⇄ Intercambios</div>
+    <button class="phone-close">✕</button>
+  </div>
+
+  <!-- Balance indicator -->
+  <div class="cx-balance">
+    <div class="cx-balance-row">
+      <span class="cx-balance-l">Das 5</span>
+      <span class="cx-balance-r">Recibes 7</span>
+    </div>
+    <div class="cx-balance-bar">
+      <div class="das"     style="flex: 5;"></div>
+      <div class="recibes" style="flex: 7;"></div>
+    </div>
+    <div class="cx-balance-hint ok">Trato favorable · te dan 2 más</div>
+  </div>
+
+  <!-- Sección DAS -->
+  <div class="cx-section give">
+    <div class="cx-section-head">
+      <div class="cx-section-title">→ Le das <span class="cx-section-count">5</span></div>
+      <button class="cx-section-clear">Quitar todo</button>
+    </div>
+    <div class="cx-team">
+      <div class="cx-team-head">
+        <span class="cx-team-label">Argentina · A</span>
+        <button class="cx-team-x" title="Quitar las 2 de Argentina">✕ 2</button>
+      </div>
+      <div class="cx-chips">
+        <span class="cx-chip">3<span class="cx-chip-x">✕</span></span>
+        <span class="cx-chip">7<span class="cx-chip-x">✕</span></span>
+      </div>
+    </div>
+    <div class="cx-team">
+      <div class="cx-team-head">
+        <span class="cx-team-label">Brasil · C</span>
+        <button class="cx-team-x">✕ 2</button>
+      </div>
+      <div class="cx-chips">
+        <span class="cx-chip">12<span class="cx-chip-x">✕</span></span>
+        <span class="cx-chip">15<span class="cx-chip-x">✕</span></span>
+      </div>
+    </div>
+    <div class="cx-team">
+      <div class="cx-team-head">
+        <span class="cx-team-label">Intro</span>
+        <button class="cx-team-x">✕ 1</button>
+      </div>
+      <div class="cx-chips">
+        <span class="cx-chip">FWC3<span class="cx-chip-x">✕</span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección RECIBES -->
+  <div class="cx-section receive">
+    <div class="cx-section-head">
+      <div class="cx-section-title">← Recibes <span class="cx-section-count">7</span></div>
+      <button class="cx-section-clear">Quitar todo</button>
+    </div>
+    <div class="cx-team">
+      <div class="cx-team-head">
+        <span class="cx-team-label">México · A</span>
+        <button class="cx-team-x">✕ 3</button>
+      </div>
+      <div class="cx-chips">
+        <span class="cx-chip">5<span class="cx-chip-x">✕</span></span>
+        <span class="cx-chip">9<span class="cx-chip-x">✕</span></span>
+        <span class="cx-chip">14<span class="cx-chip-x">✕</span></span>
+      </div>
+    </div>
+    <div class="cx-team">
+      <div class="cx-team-head">
+        <span class="cx-team-label">Colombia · F</span>
+        <button class="cx-team-x">✕ 4</button>
+      </div>
+      <div class="cx-chips">
+        <span class="cx-chip">2<span class="cx-chip-x">✕</span></span>
+        <span class="cx-chip">8<span class="cx-chip-x">✕</span></span>
+        <span class="cx-chip">11<span class="cx-chip-x">✕</span></span>
+        <span class="cx-chip">19<span class="cx-chip-x">✕</span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sticky bottom bar -->
+  <div class="cx-sticky">
+    <button class="cx-btn secondary">Reset</button>
+    <button class="cx-btn primary">Confirmar cambio (5 ↔ 7)</button>
+  </div>
+</div>
+
+<!-- ============== ESCENARIO 2: trato desfavorable ============== -->
+<h2 style="max-width: 414px; margin: 0 auto; padding: 0 14px;">Variante: trato desfavorable</h2>
+<div class="phone">
+  <div class="phone-header">
+    <div class="phone-title">⇄ Intercambios</div>
+    <button class="phone-close">✕</button>
+  </div>
+
+  <div class="cx-balance">
+    <div class="cx-balance-row">
+      <span class="cx-balance-l">Das 8</span>
+      <span class="cx-balance-r">Recibes 2</span>
+    </div>
+    <div class="cx-balance-bar">
+      <div class="das"     style="flex: 8;"></div>
+      <div class="recibes" style="flex: 2;"></div>
+    </div>
+    <div class="cx-balance-hint bad">Le das 6 más · puedes negociar</div>
+  </div>
+
+  <div class="cx-section give">
+    <div class="cx-section-head">
+      <div class="cx-section-title">→ Le das <span class="cx-section-count">8</span></div>
+      <button class="cx-section-clear">Quitar todo</button>
+    </div>
+    <div class="cx-team">
+      <div class="cx-team-head">
+        <span class="cx-team-label">Argentina · A</span>
+        <button class="cx-team-x">✕ 4</button>
+      </div>
+      <div class="cx-chips">
+        <span class="cx-chip">3<span class="cx-chip-x">✕</span></span>
+        <span class="cx-chip">7<span class="cx-chip-x">✕</span></span>
+        <span class="cx-chip">11<span class="cx-chip-x">✕</span></span>
+        <span class="cx-chip">15<span class="cx-chip-x">✕</span></span>
+      </div>
+    </div>
+    <div class="cx-team">
+      <div class="cx-team-head">
+        <span class="cx-team-label">Brasil · C</span>
+        <button class="cx-team-x">✕ 4</button>
+      </div>
+      <div class="cx-chips">
+        <span class="cx-chip">2<span class="cx-chip-x">✕</span></span>
+        <span class="cx-chip">6<span class="cx-chip-x">✕</span></span>
+        <span class="cx-chip">12<span class="cx-chip-x">✕</span></span>
+        <span class="cx-chip">18<span class="cx-chip-x">✕</span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="cx-section receive">
+    <div class="cx-section-head">
+      <div class="cx-section-title">← Recibes <span class="cx-section-count">2</span></div>
+      <button class="cx-section-clear">Quitar todo</button>
+    </div>
+    <div class="cx-team">
+      <div class="cx-team-head">
+        <span class="cx-team-label">México · A</span>
+        <button class="cx-team-x">✕ 2</button>
+      </div>
+      <div class="cx-chips">
+        <span class="cx-chip">5<span class="cx-chip-x">✕</span></span>
+        <span class="cx-chip">9<span class="cx-chip-x">✕</span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="cx-sticky">
+    <button class="cx-btn secondary">Reset</button>
+    <button class="cx-btn primary">Confirmar cambio (8 ↔ 2)</button>
+  </div>
+</div>
+
+<!-- ============== ESCENARIO 3: parejo ============== -->
+<h2 style="max-width: 414px; margin: 0 auto; padding: 0 14px;">Variante: parejo</h2>
+<div class="phone">
+  <div class="phone-header">
+    <div class="phone-title">⇄ Intercambios</div>
+    <button class="phone-close">✕</button>
+  </div>
+
+  <div class="cx-balance">
+    <div class="cx-balance-row">
+      <span class="cx-balance-l">Das 3</span>
+      <span class="cx-balance-r">Recibes 3</span>
+    </div>
+    <div class="cx-balance-bar">
+      <div class="das"     style="flex: 3;"></div>
+      <div class="recibes" style="flex: 3;"></div>
+    </div>
+    <div class="cx-balance-hint ok">Trato parejo · 3 por 3</div>
+  </div>
+
+  <div class="cx-section give">
+    <div class="cx-section-head">
+      <div class="cx-section-title">→ Le das <span class="cx-section-count">3</span></div>
+      <button class="cx-section-clear">Quitar todo</button>
+    </div>
+    <div class="cx-team">
+      <div class="cx-team-head">
+        <span class="cx-team-label">Argentina · A</span>
+        <button class="cx-team-x">✕ 3</button>
+      </div>
+      <div class="cx-chips">
+        <span class="cx-chip">3<span class="cx-chip-x">✕</span></span>
+        <span class="cx-chip">7<span class="cx-chip-x">✕</span></span>
+        <span class="cx-chip">11<span class="cx-chip-x">✕</span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="cx-section receive">
+    <div class="cx-section-head">
+      <div class="cx-section-title">← Recibes <span class="cx-section-count">3</span></div>
+      <button class="cx-section-clear">Quitar todo</button>
+    </div>
+    <div class="cx-team">
+      <div class="cx-team-head">
+        <span class="cx-team-label">México · A</span>
+        <button class="cx-team-x">✕ 3</button>
+      </div>
+      <div class="cx-chips">
+        <span class="cx-chip">5<span class="cx-chip-x">✕</span></span>
+        <span class="cx-chip">9<span class="cx-chip-x">✕</span></span>
+        <span class="cx-chip">14<span class="cx-chip-x">✕</span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="cx-sticky">
+    <button class="cx-btn secondary">Reset</button>
+    <button class="cx-btn primary">Confirmar cambio (3 ↔ 3)</button>
+  </div>
+</div>
+
+<script>
+  // Demo: tap en chip para descartar (visual)
+  document.querySelectorAll('.cx-chip').forEach(c => {
+    c.onclick = (e) => {
+      e.stopPropagation();
+      c.classList.toggle('discarded');
+    };
+  });
+</script>
+
+</body>
+</html>

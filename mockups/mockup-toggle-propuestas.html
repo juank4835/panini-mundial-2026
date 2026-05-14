@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup · Propuestas para el toggle</title>
+<style>
+  /* Variables exactas del app */
+  :root {
+    --bg: #000000;
+    --bg-2: #1a1a1a;
+    --bg-3: #2a2a2a;
+    --text: #f0eee6;
+    --text-2: #b4b2a9;
+    --text-3: #888780;
+    --border: rgba(240, 238, 230, 0.12);
+    --amber: #EF9F27;
+    --blue: #4A9EFF;
+    --green: #00D685;
+    --danger: #E24B4A;
+    --accent: #FF8C1A;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: #050505;
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif;
+    font-size: 14px;
+  }
+  .page { max-width: 1300px; margin: 0 auto; padding: 24px 16px 80px; }
+  .page-title { font-size: 20px; font-weight: 600; margin: 0 0 4px; }
+  .page-sub { color: var(--text-2); font-size: 13px; margin: 0 0 24px; max-width: 800px; }
+  .row { display: flex; gap: 18px; flex-wrap: wrap; align-items: flex-start; justify-content: center; }
+  .col { display: flex; flex-direction: column; align-items: center; }
+  .opt-title {
+    color: var(--amber);
+    font-size: 14px; font-weight: 700;
+    margin: 0 0 4px;
+    text-transform: uppercase; letter-spacing: 0.8px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .opt-sub {
+    color: var(--text-3); font-size: 11px;
+    margin: 0 0 12px; max-width: 360px;
+    text-align: center; line-height: 1.5;
+  }
+  .phone {
+    width: 380px;
+    background: var(--bg);
+    border-radius: 36px;
+    border: 1px solid #1f1f1f;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    position: relative;
+  }
+  .phone-status {
+    height: 28px;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0 22px;
+    font-size: 13px; color: var(--text); font-weight: 600;
+  }
+  .phone-status .right { font-size: 10px; color: var(--text-2); letter-spacing: 1px; }
+
+  /* Header */
+  .app { padding: 0 12px 14px; }
+  .page-header {
+    display: flex; align-items: center; justify-content: space-between; gap: 6px;
+    background: var(--bg);
+    padding: 10px 0 6px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .page-header h1 {
+    margin: 0; flex: 1; min-width: 0;
+    font-size: 16px; font-weight: 500;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .header-actions { display: flex; gap: 0; flex-shrink: 0; }
+  .header-icon-btn {
+    background: none; border: 0; color: var(--bg-3);
+    padding: 5px;
+  }
+  .header-icon-btn svg { width: 18px; height: 18px; display: block; }
+  .header-icon-btn.is-view-toggle { color: var(--amber); }
+  .header-icon-btn.is-view-toggle svg { stroke: currentColor; }
+  .subtitle { color: var(--text-3); font-size: 10px; margin: 6px 0 10px; }
+
+  /* Hero (sin toggle al lado salvo donde se especifique) */
+  .hero { display: flex; align-items: center; justify-content: center; margin: 4px 0 12px; }
+  .donut-wrap {
+    position: relative; width: 180px; height: 180px;
+    flex-shrink: 0;
+  }
+  .donut-svg { width: 100%; height: 100%; display: block; }
+  .donut-track { stroke: var(--bg-3); stroke-width: 14; fill: none; }
+  .donut-fill {
+    stroke: var(--green); stroke-width: 14; fill: none;
+    stroke-linecap: round;
+    transform: rotate(-90deg); transform-origin: 100px 100px;
+    filter: drop-shadow(0 0 4px rgba(0,214,133,0.8)) drop-shadow(0 0 12px rgba(0,214,133,0.45));
+  }
+  .donut-text {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .donut-pct {
+    font-size: 30px; font-weight: 700;
+    color: var(--green); line-height: 1; letter-spacing: -1px;
+    text-shadow: 0 0 8px rgba(0,214,133,0.7), 0 0 16px rgba(0,214,133,0.5), 0 0 28px rgba(0,214,133,0.3);
+  }
+  .donut-frac {
+    font-size: 13px; color: var(--green);
+    margin-top: 4px; font-family: "JetBrains Mono", Menlo, monospace;
+    text-shadow: 0 0 6px rgba(0,214,133,0.55), 0 0 12px rgba(0,214,133,0.3);
+  }
+  .donut-label {
+    font-size: 9px; color: var(--text-3);
+    text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;
+  }
+
+  .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .stat-pill {
+    background: var(--bg-2); border-radius: var(--radius);
+    padding: 10px 6px; text-align: center;
+    border: 1px solid transparent;
+  }
+  .stat-pill-blue   { border-color: rgba(74,158,255,0.55); }
+  .stat-pill-red    { border-color: rgba(226,75,74,0.55); }
+  .stat-pill-amber  { border-color: rgba(239,159,39,0.55); }
+  .stat-pill-value { font-size: 18px; font-weight: 700; line-height: 1; }
+  .stat-pill-label { font-size: 11px; color: var(--text-2); margin-top: 4px; }
+  .stat-pill-sub { font-size: 9px; color: var(--text-3); margin-top: 3px; }
+  .stat-pill-blue .stat-pill-value { color: var(--blue); text-shadow: 0 0 6px rgba(74,158,255,0.7); }
+  .stat-pill-red .stat-pill-value { color: var(--danger); text-shadow: 0 0 6px rgba(226,75,74,0.7); }
+  .stat-pill-amber .stat-pill-value { color: var(--amber); text-shadow: 0 0 6px rgba(239,159,39,0.7); }
+
+  /* group-selector mobile */
+  .group-selector-mobile {
+    display: block; width: 100%;
+    background: var(--bg-2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 36px 10px 14px;
+    color: var(--text);
+    font-family: inherit; font-size: 13px;
+    margin: 12px 0;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'%3e%3cpath fill='none' stroke='%23FF8C1A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M3 5l4 4 4-4'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+  }
+
+  /* Tabla compacta */
+  .home-compact-tabla {
+    display: grid;
+    grid-template-columns: 44px repeat(10, 1fr);
+    gap: 3px;
+    margin: 0 0 10px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .home-compact-tabla .group-row {
+    grid-column: 1 / -1;
+    background: var(--bg-2);
+    color: var(--amber);
+    padding: 5px 10px;
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.8px;
+    margin-top: 6px; border-radius: 4px;
+  }
+  .home-compact-tabla .team-name {
+    padding: 2px 4px;
+    background: var(--bg-2); border-radius: 4px;
+    color: var(--text-2); font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+    grid-row: span 2;
+  }
+  .home-compact-tabla .cell {
+    aspect-ratio: 1;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 11px;
+    border-radius: 50%;
+    color: #fff; line-height: 1;
+  }
+  .home-compact-tabla .cell.pegada   { background: var(--green); }
+  .home-compact-tabla .cell.falta    { background: var(--danger); }
+  .home-compact-tabla .cell.suelta   { background: var(--blue); }
+  .home-compact-tabla .cell.repetida { background: var(--amber); }
+
+
+  /* ============== A · SEGMENTED PILL HORIZONTAL ============== */
+  /* iOS-style segmented control, full-width, debajo de los stats. */
+  .opt-a-toolbar {
+    display: flex;
+    background: var(--bg-2);
+    border: 0.5px solid var(--border);
+    border-radius: 100px;
+    padding: 3px;
+    margin: 0 0 12px;
+    width: 100%;
+  }
+  .opt-a-toolbar button {
+    flex: 1;
+    background: transparent;
+    border: 0;
+    color: var(--text-3);
+    padding: 8px 10px;
+    border-radius: 100px;
+    cursor: pointer;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    -webkit-tap-highlight-color: transparent;
+    transition: color 0.15s, background 0.15s;
+  }
+  .opt-a-toolbar button svg { width: 14px; height: 14px; stroke-width: 2; }
+  .opt-a-toolbar button.active {
+    background: var(--bg-3);
+    color: var(--amber);
+    box-shadow: 0 0 0 0.5px var(--amber) inset, 0 0 8px rgba(239,159,39,0.2);
+    text-shadow: 0 0 4px rgba(239,159,39,0.45);
+  }
+
+
+  /* ============== B · FAB FLOATING BOTTOM-RIGHT ============== */
+  .opt-b-fab {
+    position: absolute;
+    bottom: 24px; right: 24px;
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: var(--bg-2);
+    border: 1px solid var(--amber);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--amber);
+    box-shadow:
+      0 0 0 0.5px var(--amber) inset,
+      0 0 12px rgba(239,159,39,0.45),
+      0 4px 16px rgba(0,0,0,0.5);
+    cursor: pointer;
+  }
+  .opt-b-fab svg { width: 22px; height: 22px; stroke-width: 2; }
+
+
+  /* ============== C · HEADER ICON ============== */
+  /* Usa el patrón existing del header, añadiendo un 5to ícono al lado de Más */
+  .opt-c-header .header-icon-btn.is-view-toggle {
+    background: var(--bg-3);
+    border-radius: 6px;
+    color: var(--amber);
+    text-shadow: 0 0 4px rgba(239,159,39,0.45);
+  }
+
+
+  /* ============== D · TAB-STYLE BAR ============== */
+  /* Tabs con borde-bottom activo en el color actual del lenguaje LED */
+  .opt-d-tabs {
+    display: flex;
+    gap: 0;
+    margin: 12px 0 8px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .opt-d-tabs button {
+    flex: 1;
+    background: transparent;
+    border: 0;
+    color: var(--text-3);
+    padding: 10px 8px;
+    cursor: pointer;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 12px; font-weight: 600;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -0.5px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .opt-d-tabs button svg { width: 14px; height: 14px; stroke-width: 2; }
+  .opt-d-tabs button.active {
+    color: var(--amber);
+    border-bottom-color: var(--amber);
+    text-shadow: 0 0 4px rgba(239,159,39,0.45);
+  }
+
+
+  /* Compare grid */
+  .grid-tradeoffs {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+    margin-top: 28px; max-width: 1240px;
+    margin-left: auto; margin-right: auto;
+  }
+  .tradeoff {
+    background: var(--bg-2);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+  }
+  .tradeoff h4 {
+    margin: 0 0 6px; font-size: 12px; color: var(--amber);
+    text-transform: uppercase; letter-spacing: 0.5px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .tradeoff p { margin: 0 0 6px; font-size: 12px; color: var(--text-2); line-height: 1.55; }
+  .tradeoff .pros, .tradeoff .cons { font-size: 11px; line-height: 1.55; }
+  .tradeoff .pros { color: var(--green); }
+  .tradeoff .cons { color: var(--danger); }
+  .callout {
+    margin: 22px auto 0;
+    max-width: 900px;
+    background: rgba(239,159,39,0.06);
+    border: 0.5px solid rgba(239,159,39,0.4);
+    border-radius: 12px;
+    padding: 14px 16px;
+    color: var(--text-2);
+    font-size: 13px; line-height: 1.55;
+  }
+  .callout b { color: var(--amber); }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1 class="page-title">Toggle compacta/expandida — 4 propuestas</h1>
+  <p class="page-sub">Mismo dato (vista global, sin filtro). Lo que cambia es <b>dónde vive el toggle</b> y <b>cómo se ve</b>.</p>
+
+  <div class="row">
+
+    <!-- ====================== A · SEGMENTED ====================== -->
+    <div class="col">
+      <h3 class="opt-title">A · Segmented horizontal</h3>
+      <p class="opt-sub">Pill segmentada full-width entre stats y contenido. Estilo iOS clásico, claro y obvio.</p>
+      <div class="phone">
+        <div class="phone-status"><span>3:42</span><span class="right">●●● ⌃ █</span></div>
+        <div class="app">
+          <div class="page-header">
+            <h1>Álbum Panini Mundial 2026</h1>
+            <div class="header-actions">
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h14"/><path d="M14 4l4 4-4 4"/><path d="M20 16H6"/><path d="M10 12l-4 4 4 4"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13c0-3.5 3.5-6 8-6 1 0 2 .2 3 .5l3-2v3.5c1.5 1 2.5 2.5 2.5 4 0 1.5-1 3-2.5 4l-.5 2h-2l-.5-1H8.5L8 19H6l-.5-2C4 16 3 14.5 3 13z"/><circle cx="14" cy="12" r="0.7" fill="currentColor"/><line x1="9" y1="9" x2="12" y2="9"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M3 3h7v7H3V3zm2 2h3v3H5V5z"/><path fill="currentColor" fill-rule="evenodd" d="M14 3h7v7h-7V3zm2 2h3v3h-3V5z"/><path fill="currentColor" fill-rule="evenodd" d="M3 14h7v7H3v-7zm2 2h3v3H5v-3z"/><path fill="currentColor" d="M13 13h2v2h-2zM16 13h2v2h-2zM19 13h2v2h-2zM13 16h2v2h-2zM16 16h2v2h-2zM19 16h2v2h-2zM13 19h2v2h-2zM16 19h2v2h-2zM19 19h2v2h-2z"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
+            </div>
+          </div>
+          <p class="subtitle">Tracker colaborativo · pegadas, repetidas, faltantes</p>
+
+          <div class="hero">
+            <div class="donut-wrap">
+              <svg viewBox="0 0 200 200" class="donut-svg">
+                <circle class="donut-track" cx="100" cy="100" r="85"></circle>
+                <circle class="donut-fill" cx="100" cy="100" r="85" stroke-dasharray="534.07" stroke-dashoffset="331.12"></circle>
+              </svg>
+              <div class="donut-text">
+                <div class="donut-pct">38.0%</div>
+                <div class="donut-frac">372 / 980</div>
+                <div class="donut-label">pegadas</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-pill stat-pill-blue"><div class="stat-pill-value">52</div><div class="stat-pill-label">Sueltas</div><div class="stat-pill-sub">64 copias</div></div>
+            <div class="stat-pill stat-pill-red"><div class="stat-pill-value">556</div><div class="stat-pill-label">Faltantes</div><div class="stat-pill-sub">por conseguir</div></div>
+            <div class="stat-pill stat-pill-amber"><div class="stat-pill-value">673</div><div class="stat-pill-label">Repetidas</div><div class="stat-pill-sub">673 monas</div></div>
+          </div>
+
+          <select class="group-selector-mobile"><option>▣ Todos los equipos</option></select>
+
+          <div class="opt-a-toolbar">
+            <button class="active">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="3"/><rect x="3" y="10" width="18" height="3"/><rect x="3" y="16" width="18" height="3"/></svg>
+              Compacta
+            </button>
+            <button>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+              Expandida
+            </button>
+          </div>
+
+          <div class="home-compact-tabla">
+            <div class="group-row">Grupo C</div>
+            <div class="team-name">BRA</div>
+            <div class="cell pegada">1</div><div class="cell repetida">2</div><div class="cell pegada">3</div><div class="cell falta">4</div><div class="cell pegada">5</div><div class="cell suelta">6</div><div class="cell pegada">7</div><div class="cell pegada">8</div><div class="cell repetida">9</div><div class="cell pegada">10</div>
+            <div class="cell pegada">11</div><div class="cell falta">12</div><div class="cell pegada">13</div><div class="cell pegada">14</div><div class="cell repetida">15</div><div class="cell pegada">16</div><div class="cell suelta">17</div><div class="cell pegada">18</div><div class="cell pegada">19</div><div class="cell pegada">20</div>
+            <div class="team-name">MAR</div>
+            <div class="cell pegada">1</div><div class="cell pegada">2</div><div class="cell repetida">3</div><div class="cell repetida">4</div><div class="cell repetida">5</div><div class="cell repetida">6</div><div class="cell repetida">7</div><div class="cell pegada">8</div><div class="cell pegada">9</div><div class="cell falta">10</div>
+            <div class="cell repetida">11</div><div class="cell falta">12</div><div class="cell falta">13</div><div class="cell pegada">14</div><div class="cell pegada">15</div><div class="cell pegada">16</div><div class="cell pegada">17</div><div class="cell falta">18</div><div class="cell pegada">19</div><div class="cell pegada">20</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ====================== B · FAB ====================== -->
+    <div class="col">
+      <h3 class="opt-title">B · FAB flotante</h3>
+      <p class="opt-sub">Botón circular abajo a la derecha, siempre visible aunque hagas scroll. Tap = toggle. Discreto pero accesible.</p>
+      <div class="phone">
+        <div class="phone-status"><span>3:42</span><span class="right">●●● ⌃ █</span></div>
+        <div class="app">
+          <div class="page-header">
+            <h1>Álbum Panini Mundial 2026</h1>
+            <div class="header-actions">
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h14"/><path d="M14 4l4 4-4 4"/><path d="M20 16H6"/><path d="M10 12l-4 4 4 4"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13c0-3.5 3.5-6 8-6 1 0 2 .2 3 .5l3-2v3.5c1.5 1 2.5 2.5 2.5 4 0 1.5-1 3-2.5 4l-.5 2h-2l-.5-1H8.5L8 19H6l-.5-2C4 16 3 14.5 3 13z"/><circle cx="14" cy="12" r="0.7" fill="currentColor"/><line x1="9" y1="9" x2="12" y2="9"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M3 3h7v7H3V3zm2 2h3v3H5V5z"/><path fill="currentColor" fill-rule="evenodd" d="M14 3h7v7h-7V3zm2 2h3v3h-3V5z"/><path fill="currentColor" fill-rule="evenodd" d="M3 14h7v7H3v-7zm2 2h3v3H5v-3z"/><path fill="currentColor" d="M13 13h2v2h-2zM16 13h2v2h-2zM19 13h2v2h-2zM13 16h2v2h-2zM16 16h2v2h-2zM19 16h2v2h-2zM13 19h2v2h-2zM16 19h2v2h-2zM19 19h2v2h-2z"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
+            </div>
+          </div>
+          <p class="subtitle">Tracker colaborativo · pegadas, repetidas, faltantes</p>
+
+          <div class="hero">
+            <div class="donut-wrap">
+              <svg viewBox="0 0 200 200" class="donut-svg">
+                <circle class="donut-track" cx="100" cy="100" r="85"></circle>
+                <circle class="donut-fill" cx="100" cy="100" r="85" stroke-dasharray="534.07" stroke-dashoffset="331.12"></circle>
+              </svg>
+              <div class="donut-text">
+                <div class="donut-pct">38.0%</div>
+                <div class="donut-frac">372 / 980</div>
+                <div class="donut-label">pegadas</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-pill stat-pill-blue"><div class="stat-pill-value">52</div><div class="stat-pill-label">Sueltas</div><div class="stat-pill-sub">64 copias</div></div>
+            <div class="stat-pill stat-pill-red"><div class="stat-pill-value">556</div><div class="stat-pill-label">Faltantes</div><div class="stat-pill-sub">por conseguir</div></div>
+            <div class="stat-pill stat-pill-amber"><div class="stat-pill-value">673</div><div class="stat-pill-label">Repetidas</div><div class="stat-pill-sub">673 monas</div></div>
+          </div>
+
+          <select class="group-selector-mobile"><option>▣ Todos los equipos</option></select>
+
+          <div class="home-compact-tabla">
+            <div class="group-row">Grupo C</div>
+            <div class="team-name">BRA</div>
+            <div class="cell pegada">1</div><div class="cell repetida">2</div><div class="cell pegada">3</div><div class="cell falta">4</div><div class="cell pegada">5</div><div class="cell suelta">6</div><div class="cell pegada">7</div><div class="cell pegada">8</div><div class="cell repetida">9</div><div class="cell pegada">10</div>
+            <div class="cell pegada">11</div><div class="cell falta">12</div><div class="cell pegada">13</div><div class="cell pegada">14</div><div class="cell repetida">15</div><div class="cell pegada">16</div><div class="cell suelta">17</div><div class="cell pegada">18</div><div class="cell pegada">19</div><div class="cell pegada">20</div>
+            <div class="team-name">MAR</div>
+            <div class="cell pegada">1</div><div class="cell pegada">2</div><div class="cell repetida">3</div><div class="cell repetida">4</div><div class="cell repetida">5</div><div class="cell repetida">6</div><div class="cell repetida">7</div><div class="cell pegada">8</div><div class="cell pegada">9</div><div class="cell falta">10</div>
+            <div class="cell repetida">11</div><div class="cell falta">12</div><div class="cell falta">13</div><div class="cell pegada">14</div><div class="cell pegada">15</div><div class="cell pegada">16</div><div class="cell pegada">17</div><div class="cell falta">18</div><div class="cell pegada">19</div><div class="cell pegada">20</div>
+            <div class="team-name">HAI</div>
+            <div class="cell repetida">1</div><div class="cell pegada">2</div><div class="cell pegada">3</div><div class="cell pegada">4</div><div class="cell repetida">5</div><div class="cell pegada">6</div><div class="cell falta">7</div><div class="cell repetida">8</div><div class="cell repetida">9</div><div class="cell repetida">10</div>
+            <div class="cell repetida">11</div><div class="cell pegada">12</div><div class="cell repetida">13</div><div class="cell pegada">14</div><div class="cell pegada">15</div><div class="cell pegada">16</div><div class="cell repetida">17</div><div class="cell repetida">18</div><div class="cell repetida">19</div><div class="cell repetida">20</div>
+          </div>
+        </div>
+        <button class="opt-b-fab" aria-label="Cambiar a vista expandida">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        </button>
+      </div>
+    </div>
+
+
+    <!-- ====================== C · HEADER ICON ====================== -->
+    <div class="col">
+      <h3 class="opt-title">C · Ícono en el header</h3>
+      <p class="opt-sub">6to ícono al lado de Más, sigue el lenguaje de los demás. El ícono cambia según el modo activo (filas vs grilla).</p>
+      <div class="phone">
+        <div class="phone-status"><span>3:42</span><span class="right">●●● ⌃ █</span></div>
+        <div class="app opt-c-header">
+          <div class="page-header">
+            <h1>Álbum Panini Mundial 2026</h1>
+            <div class="header-actions">
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h14"/><path d="M14 4l4 4-4 4"/><path d="M20 16H6"/><path d="M10 12l-4 4 4 4"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13c0-3.5 3.5-6 8-6 1 0 2 .2 3 .5l3-2v3.5c1.5 1 2.5 2.5 2.5 4 0 1.5-1 3-2.5 4l-.5 2h-2l-.5-1H8.5L8 19H6l-.5-2C4 16 3 14.5 3 13z"/><circle cx="14" cy="12" r="0.7" fill="currentColor"/><line x1="9" y1="9" x2="12" y2="9"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M3 3h7v7H3V3zm2 2h3v3H5V5z"/><path fill="currentColor" fill-rule="evenodd" d="M14 3h7v7h-7V3zm2 2h3v3h-3V5z"/><path fill="currentColor" fill-rule="evenodd" d="M3 14h7v7H3v-7zm2 2h3v3H5v-3z"/><path fill="currentColor" d="M13 13h2v2h-2zM16 13h2v2h-2zM19 13h2v2h-2zM13 16h2v2h-2zM16 16h2v2h-2zM19 16h2v2h-2zM13 19h2v2h-2zM16 19h2v2h-2zM19 19h2v2h-2z"/></svg></button>
+              <!-- nuevo: toggle de vista, marcado en ámbar -->
+              <button class="header-icon-btn is-view-toggle" aria-label="Vista compacta activa">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="3"/><rect x="3" y="10" width="18" height="3"/><rect x="3" y="16" width="18" height="3"/></svg>
+              </button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
+            </div>
+          </div>
+          <p class="subtitle">Tracker colaborativo · pegadas, repetidas, faltantes</p>
+
+          <div class="hero">
+            <div class="donut-wrap">
+              <svg viewBox="0 0 200 200" class="donut-svg">
+                <circle class="donut-track" cx="100" cy="100" r="85"></circle>
+                <circle class="donut-fill" cx="100" cy="100" r="85" stroke-dasharray="534.07" stroke-dashoffset="331.12"></circle>
+              </svg>
+              <div class="donut-text">
+                <div class="donut-pct">38.0%</div>
+                <div class="donut-frac">372 / 980</div>
+                <div class="donut-label">pegadas</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-pill stat-pill-blue"><div class="stat-pill-value">52</div><div class="stat-pill-label">Sueltas</div><div class="stat-pill-sub">64 copias</div></div>
+            <div class="stat-pill stat-pill-red"><div class="stat-pill-value">556</div><div class="stat-pill-label">Faltantes</div><div class="stat-pill-sub">por conseguir</div></div>
+            <div class="stat-pill stat-pill-amber"><div class="stat-pill-value">673</div><div class="stat-pill-label">Repetidas</div><div class="stat-pill-sub">673 monas</div></div>
+          </div>
+
+          <select class="group-selector-mobile"><option>▣ Todos los equipos</option></select>
+
+          <div class="home-compact-tabla">
+            <div class="group-row">Grupo C</div>
+            <div class="team-name">BRA</div>
+            <div class="cell pegada">1</div><div class="cell repetida">2</div><div class="cell pegada">3</div><div class="cell falta">4</div><div class="cell pegada">5</div><div class="cell suelta">6</div><div class="cell pegada">7</div><div class="cell pegada">8</div><div class="cell repetida">9</div><div class="cell pegada">10</div>
+            <div class="cell pegada">11</div><div class="cell falta">12</div><div class="cell pegada">13</div><div class="cell pegada">14</div><div class="cell repetida">15</div><div class="cell pegada">16</div><div class="cell suelta">17</div><div class="cell pegada">18</div><div class="cell pegada">19</div><div class="cell pegada">20</div>
+            <div class="team-name">MAR</div>
+            <div class="cell pegada">1</div><div class="cell pegada">2</div><div class="cell repetida">3</div><div class="cell repetida">4</div><div class="cell repetida">5</div><div class="cell repetida">6</div><div class="cell repetida">7</div><div class="cell pegada">8</div><div class="cell pegada">9</div><div class="cell falta">10</div>
+            <div class="cell repetida">11</div><div class="cell falta">12</div><div class="cell falta">13</div><div class="cell pegada">14</div><div class="cell pegada">15</div><div class="cell pegada">16</div><div class="cell pegada">17</div><div class="cell falta">18</div><div class="cell pegada">19</div><div class="cell pegada">20</div>
+            <div class="team-name">HAI</div>
+            <div class="cell repetida">1</div><div class="cell pegada">2</div><div class="cell pegada">3</div><div class="cell pegada">4</div><div class="cell repetida">5</div><div class="cell pegada">6</div><div class="cell falta">7</div><div class="cell repetida">8</div><div class="cell repetida">9</div><div class="cell repetida">10</div>
+            <div class="cell repetida">11</div><div class="cell pegada">12</div><div class="cell repetida">13</div><div class="cell pegada">14</div><div class="cell pegada">15</div><div class="cell pegada">16</div><div class="cell repetida">17</div><div class="cell repetida">18</div><div class="cell repetida">19</div><div class="cell repetida">20</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ====================== D · TAB-STYLE ====================== -->
+    <div class="col">
+      <h3 class="opt-title">D · Tabs con borde-bottom</h3>
+      <p class="opt-sub">Dos tabs con borde-bottom ámbar en el activo. Patrón muy familiar y cómodo (igual que iOS/web).</p>
+      <div class="phone">
+        <div class="phone-status"><span>3:42</span><span class="right">●●● ⌃ █</span></div>
+        <div class="app">
+          <div class="page-header">
+            <h1>Álbum Panini Mundial 2026</h1>
+            <div class="header-actions">
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h14"/><path d="M14 4l4 4-4 4"/><path d="M20 16H6"/><path d="M10 12l-4 4 4 4"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13c0-3.5 3.5-6 8-6 1 0 2 .2 3 .5l3-2v3.5c1.5 1 2.5 2.5 2.5 4 0 1.5-1 3-2.5 4l-.5 2h-2l-.5-1H8.5L8 19H6l-.5-2C4 16 3 14.5 3 13z"/><circle cx="14" cy="12" r="0.7" fill="currentColor"/><line x1="9" y1="9" x2="12" y2="9"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M3 3h7v7H3V3zm2 2h3v3H5V5z"/><path fill="currentColor" fill-rule="evenodd" d="M14 3h7v7h-7V3zm2 2h3v3h-3V5z"/><path fill="currentColor" fill-rule="evenodd" d="M3 14h7v7H3v-7zm2 2h3v3H5v-3z"/><path fill="currentColor" d="M13 13h2v2h-2zM16 13h2v2h-2zM19 13h2v2h-2zM13 16h2v2h-2zM16 16h2v2h-2zM19 16h2v2h-2zM13 19h2v2h-2zM16 19h2v2h-2zM19 19h2v2h-2z"/></svg></button>
+              <button class="header-icon-btn"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
+            </div>
+          </div>
+          <p class="subtitle">Tracker colaborativo · pegadas, repetidas, faltantes</p>
+
+          <div class="hero">
+            <div class="donut-wrap">
+              <svg viewBox="0 0 200 200" class="donut-svg">
+                <circle class="donut-track" cx="100" cy="100" r="85"></circle>
+                <circle class="donut-fill" cx="100" cy="100" r="85" stroke-dasharray="534.07" stroke-dashoffset="331.12"></circle>
+              </svg>
+              <div class="donut-text">
+                <div class="donut-pct">38.0%</div>
+                <div class="donut-frac">372 / 980</div>
+                <div class="donut-label">pegadas</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-pill stat-pill-blue"><div class="stat-pill-value">52</div><div class="stat-pill-label">Sueltas</div><div class="stat-pill-sub">64 copias</div></div>
+            <div class="stat-pill stat-pill-red"><div class="stat-pill-value">556</div><div class="stat-pill-label">Faltantes</div><div class="stat-pill-sub">por conseguir</div></div>
+            <div class="stat-pill stat-pill-amber"><div class="stat-pill-value">673</div><div class="stat-pill-label">Repetidas</div><div class="stat-pill-sub">673 monas</div></div>
+          </div>
+
+          <select class="group-selector-mobile"><option>▣ Todos los equipos</option></select>
+
+          <div class="opt-d-tabs">
+            <button class="active">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="3"/><rect x="3" y="10" width="18" height="3"/><rect x="3" y="16" width="18" height="3"/></svg>
+              Compacta
+            </button>
+            <button>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+              Expandida
+            </button>
+          </div>
+
+          <div class="home-compact-tabla">
+            <div class="group-row">Grupo C</div>
+            <div class="team-name">BRA</div>
+            <div class="cell pegada">1</div><div class="cell repetida">2</div><div class="cell pegada">3</div><div class="cell falta">4</div><div class="cell pegada">5</div><div class="cell suelta">6</div><div class="cell pegada">7</div><div class="cell pegada">8</div><div class="cell repetida">9</div><div class="cell pegada">10</div>
+            <div class="cell pegada">11</div><div class="cell falta">12</div><div class="cell pegada">13</div><div class="cell pegada">14</div><div class="cell repetida">15</div><div class="cell pegada">16</div><div class="cell suelta">17</div><div class="cell pegada">18</div><div class="cell pegada">19</div><div class="cell pegada">20</div>
+            <div class="team-name">MAR</div>
+            <div class="cell pegada">1</div><div class="cell pegada">2</div><div class="cell repetida">3</div><div class="cell repetida">4</div><div class="cell repetida">5</div><div class="cell repetida">6</div><div class="cell repetida">7</div><div class="cell pegada">8</div><div class="cell pegada">9</div><div class="cell falta">10</div>
+            <div class="cell repetida">11</div><div class="cell falta">12</div><div class="cell falta">13</div><div class="cell pegada">14</div><div class="cell pegada">15</div><div class="cell pegada">16</div><div class="cell pegada">17</div><div class="cell falta">18</div><div class="cell pegada">19</div><div class="cell pegada">20</div>
+            <div class="team-name">HAI</div>
+            <div class="cell repetida">1</div><div class="cell pegada">2</div><div class="cell pegada">3</div><div class="cell pegada">4</div><div class="cell repetida">5</div><div class="cell pegada">6</div><div class="cell falta">7</div><div class="cell repetida">8</div><div class="cell repetida">9</div><div class="cell repetida">10</div>
+            <div class="cell repetida">11</div><div class="cell pegada">12</div><div class="cell repetida">13</div><div class="cell pegada">14</div><div class="cell pegada">15</div><div class="cell pegada">16</div><div class="cell repetida">17</div><div class="cell repetida">18</div><div class="cell repetida">19</div><div class="cell repetida">20</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="grid-tradeoffs">
+    <div class="tradeoff">
+      <h4>A · Segmented horizontal</h4>
+      <p>Pill segmentada full-width entre el group-selector y el contenido.</p>
+      <div class="pros">+ Más obvio que la vertical actual</div>
+      <div class="pros">+ Patrón iOS clásico, súper familiar</div>
+      <div class="pros">+ Etiquetas legibles ("Compacta" / "Expandida")</div>
+      <div class="cons">− Suma una fila más antes del contenido</div>
+    </div>
+    <div class="tradeoff">
+      <h4>B · FAB flotante</h4>
+      <p>Botón circular abajo a la derecha, posición fija.</p>
+      <div class="pros">+ Siempre visible aunque hagas scroll</div>
+      <div class="pros">+ Cero espacio robado al hero/contenido</div>
+      <div class="pros">+ Ícono cambia según modo (filas/grilla)</div>
+      <div class="cons">− Tapa contenido en la esquina</div>
+      <div class="cons">− Menos descubrible que un toggle textual</div>
+    </div>
+    <div class="tradeoff">
+      <h4>C · Ícono en el header</h4>
+      <p>6to ícono al lado de Más, mismo lenguaje de los otros.</p>
+      <div class="pros">+ Cero espacio nuevo — usa el header sticky</div>
+      <div class="pros">+ Coherente con el resto de íconos</div>
+      <div class="pros">+ Marca de "activo" en ámbar</div>
+      <div class="cons">− 6 íconos pueden saturar el header</div>
+      <div class="cons">− Sin etiqueta textual: depende del ícono</div>
+    </div>
+    <div class="tradeoff" style="border-color: var(--green);">
+      <h4 style="color: var(--green);">D · Tabs con borde-bottom</h4>
+      <p>Dos tabs separados por línea inferior, ámbar el activo.</p>
+      <div class="pros">+ Súper natural — todo el mundo conoce este patrón</div>
+      <div class="pros">+ Etiqueta textual + ícono = doble pista visual</div>
+      <div class="pros">+ Marca clara de cuál vista activa</div>
+      <div class="cons">− Suma una fila al stack vertical</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <b>Mi recomendación:</b> <b>opción D</b> (tabs con borde-bottom). Es el patrón más natural — dos tabs que dicen "Compacta" / "Expandida" con borde inferior ámbar en la activa, justo arriba del contenido. Es claro, descubrible, no tapa nada y queda cerca del cambio que produce.
+    <br><br>
+    Si te molesta el espacio vertical extra, <b>C</b> (ícono header) gana porque no añade nada al stack — pero es menos descubrible.
+    <br><br>
+    <b>B</b> (FAB) es buena si lo importante es "puedo cambiar la vista en cualquier scroll", pero tapa una esquina del contenido.
+  </div>
+
+</div>
+</body>
+</html>

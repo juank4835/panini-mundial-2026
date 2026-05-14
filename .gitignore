@@ -1,0 +1,27 @@
+# Dependencias npm (no committeamos node_modules — se reinstala con npm install)
+node_modules/
+
+# Builds y artifacts
+dist/
+build/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Editor configs locales
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+npm-debug.log*
+
+# Backups locales (los backups intencionales van en backups/, no en raíz)
+*.backup
+*.bak
+
+# Variables de entorno (si llegamos a tener)
+.env
+.env.local

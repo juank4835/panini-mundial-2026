@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup · Opciones de color neón para Balance</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: #000;
+    color: #f0eee6;
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    font-size: 14px;
+  }
+  .page {
+    max-width: 1380px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+  h1 { font-size: 22px; font-weight: 500; text-align: center; margin: 0 0 6px; }
+  .subtitle { text-align: center; color: #888780; font-size: 13px; margin-bottom: 32px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 18px;
+  }
+  .card {
+    background: #1a1a1a;
+    border: 0.5px solid #3a3a37;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 12px 14px 10px;
+    border-bottom: 0.5px solid #3a3a37;
+  }
+  .card-name {
+    font-size: 13px;
+    font-weight: 700;
+    margin: 0;
+  }
+  .card-hex {
+    font-size: 10px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    color: #888780;
+    margin-top: 2px;
+  }
+  .card-vibe {
+    font-size: 11px;
+    color: #b8b6ae;
+    margin-top: 4px;
+    line-height: 1.3;
+  }
+  .preview {
+    padding: 16px;
+  }
+  /* The balance hero — this is what changes per color */
+  .hero {
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+    margin-bottom: 10px;
+    background: linear-gradient(180deg, #1f1f1f 0%, #000 100%);
+  }
+  .hero-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #888780;
+  }
+  .hero-value {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+    margin-top: 4px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .hero-sub {
+    font-size: 10px;
+    color: #b8b6ae;
+    margin-top: 6px;
+  }
+  .pill {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 700;
+    margin-top: 6px;
+  }
+  .tx-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    font-size: 11px;
+  }
+  .tx-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 11px;
+  }
+  .tx-info { flex: 1; }
+  .tx-info b { display: block; font-weight: 600; font-size: 11px; }
+  .tx-info span { font-size: 9px; color: #888780; }
+  .tx-amount {
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-weight: 700;
+    font-size: 12px;
+  }
+  .footnote {
+    text-align: center;
+    color: #888780;
+    font-size: 11px;
+    margin-top: 28px;
+  }
+
+  /* === Color variants (each defines its own --c) === */
+
+  .c1 { --c: #FF1F8C;  --c-rgb: 255,31,140;   } /* Fuchsia neón (actual) */
+  .c2 { --c: #FF0080;  --c-rgb: 255,0,128;    } /* Hot Pink */
+  .c3 { --c: #FF00C8;  --c-rgb: 255,0,200;    } /* Magenta puro */
+  .c4 { --c: #D946EF;  --c-rgb: 217,70,239;   } /* Fuchsia Tailwind */
+  .c5 { --c: #B026FF;  --c-rgb: 176,38,255;   } /* Violeta neón */
+  .c6 { --c: #9D00FF;  --c-rgb: 157,0,255;    } /* Púrpura cyber */
+  .c7 { --c: #00F0FF;  --c-rgb: 0,240,255;    } /* Cyan neón */
+  .c8 { --c: #00FFC8;  --c-rgb: 0,255,200;    } /* Mint/turquesa */
+  .c9 { --c: #FF6B00;  --c-rgb: 255,107,0;    } /* Naranja neón */
+  .c10 { --c: #FF3838; --c-rgb: 255,56,56;    } /* Rojo intenso (referencia) */
+  .c11 { --c: #FFEB3B; --c-rgb: 255,235,59;   } /* Amarillo neón */
+  .c12 { --c: #FF1493; --c-rgb: 255,20,147;   } /* Deep Pink clásico */
+
+  .hero { border: 1px solid rgba(var(--c-rgb), 0.5); box-shadow: 0 0 30px rgba(var(--c-rgb), 0.15) inset; }
+  .hero-value {
+    color: var(--c);
+    text-shadow:
+      0 0 8px rgba(var(--c-rgb), 0.7),
+      0 0 16px rgba(var(--c-rgb), 0.45),
+      0 0 28px rgba(var(--c-rgb), 0.25);
+  }
+  .pill {
+    background: rgba(var(--c-rgb), 0.15);
+    color: var(--c);
+    border: 0.5px solid var(--c);
+  }
+  .tx-icon { background: rgba(var(--c-rgb), 0.18); color: var(--c); }
+  .tx-amount { color: var(--c); }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>12 opciones de color neón</h1>
+  <p class="subtitle">Mismo card de Balance con cada color aplicado. El <b>Balance neto</b>, los <b>egresos</b> y los <b>iconos −</b> usan el color seleccionado.</p>
+
+  <div class="grid">
+
+    <div class="card c1">
+      <div class="card-header">
+        <p class="card-name">1 · Fuchsia neón <span style="color:#888;">(actual)</span></p>
+        <p class="card-hex">#FF1F8C</p>
+        <p class="card-vibe">Rosado vibrante con leve azul. Equilibrado, no chilla. Clásico cyberpunk.</p>
+      </div>
+      <div class="preview">
+        <div class="hero">
+          <div class="hero-label">Balance neto</div>
+          <div class="hero-value">−$170.000</div>
+          <div class="hero-sub">$250k invertido · $80k recuperado</div>
+          <div class="pill">ROI 32%</div>
+        </div>
+        <div class="tx-row">
+          <div class="tx-icon">−</div>
+          <div class="tx-info"><b>10 sobres</b><span>Hoy · $5k c/u</span></div>
+          <div class="tx-amount">−$50k</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card c2">
+      <div class="card-header">
+        <p class="card-name">2 · Hot Pink</p>
+        <p class="card-hex">#FF0080</p>
+        <p class="card-vibe">Más rosa, menos morado. Más cálido que fuchsia. Energético.</p>
+      </div>
+      <div class="preview">
+        <div class="hero">
+          <div class="hero-label">Balance neto</div>
+          <div class="hero-value">−$170.000</div>
+          <div class="hero-sub">$250k invertido · $80k recuperado</div>
+          <div class="pill">ROI 32%</div>
+        </div>
+        <div class="tx-row">
+          <div class="tx-icon">−</div>
+          <div class="tx-info"><b>10 sobres</b><span>Hoy · $5k c/u</span></div>
+          <div class="tx-amount">−$50k</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card c3">
+      <div class="card-header">
+        <p class="card-name">3 · Magenta puro</p>
+        <p class="card-hex">#FF00C8</p>
+        <p class="card-vibe">Magenta saturado, más púrpura. Neón clásico de los 80.</p>
+      </div>
+      <div class="preview">
+        <div class="hero">
+          <div class="hero-label">Balance neto</div>
+          <div class="hero-value">−$170.000</div>
+          <div class="hero-sub">$250k invertido · $80k recuperado</div>
+          <div class="pill">ROI 32%</div>
+        </div>
+        <div class="tx-row">
+          <div class="tx-icon">−</div>
+          <div class="tx-info"><b>10 sobres</b><span>Hoy · $5k c/u</span></div>
+          <div class="tx-amount">−$50k</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card c4">
+      <div class="card-header">
+        <p class="card-name">4 · Fuchsia Tailwind</p>
+        <p class="card-hex">#D946EF</p>
+        <p class="card-vibe">Más suave, más violeta. Estilo moderno tipo Stripe.</p>
+      </div>
+      <div class="preview">
+        <div class="hero">
+          <div class="hero-label">Balance neto</div>
+          <div class="hero-value">−$170.000</div>
+          <div class="hero-sub">$250k invertido · $80k recuperado</div>
+          <div class="pill">ROI 32%</div>
+        </div>
+        <div class="tx-row">
+          <div class="tx-icon">−</div>
+          <div class="tx-info"><b>10 sobres</b><span>Hoy · $5k c/u</span></div>
+          <div class="tx-amount">−$50k</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card c5">
+      <div class="card-header">
+        <p class="card-name">5 · Violeta neón</p>
+        <p class="card-hex">#B026FF</p>
+        <p class="card-vibe">Púrpura brillante. Más oscuro que magenta, vibe synthwave.</p>
+      </div>
+      <div class="preview">
+        <div class="hero">
+          <div class="hero-label">Balance neto</div>
+          <div class="hero-value">−$170.000</div>
+          <div class="hero-sub">$250k invertido · $80k recuperado</div>
+          <div class="pill">ROI 32%</div>
+        </div>
+        <div class="tx-row">
+          <div class="tx-icon">−</div>
+          <div class="tx-info"><b>10 sobres</b><span>Hoy · $5k c/u</span></div>
+          <div class="tx-amount">−$50k</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card c6">
+      <div class="card-header">
+        <p class="card-name">6 · Púrpura cyber</p>
+        <p class="card-hex">#9D00FF</p>
+        <p class="card-vibe">Púrpura muy saturado. Vibra "hacker matrix".</p>
+      </div>
+      <div class="preview">
+        <div class="hero">
+          <div class="hero-label">Balance neto</div>
+          <div class="hero-value">−$170.000</div>
+          <div class="hero-sub">$250k invertido · $80k recuperado</div>
+          <div class="pill">ROI 32%</div>
+        </div>
+        <div class="tx-row">
+          <div class="tx-icon">−</div>
+          <div class="tx-info"><b>10 sobres</b><span>Hoy · $5k c/u</span></div>
+          <div class="tx-amount">−$50k</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card c7">
+      <div class="card-header">
+        <p class="card-name">7 · Cyan neón</p>
+        <p class="card-hex">#00F0FF</p>
+        <p class="card-vibe">⚠️ Cuidado: muy cerca del azul de Sueltas. Brillante y futurista.</p>
+      </div>
+      <div class="preview">
+        <div class="hero">
+          <div class="hero-label">Balance neto</div>
+          <div class="hero-value">−$170.000</div>
+          <div class="hero-sub">$250k invertido · $80k recuperado</div>
+          <div class="pill">ROI 32%</div>
+        </div>
+        <div class="tx-row">
+          <div class="tx-icon">−</div>
+          <div class="tx-info"><b>10 sobres</b><span>Hoy · $5k c/u</span></div>
+          <div class="tx-amount">−$50k</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card c8">
+      <div class="card-header">
+        <p class="card-name">8 · Mint / turquesa</p>
+        <p class="card-hex">#00FFC8</p>
+        <p class="card-vibe">⚠️ Cuidado: muy cerca del verde de Pegadas. Suave pero distintivo.</p>
+      </div>
+      <div class="preview">
+        <div class="hero">
+          <div class="hero-label">Balance neto</div>
+          <div class="hero-value">−$170.000</div>
+          <div class="hero-sub">$250k invertido · $80k recuperado</div>
+          <div class="pill">ROI 32%</div>
+        </div>
+        <div class="tx-row">
+          <div class="tx-icon">−</div>
+          <div class="tx-info"><b>10 sobres</b><span>Hoy · $5k c/u</span></div>
+          <div class="tx-amount">−$50k</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card c9">
+      <div class="card-header">
+        <p class="card-name">9 · Naranja neón</p>
+        <p class="card-hex">#FF6B00</p>
+        <p class="card-vibe">⚠️ Cuidado: cerca del accent ya usado. Más saturado, vibe industrial.</p>
+      </div>
+      <div class="preview">
+        <div class="hero">
+          <div class="hero-label">Balance neto</div>
+          <div class="hero-value">−$170.000</div>
+          <div class="hero-sub">$250k invertido · $80k recuperado</div>
+          <div class="pill">ROI 32%</div>
+        </div>
+        <div class="tx-row">
+          <div class="tx-icon">−</div>
+          <div class="tx-info"><b>10 sobres</b><span>Hoy · $5k c/u</span></div>
+          <div class="tx-amount">−$50k</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card c10">
+      <div class="card-header">
+        <p class="card-name">10 · Rojo intenso</p>
+        <p class="card-hex">#FF3838</p>
+        <p class="card-vibe">Rojo más vivo que el actual de la app. Si querés mantener "pérdida = rojo".</p>
+      </div>
+      <div class="preview">
+        <div class="hero">
+          <div class="hero-label">Balance neto</div>
+          <div class="hero-value">−$170.000</div>
+          <div class="hero-sub">$250k invertido · $80k recuperado</div>
+          <div class="pill">ROI 32%</div>
+        </div>
+        <div class="tx-row">
+          <div class="tx-icon">−</div>
+          <div class="tx-info"><b>10 sobres</b><span>Hoy · $5k c/u</span></div>
+          <div class="tx-amount">−$50k</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card c11">
+      <div class="card-header">
+        <p class="card-name">11 · Amarillo neón</p>
+        <p class="card-hex">#FFEB3B</p>
+        <p class="card-vibe">⚠️ Cuidado: cerca del amber de Repetidas. Vibe alerta de máquina.</p>
+      </div>
+      <div class="preview">
+        <div class="hero">
+          <div class="hero-label">Balance neto</div>
+          <div class="hero-value">−$170.000</div>
+          <div class="hero-sub">$250k invertido · $80k recuperado</div>
+          <div class="pill">ROI 32%</div>
+        </div>
+        <div class="tx-row">
+          <div class="tx-icon">−</div>
+          <div class="tx-info"><b>10 sobres</b><span>Hoy · $5k c/u</span></div>
+          <div class="tx-amount">−$50k</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card c12">
+      <div class="card-header">
+        <p class="card-name">12 · Deep Pink clásico</p>
+        <p class="card-hex">#FF1493</p>
+        <p class="card-vibe">El "DeepPink" clásico de CSS. Equilibrio entre fuchsia y hot pink.</p>
+      </div>
+      <div class="preview">
+        <div class="hero">
+          <div class="hero-label">Balance neto</div>
+          <div class="hero-value">−$170.000</div>
+          <div class="hero-sub">$250k invertido · $80k recuperado</div>
+          <div class="pill">ROI 32%</div>
+        </div>
+        <div class="tx-row">
+          <div class="tx-icon">−</div>
+          <div class="tx-info"><b>10 sobres</b><span>Hoy · $5k c/u</span></div>
+          <div class="tx-amount">−$50k</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="footnote">⚠️ = colores cercanos a otros que ya usa la app (azul, verde, amber, accent). Pueden confundir visualmente. Mi recomendación: 1, 2, 3, 4 o 12 (familia rosa/fuchsia) o 5, 6 (familia púrpura) — son los que más contrastan con el resto sin pisarse.</p>
+</div>
+</body>
+</html>

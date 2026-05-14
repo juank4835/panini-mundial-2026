@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Mockup v4 · Álbum estilo calendario</title>
+<style>
+  :root {
+    --bg: #1a1a1a;
+    --bg-2: #1a1a1a;
+    --border: #3a3a37;
+    --text: #f0eee6;
+    --text-2: #b8b6ae;
+    --text-3: #555;
+    --green: #00D685;
+    --amber: #EF9F27;
+    --amber-text: #412402;
+    --danger: #E24B4A;
+    --radius: 8px;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .page {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+
+  .hero {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 32px;
+  }
+  .hero h1 {
+    font-size: 56px;
+    font-weight: 800;
+    margin: 0;
+    color: var(--text);
+    letter-spacing: -2px;
+  }
+  .hero .stats {
+    color: var(--text-3);
+    font-size: 13px;
+    text-align: right;
+  }
+  .hero .stats b { color: var(--text); font-family: "JetBrains Mono", Menlo, monospace; }
+
+  /* Leyenda */
+  .legend {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: var(--text-2);
+    margin-bottom: 18px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-day {
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    border-radius: 50%;
+  }
+  .legend-day.tengo { color: var(--text-3); }
+  .legend-day.falta { color: var(--danger); }
+  .legend-day.rep { background: var(--amber); color: var(--amber-text); }
+
+  /* Grid de equipos tipo calendario */
+  .calendar {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 32px 28px;
+  }
+  .team-cal {
+    /* Un equipo = un "mes" del calendario */
+  }
+  .team-cal-name {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--danger);
+    margin: 0 0 12px;
+    letter-spacing: -0.5px;
+  }
+  .team-cal-sub {
+    font-size: 11px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0 0 8px;
+    font-weight: 500;
+  }
+  .team-cal-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px 4px;
+  }
+  .day {
+    position: relative;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    height: 28px;
+    line-height: 28px;
+    border-radius: 50%;
+    width: 28px;
+    margin: 0 auto;
+  }
+  .day.tengo { color: var(--text-3); }
+  .day.falta { color: var(--danger); font-weight: 700; }
+  .day.rep {
+    background: var(--amber);
+    color: var(--amber-text);
+    font-weight: 700;
+  }
+  .day.rep .x {
+    position: absolute;
+    top: -6px;
+    right: -8px;
+    background: var(--bg);
+    color: var(--amber);
+    border: 1px solid var(--amber);
+    border-radius: 100px;
+    padding: 0 4px;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1.3;
+    min-width: 16px;
+    text-align: center;
+  }
+
+  /* Encabezado del grupo (separador) */
+  .group-divider {
+    grid-column: 1 / -1;
+    font-size: 13px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 0.5px solid var(--border);
+    padding-bottom: 6px;
+    margin-bottom: -8px;
+    margin-top: 8px;
+    font-weight: 600;
+  }
+  .group-divider:first-child { margin-top: 0; }
+
+  /* Para los IDs largos (FWC1...FWC19) */
+  .day.long { font-size: 11px; }
+
+  footer {
+    text-align: center;
+    color: var(--text-3);
+    font-size: 11px;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 0.5px solid var(--border);
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="hero">
+    <h1>2026</h1>
+    <div class="stats">
+      <b>649</b> / 980 · 66.2% · <b style="color:var(--amber);">87 rep</b> · <b style="color:var(--danger);">331 faltan</b>
+      <br><small>Datos de ejemplo</small>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span class="legend-item"><span class="legend-day tengo">5</span> Tengo</span>
+    <span class="legend-item"><span class="legend-day falta">5</span> Me falta</span>
+    <span class="legend-item"><span class="legend-day rep">5</span> Repetida (×N)</span>
+  </div>
+
+  <div class="calendar">
+
+    <!-- Intro & History -->
+    <div class="group-divider">Intro & History</div>
+
+    <div class="team-cal">
+      <h2 class="team-cal-name">Intro</h2>
+      <div class="team-cal-sub">Logo · Mascotas · Anfitriones</div>
+      <div class="team-cal-grid">
+        <div class="day falta long">00</div>
+        <div class="day tengo long">FW1</div>
+        <div class="day rep long">FW2<span class="x">×2</span></div>
+        <div class="day tengo long">FW3</div>
+        <div class="day falta long">FW4</div>
+        <div class="day tengo long">FW5</div>
+        <div class="day tengo long">FW6</div>
+        <div class="day rep long">FW7<span class="x">×3</span></div>
+        <div class="day tengo long">FW8</div>
+      </div>
+    </div>
+
+    <div class="team-cal">
+      <h2 class="team-cal-name">History</h2>
+      <div class="team-cal-sub">Campeones de mundiales</div>
+      <div class="team-cal-grid">
+        <div class="day tengo long">FW9</div>
+        <div class="day falta long">F10</div>
+        <div class="day tengo long">F11</div>
+        <div class="day rep long">F12<span class="x">×2</span></div>
+        <div class="day tengo long">F13</div>
+        <div class="day tengo long">F14</div>
+        <div class="day falta long">F15</div>
+        <div class="day tengo long">F16</div>
+        <div class="day tengo long">F17</div>
+        <div class="day tengo long">F18</div>
+        <div class="day tengo long">F19</div>
+      </div>
+    </div>
+
+    <!-- Grupo A -->
+    <div class="group-divider">Grupo A</div>
+
+    <div class="team-cal">
+      <h2 class="team-cal-name">México</h2>
+      <div class="team-cal-sub">Grupo A · 17 / 20</div>
+      <div class="team-cal-grid">
+        <div class="day tengo">1</div>
+        <div class="day tengo">2</div>
+        <div class="day rep">3<span class="x">×2</span></div>
+        <div class="day tengo">4</div>
+        <div class="day falta">5</div>
+        <div class="day tengo">6</div>
+        <div class="day tengo">7</div>
+        <div class="day tengo">8</div>
+        <div class="day tengo">9</div>
+        <div class="day tengo">10</div>
+        <div class="day tengo">11</div>
+        <div class="day falta">12</div>
+        <div class="day rep">13<span class="x">×4</span></div>
+        <div class="day tengo">14</div>
+        <div class="day tengo">15</div>
+        <div class="day tengo">16</div>
+        <div class="day falta">17</div>
+        <div class="day tengo">18</div>
+        <div class="day rep">19<span class="x">×2</span></div>
+        <div class="day tengo">20</div>
+      </div>
+    </div>
+
+    <div class="team-cal">
+      <h2 class="team-cal-name">Sudáfrica</h2>
+      <div class="team-cal-sub">Grupo A · 12 / 20</div>
+      <div class="team-cal-grid">
+        <div class="day falta">1</div>
+        <div class="day tengo">2</div>
+        <div class="day tengo">3</div>
+        <div class="day falta">4</div>
+        <div class="day falta">5</div>
+        <div class="day tengo">6</div>
+        <div class="day tengo">7</div>
+        <div class="day falta">8</div>
+        <div class="day tengo">9</div>
+        <div class="day tengo">10</div>
+        <div class="day falta">11</div>
+        <div class="day falta">12</div>
+        <div class="day tengo">13</div>
+        <div class="day tengo">14</div>
+        <div class="day tengo">15</div>
+        <div class="day tengo">16</div>
+        <div class="day falta">17</div>
+        <div class="day tengo">18</div>
+        <div class="day tengo">19</div>
+        <div class="day falta">20</div>
+      </div>
+    </div>
+
+    <div class="team-cal">
+      <h2 class="team-cal-name">Corea del Sur</h2>
+      <div class="team-cal-sub">Grupo A · 19 / 20</div>
+      <div class="team-cal-grid">
+        <div class="day tengo">1</div>
+        <div class="day tengo">2</div>
+        <div class="day tengo">3</div>
+        <div class="day tengo">4</div>
+        <div class="day tengo">5</div>
+        <div class="day tengo">6</div>
+        <div class="day falta">7</div>
+        <div class="day tengo">8</div>
+        <div class="day tengo">9</div>
+        <div class="day rep">10<span class="x">×2</span></div>
+        <div class="day tengo">11</div>
+        <div class="day tengo">12</div>
+        <div class="day tengo">13</div>
+        <div class="day tengo">14</div>
+        <div class="day tengo">15</div>
+        <div class="day tengo">16</div>
+        <div class="day tengo">17</div>
+        <div class="day tengo">18</div>
+        <div class="day tengo">19</div>
+        <div class="day tengo">20</div>
+      </div>
+    </div>
+
+    <div class="team-cal">
+      <h2 class="team-cal-name">Rep. Checa</h2>
+      <div class="team-cal-sub">Grupo A · 15 / 20</div>
+      <div class="team-cal-grid">
+        <div class="day tengo">1</div>
+        <div class="day tengo">2</div>
+        <div class="day falta">3</div>
+        <div class="day tengo">4</div>
+        <div class="day tengo">5</div>
+        <div class="day tengo">6</div>
+        <div class="day rep">7<span class="x">×2</span></div>
+        <div class="day tengo">8</div>
+        <div class="day falta">9</div>
+        <div class="day tengo">10</div>
+        <div class="day tengo">11</div>
+        <div class="day tengo">12</div>
+        <div class="day tengo">13</div>
+        <div class="day tengo">14</div>
+        <div class="day falta">15</div>
+        <div class="day tengo">16</div>
+        <div class="day tengo">17</div>
+        <div class="day falta">18</div>
+        <div class="day tengo">19</div>
+        <div class="day falta">20</div>
+      </div>
+    </div>
+
+    <!-- Grupo B -->
+    <div class="group-divider">Grupo B</div>
+
+    <div class="team-cal">
+      <h2 class="team-cal-name">Canadá</h2>
+      <div class="team-cal-sub">Grupo B · 19 / 20</div>
+      <div class="team-cal-grid">
+        <div class="day tengo">1</div>
+        <div class="day falta">2</div>
+        <div class="day tengo">3</div>
+        <div class="day tengo">4</div>
+        <div class="day tengo">5</div>
+        <div class="day tengo">6</div>
+        <div class="day tengo">7</div>
+        <div class="day tengo">8</div>
+        <div class="day tengo">9</div>
+        <div class="day tengo">10</div>
+        <div class="day tengo">11</div>
+        <div class="day tengo">12</div>
+        <div class="day tengo">13</div>
+        <div class="day tengo">14</div>
+        <div class="day tengo">15</div>
+        <div class="day tengo">16</div>
+        <div class="day tengo">17</div>
+        <div class="day tengo">18</div>
+        <div class="day tengo">19</div>
+        <div class="day tengo">20</div>
+      </div>
+    </div>
+
+    <div class="team-cal">
+      <h2 class="team-cal-name">Bosnia y H.</h2>
+      <div class="team-cal-sub">Grupo B · 15 / 20</div>
+      <div class="team-cal-grid">
+        <div class="day falta">1</div>
+        <div class="day tengo">2</div>
+        <div class="day tengo">3</div>
+        <div class="day tengo">4</div>
+        <div class="day falta">5</div>
+        <div class="day tengo">6</div>
+        <div class="day tengo">7</div>
+        <div class="day tengo">8</div>
+        <div class="day tengo">9</div>
+        <div class="day falta">10</div>
+        <div class="day tengo">11</div>
+        <div class="day tengo">12</div>
+        <div class="day tengo">13</div>
+        <div class="day falta">14</div>
+        <div class="day tengo">15</div>
+        <div class="day tengo">16</div>
+        <div class="day tengo">17</div>
+        <div class="day tengo">18</div>
+        <div class="day falta">19</div>
+        <div class="day tengo">20</div>
+      </div>
+    </div>
+
+    <div class="team-cal">
+      <h2 class="team-cal-name">Catar</h2>
+      <div class="team-cal-sub">Grupo B · 18 / 20</div>
+      <div class="team-cal-grid">
+        <div class="day tengo">1</div>
+        <div class="day tengo">2</div>
+        <div class="day falta">3</div>
+        <div class="day tengo">4</div>
+        <div class="day tengo">5</div>
+        <div class="day tengo">6</div>
+        <div class="day tengo">7</div>
+        <div class="day tengo">8</div>
+        <div class="day tengo">9</div>
+        <div class="day tengo">10</div>
+        <div class="day falta">11</div>
+        <div class="day tengo">12</div>
+        <div class="day tengo">13</div>
+        <div class="day tengo">14</div>
+        <div class="day tengo">15</div>
+        <div class="day tengo">16</div>
+        <div class="day tengo">17</div>
+        <div class="day tengo">18</div>
+        <div class="day tengo">19</div>
+        <div class="day tengo">20</div>
+      </div>
+    </div>
+
+    <div class="team-cal">
+      <h2 class="team-cal-name">Suiza</h2>
+      <div class="team-cal-sub">Grupo B · 16 / 20</div>
+      <div class="team-cal-grid">
+        <div class="day tengo">1</div>
+        <div class="day tengo">2</div>
+        <div class="day tengo">3</div>
+        <div class="day falta">4</div>
+        <div class="day tengo">5</div>
+        <div class="day falta">6</div>
+        <div class="day tengo">7</div>
+        <div class="day tengo">8</div>
+        <div class="day tengo">9</div>
+        <div class="day tengo">10</div>
+        <div class="day tengo">11</div>
+        <div class="day tengo">12</div>
+        <div class="day falta">13</div>
+        <div class="day tengo">14</div>
+        <div class="day tengo">15</div>
+        <div class="day tengo">16</div>
+        <div class="day falta">17</div>
+        <div class="day tengo">18</div>
+        <div class="day tengo">19</div>
+        <div class="day tengo">20</div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    Vista pública · Estilo calendario · Mockup con datos inventados
+  </footer>
+</div>
+</body>
+</html>

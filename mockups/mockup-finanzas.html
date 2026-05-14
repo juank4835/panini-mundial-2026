@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup · Finanzas Panini — 3 layouts</title>
+<style>
+  :root {
+    --bg: #000000;
+    --bg-2: #1a1a1a;
+    --bg-3: #2a2a2a;
+    --border: #3a3a37;
+    --text: #f0eee6;
+    --text-2: #b8b6ae;
+    --text-3: #888780;
+    --green: #00D685;
+    --green-dark: #00A065;
+    --amber: #EF9F27;
+    --danger: #E24B4A;
+    --blue: #4A9EFF;
+    --accent: #FF8C1A;
+    /* Fuchsia / rosado neón — exclusivo de la vista Balance.
+       Reemplaza al rojo para que esta vista se sienta diferente. */
+    --fuchsia: #FF1F8C;
+    --fuchsia-dark: #C71585;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .page {
+    max-width: 1380px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+  .page-header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .page-header h1 { margin: 0 0 6px; font-size: 22px; font-weight: 500; }
+  .page-header p { color: var(--text-2); font-size: 13px; margin: 0; }
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 24px;
+  }
+  @media (max-width: 1100px) { .compare { grid-template-columns: 1fr; } }
+
+  .layout {
+    background: #0a0a0a;
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 18px;
+    max-width: 420px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .layout-header {
+    text-align: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .layout-header h2 { margin: 0 0 4px; font-size: 14px; color: var(--accent); font-weight: 700; letter-spacing: 0.5px; }
+  .layout-header p { margin: 0; font-size: 11px; color: var(--text-3); }
+
+  /* Common UI */
+  .stat-pill {
+    background: var(--bg-2);
+    border-radius: var(--radius);
+    padding: 12px 10px;
+    text-align: center;
+    border: 1px solid transparent;
+  }
+  .stat-pill-value {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .stat-pill-label {
+    font-size: 11px;
+    color: var(--text-2);
+    margin-top: 4px;
+  }
+  .stat-pill-sub {
+    font-size: 10px;
+    color: var(--text-3);
+    margin-top: 3px;
+  }
+  .green-glow {
+    color: var(--green);
+    text-shadow: 0 0 8px rgba(0,214,133,0.5), 0 0 16px rgba(0,214,133,0.25);
+  }
+  .red-glow {
+    color: var(--fuchsia);
+    text-shadow:
+      0 0 8px rgba(255,31,140,0.7),
+      0 0 16px rgba(255,31,140,0.45),
+      0 0 28px rgba(255,31,140,0.25);
+  }
+  .amber-glow {
+    color: var(--amber);
+    text-shadow: 0 0 8px rgba(239,159,39,0.5), 0 0 16px rgba(239,159,39,0.25);
+  }
+  .info-box {
+    background: var(--bg-2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    margin-bottom: 14px;
+    font-size: 12px;
+    color: var(--text-2);
+  }
+
+  /* === Layout A: Dashboard simple === */
+  /* El hero usa el color del balance — fuchsia si es negativo (estás en
+     pérdida), verde si es positivo. Glow suave alrededor del borde. */
+  .balance-hero {
+    background: linear-gradient(180deg, var(--bg-2) 0%, var(--bg) 100%);
+    border: 1px solid rgba(255,31,140,0.5);
+    border-radius: var(--radius-lg);
+    padding: 22px 18px;
+    text-align: center;
+    margin-bottom: 14px;
+    box-shadow: 0 0 30px rgba(255,31,140,0.15) inset;
+  }
+  .balance-hero-label {
+    font-size: 11px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .balance-hero-value {
+    font-size: 38px;
+    font-weight: 700;
+    margin-top: 6px;
+    line-height: 1;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .balance-hero-sub {
+    font-size: 12px;
+    color: var(--text-2);
+    margin-top: 8px;
+  }
+  .balance-hero-roi {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 700;
+    background: rgba(0,214,133,0.15);
+    color: var(--green);
+    border: 0.5px solid var(--green);
+  }
+  .stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .tx-list {
+    background: var(--bg-2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 4px 0;
+  }
+  .tx-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .tx-row:last-child { border-bottom: 0; }
+  .tx-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .tx-icon.out { background: rgba(255,31,140,0.18); color: var(--fuchsia); }
+  .tx-icon.in { background: rgba(0,214,133,0.18); color: var(--green); }
+  .tx-icon.swap { background: rgba(74,158,255,0.18); color: var(--blue); }
+  .tx-info {
+    flex: 1;
+    min-width: 0;
+    font-size: 12px;
+  }
+  .tx-info b { display: block; font-weight: 600; }
+  .tx-info span { color: var(--text-3); font-size: 11px; }
+  .tx-amount {
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  .tx-amount.out { color: var(--fuchsia); }
+  .tx-amount.in { color: var(--green); }
+  .tx-amount.swap { color: var(--blue); }
+  .fab {
+    width: 100%;
+    margin-top: 12px;
+    padding: 12px;
+    background: var(--accent);
+    color: #000;
+    border: 0;
+    border-radius: var(--radius);
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  /* === Layout B: Two-column detail === */
+  .roi-banner {
+    background: linear-gradient(90deg, var(--bg-2) 0%, var(--bg-3) 100%);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 14px;
+    text-align: center;
+  }
+  .roi-banner .pct {
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .roi-banner .label {
+    font-size: 11px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 6px;
+  }
+  .roi-progress {
+    height: 6px;
+    background: var(--bg-3);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 10px;
+  }
+  .roi-fill {
+    height: 100%;
+    background: var(--green);
+    width: 30%;
+  }
+  .panel {
+    background: var(--bg-2);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin-bottom: 10px;
+    border-left: 3px solid;
+  }
+  .panel.out { border-left-color: var(--fuchsia); }
+  .panel.in { border-left-color: var(--green); }
+  .panel.pending { border-left-color: var(--amber); }
+  .panel-title {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .panel-title.out { color: var(--fuchsia); }
+  .panel-title.in { color: var(--green); }
+  .panel-title.pending { color: var(--amber); }
+  .panel-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .panel-stat .v {
+    font-size: 18px;
+    font-weight: 700;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .panel-stat .l {
+    font-size: 10px;
+    color: var(--text-3);
+    margin-top: 2px;
+  }
+
+  /* === Layout C: Timeline === */
+  .timeline-chart {
+    height: 140px;
+    background: var(--bg-2);
+    border-radius: var(--radius);
+    padding: 10px;
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .chart-bar {
+    position: absolute;
+    bottom: 30px;
+    background: linear-gradient(180deg, var(--green) 0%, var(--green-dark) 100%);
+    border-radius: 2px 2px 0 0;
+  }
+  .chart-bar.out {
+    background: linear-gradient(180deg, var(--fuchsia) 0%, var(--fuchsia-dark) 100%);
+  }
+  .chart-axis {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 26px;
+    height: 1px;
+    background: var(--border);
+  }
+  .chart-axis-label {
+    position: absolute;
+    bottom: 8px;
+    color: var(--text-3);
+    font-size: 9px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .timeline-tx-row {
+    display: flex;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 0.5px solid var(--border);
+    font-size: 12px;
+  }
+  .timeline-tx-row:last-child { border-bottom: 0; }
+  .timeline-date {
+    width: 40px;
+    color: var(--text-3);
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-size: 10px;
+  }
+  .timeline-desc { flex: 1; }
+  .timeline-amt {
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-weight: 700;
+  }
+
+  .pill-chip {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-right: 4px;
+  }
+
+  /* Notes section */
+  .notes {
+    margin-top: 36px;
+    padding: 18px;
+    background: var(--bg-2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+  }
+  .notes h3 {
+    margin: 0 0 12px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .notes ul { padding-left: 20px; margin: 0; }
+  .notes li {
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.5;
+  }
+  .notes b { color: var(--text); }
+
+  .footnote {
+    text-align: center;
+    color: var(--text-3);
+    font-size: 11px;
+    margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="page-header">
+    <h1>💰 Vista de Finanzas — 3 propuestas</h1>
+    <p>Datos de ejemplo: invertiste $250.000 en sobres, vendiste $80.000 en repetidas, intercambiaste 50 láminas. Balance neto = −$170.000. ROI = 32%.</p>
+  </div>
+
+  <div class="compare">
+
+    <!-- ============== LAYOUT A: DASHBOARD ============== -->
+    <div class="layout">
+      <div class="layout-header">
+        <h2>OPCIÓN A · Dashboard</h2>
+        <p>Balance arriba + 4 stats + lista de movimientos</p>
+      </div>
+
+      <div class="balance-hero">
+        <div class="balance-hero-label">Balance neto</div>
+        <div class="balance-hero-value red-glow">−$170.000</div>
+        <div class="balance-hero-sub">$250k invertido · $80k recuperado</div>
+        <div class="balance-hero-roi">ROI · 32% recuperado</div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-pill">
+          <div class="stat-pill-value red-glow">$250k</div>
+          <div class="stat-pill-label">Invertido</div>
+          <div class="stat-pill-sub">50 sobres · avg $5k</div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-pill-value green-glow">$80k</div>
+          <div class="stat-pill-label">Recuperado</div>
+          <div class="stat-pill-sub">160 láminas vendidas</div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-pill-value amber-glow">$281k</div>
+          <div class="stat-pill-label">Pendiente</div>
+          <div class="stat-pill-sub">562 repetidas × $500</div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-pill-value">50</div>
+          <div class="stat-pill-label">Trades</div>
+          <div class="stat-pill-sub">~ $35k ahorrado</div>
+        </div>
+      </div>
+
+      <div class="tx-list">
+        <div class="tx-row">
+          <div class="tx-icon out">−</div>
+          <div class="tx-info"><b>10 sobres</b><span>Hoy · $5.000 c/u</span></div>
+          <div class="tx-amount out">−$50.000</div>
+        </div>
+        <div class="tx-row">
+          <div class="tx-icon in">+</div>
+          <div class="tx-info"><b>30 láminas a Pacho</b><span>Ayer · $500 c/u</span></div>
+          <div class="tx-amount in">+$15.000</div>
+        </div>
+        <div class="tx-row">
+          <div class="tx-icon swap">⇄</div>
+          <div class="tx-info"><b>Intercambio Mauricio</b><span>Lun · 30↔30</span></div>
+          <div class="tx-amount swap">0</div>
+        </div>
+        <div class="tx-row">
+          <div class="tx-icon out">−</div>
+          <div class="tx-info"><b>20 sobres</b><span>Vie · $5.500 c/u</span></div>
+          <div class="tx-amount out">−$110.000</div>
+        </div>
+      </div>
+
+      <button class="fab">+ Registrar movimiento</button>
+    </div>
+
+    <!-- ============== LAYOUT B: PANELES POR CATEGORÍA ============== -->
+    <div class="layout">
+      <div class="layout-header">
+        <h2>OPCIÓN B · Paneles por categoría</h2>
+        <p>ROI grande + 3 paneles separados con detalle</p>
+      </div>
+
+      <div class="roi-banner">
+        <div class="pct green-glow">32%</div>
+        <div class="label">ROI · recuperado</div>
+        <div class="roi-progress"><div class="roi-fill"></div></div>
+      </div>
+
+      <div class="panel out">
+        <div class="panel-title out">▼ Inversión</div>
+        <div class="panel-grid">
+          <div class="panel-stat">
+            <div class="v red-glow">$250.000</div>
+            <div class="l">Total invertido</div>
+          </div>
+          <div class="panel-stat">
+            <div class="v">50</div>
+            <div class="l">Sobres comprados</div>
+          </div>
+          <div class="panel-stat">
+            <div class="v">$5.000</div>
+            <div class="l">Costo prom. sobre</div>
+          </div>
+          <div class="panel-stat">
+            <div class="v">$1.923</div>
+            <div class="l">Costo / lámina única</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel in">
+        <div class="panel-title in">▲ Recuperación</div>
+        <div class="panel-grid">
+          <div class="panel-stat">
+            <div class="v green-glow">$80.000</div>
+            <div class="l">Total vendido</div>
+          </div>
+          <div class="panel-stat">
+            <div class="v">160</div>
+            <div class="l">Láminas vendidas</div>
+          </div>
+          <div class="panel-stat">
+            <div class="v">50</div>
+            <div class="l">Trades hechos</div>
+          </div>
+          <div class="panel-stat">
+            <div class="v">$500</div>
+            <div class="l">Precio prom.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel pending">
+        <div class="panel-title pending">⧗ Por vender</div>
+        <div class="panel-grid">
+          <div class="panel-stat">
+            <div class="v amber-glow">$281.000</div>
+            <div class="l">Valor estimado</div>
+          </div>
+          <div class="panel-stat">
+            <div class="v">562</div>
+            <div class="l">Repetidas en stock</div>
+          </div>
+        </div>
+        <div style="margin-top:10px; font-size:11px; color:var(--text-3);">
+          Si vendés todas a $500: balance final = <b style="color:var(--green);">+$111.000</b>
+        </div>
+      </div>
+
+      <button class="fab">+ Registrar movimiento</button>
+    </div>
+
+    <!-- ============== LAYOUT C: TIMELINE ============== -->
+    <div class="layout">
+      <div class="layout-header">
+        <h2>OPCIÓN C · Timeline</h2>
+        <p>Gráfico de barras + historial cronológico</p>
+      </div>
+
+      <div class="info-box">
+        <b>Balance hoy:</b>
+        <span class="red-glow" style="font-weight:700;font-family:'JetBrains Mono',monospace;">−$170.000</span>
+        <span style="color:var(--text-3);">·</span>
+        <b style="color:var(--green);">ROI 32%</b>
+      </div>
+
+      <div class="timeline-chart">
+        <!-- Barras simulando movimientos por día -->
+        <div class="chart-bar out" style="left:8%; width:8%; height:55px;"></div>
+        <div class="chart-bar"     style="left:18%; width:8%; height:30px;"></div>
+        <div class="chart-bar out" style="left:28%; width:8%; height:75px;"></div>
+        <div class="chart-bar"     style="left:38%; width:8%; height:40px;"></div>
+        <div class="chart-bar"     style="left:48%; width:8%; height:25px;"></div>
+        <div class="chart-bar out" style="left:58%; width:8%; height:90px;"></div>
+        <div class="chart-bar"     style="left:68%; width:8%; height:50px;"></div>
+        <div class="chart-bar out" style="left:78%; width:8%; height:35px;"></div>
+        <div class="chart-bar"     style="left:88%; width:8%; height:60px;"></div>
+        <div class="chart-axis"></div>
+        <div class="chart-axis-label" style="left:10px;">may 1</div>
+        <div class="chart-axis-label" style="right:10px;">hoy</div>
+      </div>
+
+      <div style="display:flex; gap:10px; margin-bottom:14px;">
+        <span class="pill-chip" style="background:rgba(255,31,140,0.18);color:var(--fuchsia);">▼ −$250k</span>
+        <span class="pill-chip" style="background:rgba(0,214,133,0.18);color:var(--green);">▲ +$80k</span>
+        <span class="pill-chip" style="background:rgba(74,158,255,0.18);color:var(--blue);">⇄ 50 trades</span>
+      </div>
+
+      <div style="background:var(--bg-2); border-radius:var(--radius); padding:12px;">
+        <div style="font-size:12px; font-weight:600; margin-bottom:8px; color:var(--text-2);">Historial</div>
+
+        <div class="timeline-tx-row">
+          <div class="timeline-date">06/05</div>
+          <div class="timeline-desc">10 sobres · $5k c/u</div>
+          <div class="timeline-amt" style="color:var(--fuchsia);">−$50k</div>
+        </div>
+        <div class="timeline-tx-row">
+          <div class="timeline-date">05/05</div>
+          <div class="timeline-desc">30 láminas → Pacho</div>
+          <div class="timeline-amt" style="color:var(--green);">+$15k</div>
+        </div>
+        <div class="timeline-tx-row">
+          <div class="timeline-date">04/05</div>
+          <div class="timeline-desc">⇄ trade Mauricio (30↔30)</div>
+          <div class="timeline-amt" style="color:var(--blue);">0</div>
+        </div>
+        <div class="timeline-tx-row">
+          <div class="timeline-date">03/05</div>
+          <div class="timeline-desc">50 láminas → vecino</div>
+          <div class="timeline-amt" style="color:var(--green);">+$25k</div>
+        </div>
+        <div class="timeline-tx-row">
+          <div class="timeline-date">02/05</div>
+          <div class="timeline-desc">20 sobres · $5.5k c/u</div>
+          <div class="timeline-amt" style="color:var(--fuchsia);">−$110k</div>
+        </div>
+        <div class="timeline-tx-row">
+          <div class="timeline-date">01/05</div>
+          <div class="timeline-desc">Compra inicial · 20 sobres</div>
+          <div class="timeline-amt" style="color:var(--fuchsia);">−$90k</div>
+        </div>
+      </div>
+
+      <button class="fab">+ Registrar movimiento</button>
+    </div>
+
+  </div>
+
+  <div class="notes">
+    <h3>Decisiones a tomar antes de implementar</h3>
+    <ul>
+      <li><b>Moneda:</b> COP por defecto (con formato $5.000)? ¿Querés que sea configurable?</li>
+      <li><b>Tipos de movimiento:</b>
+        <ul>
+          <li><b>Compra de sobres</b> — sale dinero (−)</li>
+          <li><b>Venta de láminas</b> — entra dinero (+)</li>
+          <li><b>Intercambio</b> — neutro (0) pero contabiliza ahorro implícito</li>
+          <li><b>Compra de láminas sueltas</b> a una papelería — sale dinero (−)</li>
+          <li><b>Otros</b> — gastos varios (envío, paquetería, etc.)</li>
+        </ul>
+      </li>
+      <li><b>Costo por sobre:</b> ¿fijo (configuración) o variable por compra (más realista para precios cambiantes)?</li>
+      <li><b>Valor de las láminas pendientes:</b> ¿usar precio promedio de venta o configurable por sticker?</li>
+      <li><b>Storage:</b> las transacciones se guardan en el backend Apps Script junto al estado actual, así son persistentes y compartibles con tu esposa.</li>
+      <li><b>Cómo entrar a esta vista:</b> nueva pestaña en la barra inferior reemplazando "Cambios" o agregada en "Más"? O un botón flotante en el home cerca del donut?</li>
+      <li><b>Bonus opcional:</b>
+        <ul>
+          <li>Punto de equilibrio: "necesitas vender X láminas más para igualar lo invertido"</li>
+          <li>Sugerencia: "te quedan 138 láminas únicas por conseguir, costo estimado en sobres = $XXXk"</li>
+          <li>Resumen mensual: cuánto gastaste/recuperaste por mes</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+
+  <p class="footnote">Mockup estático — los datos son inventados. Decime cuál layout (A, B, C) o combinación te gusta y lo implemento real.</p>
+</div>
+</body>
+</html>
