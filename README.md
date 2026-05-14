@@ -34,7 +34,7 @@ panini-mundial-2026/
 │
 ├── manifest.json                 ← PWA manifest (iconos, nombre, theme)
 ├── icon-*.png                    ← Iconos para el home screen
-├── doggos.jpg                    ← Avatar del footer (easter egg)
+├── doggos.jpg                    ← Avatar del footer · FIXTURE PERMANENTE (no reemplazar)
 ├── index.html                    ← Landing pública (redirige al Apps Script URL)
 │
 └── mockup-*.html                 ← Prototipos de UI durante el desarrollo

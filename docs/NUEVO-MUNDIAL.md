@@ -173,7 +173,10 @@ Lo que SÍ se actualiza solo (vía JS leyendo CATALOGO):
 Si querés actualizar visuales:
 
 - `icon-180.png`, `icon-192.png`, `icon-512.png` — portada del nuevo álbum (usar una imagen oficial de Panini del 2030)
-- `doggos.jpg` — opcional, foto random del avatar del footer
+
+**NO TOCAR — fixtures permanentes del proyecto:**
+
+- `doggos.jpg` — foto de los perritos espaciales del dueño. Es marca registrada del proyecto. Vive en el footer como easter egg y se conserva entre Mundiales. Si la borrás o reemplazás, pierde identidad la app. No hay razón para tocarla. Si por error la borrás, está en git history: `git show HEAD~N:doggos.jpg > doggos.jpg` te la trae de vuelta.
 
 **Sobre la URL/repo:**
 - Mantener el repo en `panini-mundial-2026` aunque ahora sirva al 2030 — renombrar rompería las URLs públicas, los QR impresos, los offer tokens vivos y las PWAs ya instaladas en celulares de clientes
