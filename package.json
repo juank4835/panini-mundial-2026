@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "sync-catalog": "node scripts/sync-catalog.js",
-    "migrate-mundial": "node scripts/migrate-mundial.js"
+    "migrate-mundial": "node scripts/migrate-mundial.js",
+    "verify": "node scripts/verify-deploy.js"
   },
   "repository": {
     "type": "git",

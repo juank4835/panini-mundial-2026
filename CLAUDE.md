@@ -165,6 +165,21 @@ clasp redeploy -V N -d "vN Mundial NEW_YEAR" AKfycbxb6U2M25Ah4ZyWu_C8PCQQGzpFzFs
 5. Probar el flujo de Cruzar (debe mostrar los equipos nuevos)
 6. Probar la página pública `/cambios/` (debe mostrar el catálogo nuevo)
 
+### Tarea 1.5: Verificar que un deployment esté sano
+
+**Trigger frases:** "verificá que esté todo bien", "está vivo X", "health check"
+
+```bash
+npm run verify -- --target sandbox       # o production
+```
+
+El script (`scripts/verify-deploy.js`) hace HTTP GET al deployment, al
+backend (`?action=publica`), a GitHub Pages, y verifica los HTMLs locales.
+Reporta una tabla OK/FAIL con 11 checks. Sale con código 1 si algo falla.
+
+Se ejecuta automáticamente al final de `npm run migrate-mundial`, pero
+podés correrlo independiente cuando sospeches que algo se rompió.
+
 ### Tarea 2: Deployar un bugfix o feature
 
 **Trigger frases:** "deploy esto", "subí el cambio", "hay un bug en X"

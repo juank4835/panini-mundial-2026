@@ -422,6 +422,20 @@ function main() {
   const commitFirstLine = gitCommitAndPush(target.root, newYear, versionN);
   if (commitFirstLine) ok('commit: ' + commitFirstLine);
 
+  // === Verify post-deploy ===
+  log('');
+  log('=== Health-check post-deploy ===');
+  // GitHub Pages tarda 1-2 min en publicar después de un push. Esperamos
+  // antes del verify para que los checks de Pages no fallen falsamente.
+  log('Esperando 90s para que GitHub Pages procese el push...');
+  try { execSync('sleep 90'); } catch (e) {}
+  try {
+    execSync(`node "${path.join(__dirname, 'verify-deploy.js')}" --target ${args.target} --expect-year ${newYear}`,
+       { cwd: target.root, stdio: 'inherit' });
+  } catch (e) {
+    err('verify-deploy reportó fallas. Revisar manualmente con: npm run verify -- --target ' + args.target);
+  }
+
   // === Resumen final ===
   log('');
   log('========================================');
