@@ -32,6 +32,17 @@ Diseñado para reusarse cada 4 años (nuevo Mundial = nuevo catálogo de equipos
 
 **REGLA DE ORO:** la URL de producción está pinned a la PWA instalada en el iPhone del usuario y a QRs/links impresos circulando. **NUNCA crear deployments nuevos con `clasp deploy` (genera URL nueva). SIEMPRE usar `clasp redeploy -V N -d "..." <DEPLOYMENT_URL>`** para actualizar la URL existente.
 
+**PRODUCCIÓN TIENE DATOS VIVOS — proteger.**
+
+Producción es donde el usuario registra sus pegadas reales, ventas reales, plata real. **No tocar producción durante simulaciones, pruebas o exploraciones.** Default a sandbox SIEMPRE a menos que el usuario diga explícitamente "deploy a producción" o "migrar producción". Si tenés duda, preguntá.
+
+Las únicas tareas que justifican tocar producción son:
+- Bugfix urgente (con la palabra "deploy", "bug", "arreglar" del usuario)
+- Migración real entre Mundiales (con confirmación explícita del usuario)
+- Sincronización docs/strings menores (texto sin riesgo de datos)
+
+Si el usuario te pide "simular X" o "probar Y" o "ver cómo se vería Z" → **es trabajo de sandbox**, no de producción.
+
 ---
 
 ## Tareas que el usuario te puede pedir
