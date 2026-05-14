@@ -1131,6 +1131,45 @@ function debugReset() {
   Logger.log('Reset completo');
 }
 
+/**
+ * Reset selectivo para empezar un Mundial nuevo. Borra el estado del álbum,
+ * finanzas, ofertas y orden de equipos — pero deja propiedades NO relacionadas
+ * (si las hubiera). Más seguro que debugReset() que borra TODO.
+ *
+ * USO: cuando salga el próximo Mundial y querás arrancar fresh:
+ *   1. Hacer backup primero (curl ?action=publica > backup.json)
+ *   2. Editar catalogo.json + los bloques CATALOGO de los HTMLs
+ *   3. Deploy del nuevo código
+ *   4. Ejecutar ESTA función manualmente desde el editor de Apps Script
+ *   5. Resetear localStorage en la app (Finanzas → ⋮ → Reset)
+ *
+ * Ver docs/NUEVO-MUNDIAL.md para el flujo completo.
+ */
+function resetParaProximoMundial() {
+  const props = PropertiesService.getScriptProperties();
+  const allKeys = props.getKeys();
+  const prefixesToWipe = ['STATE_', 'OFERTA_'];
+  const exactKeysToWipe = ['__finanzas', '__version', '__finVersion', '__orden'];
+  let borradas = 0;
+  let conservadas = [];
+  allKeys.forEach(k => {
+    const matchPrefix = prefixesToWipe.some(p => k.indexOf(p) === 0);
+    const matchExact = exactKeysToWipe.indexOf(k) >= 0;
+    if (matchPrefix || matchExact) {
+      props.deleteProperty(k);
+      borradas++;
+    } else {
+      conservadas.push(k);
+    }
+  });
+  const summary = 'Reset para próximo Mundial — ' + borradas + ' keys borradas.' +
+    (conservadas.length > 0
+      ? ' Conservadas (no tocadas): ' + conservadas.join(', ')
+      : ' Storage queda completamente limpio.');
+  Logger.log(summary);
+  return summary;
+}
+
 /** Forzar la migración manualmente (útil después de un cambio de modelo). */
 function debugMigrate() {
   const props = PropertiesService.getScriptProperties();

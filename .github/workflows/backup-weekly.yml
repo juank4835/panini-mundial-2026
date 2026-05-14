@@ -1,0 +1,72 @@
+# Backup automático semanal del estado del álbum.
+#
+# Corre cada lunes a las 8am Bogotá (13:00 UTC).
+# Descarga el snapshot público del backend vía ?action=publica y lo
+# commitea a la carpeta backups/ del repo.
+#
+# Permite también ejecución manual desde la pestaña Actions de GitHub.
+#
+# Lo que captura el snapshot:
+#   - Estado de cada lámina (pegada/suelta)
+#   - Precios de referencia
+#   - Especiales (precios override por id)
+#   - Descuentos por volumen
+#
+# Lo que NO captura (requiere auth):
+#   - Movimientos de finanzas (esos van por export manual)
+#
+# Si el snapshot es idéntico al último commit (no hubo cambios en una
+# semana), el commit es no-op y no se pushea.
+
+name: Backup semanal del álbum
+
+on:
+  schedule:
+    # 13:00 UTC = 8:00 AM Bogotá (UTC-5). Lunes.
+    - cron: '0 13 * * 1'
+  workflow_dispatch:  # Permite ejecutar manualmente desde GitHub UI
+
+permissions:
+  contents: write  # Para poder hacer commit + push
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Descargar snapshot del backend
+        id: snapshot
+        run: |
+          mkdir -p backups
+          DATE=$(date +%Y%m%d)
+          FILE="backups/auto-${DATE}.json"
+          echo "file=${FILE}" >> "$GITHUB_OUTPUT"
+          curl -sL --fail \
+            "https://script.google.com/macros/s/AKfycbxb6U2M25Ah4ZyWu_C8PCQQGzpFzFs6a2VOsmDhTgehVi8V1tUm66LxYKntDFCx9H-6eg/exec?action=publica" \
+            > "${FILE}"
+          # Validar que es JSON válido y que tiene ok:true
+          OK=$(node -e "const d=require('./${FILE}'); console.log(d.ok === true);")
+          if [ "$OK" != "true" ]; then
+            echo "ERROR: snapshot inválido (ok != true)"
+            cat "${FILE}"
+            exit 1
+          fi
+          # Tamaño del archivo (info útil en logs)
+          SIZE=$(wc -c < "${FILE}")
+          echo "Snapshot OK: ${SIZE} bytes en ${FILE}"
+
+      - name: Commit si hubo cambios
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions (backup auto)"
+          git add backups/
+          # Solo commitear si hay cambios reales (snapshot diff vs ultima semana)
+          if git diff --staged --quiet; then
+            echo "No hay cambios en el state — sin commit."
+          else
+            git commit -m "Backup automático: $(date +%Y-%m-%d)"
+            git push
+            echo "Backup committed."
+          fi

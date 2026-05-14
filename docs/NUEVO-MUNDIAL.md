@@ -62,62 +62,123 @@ Editar `catalogo.json` con los datos del nuevo Mundial:
 
 ---
 
-## Fase 3 — Actualizar código que aún tiene datos hardcodeados (1-2 horas)
+## Fase 3 — Actualizar el catálogo en el código (15 min)
 
-> En la versión actual (mayo 2026), el catálogo todavía está hardcodeado en `apps-script-deploy/index.html` y `cambios/index.html`. La idea es refactorizar para leer de `catalogo.json` antes de 2030, pero si no se hizo, hay que actualizar manualmente:
+Desde el refactor de mayo 2026, el catálogo vive en un bloque `CATALOGO` claramente marcado al inicio del `<script>` de cada archivo. Para migrar:
 
-**En `apps-script-deploy/index.html`:**
-- Buscar `const ordenInicial = [` y reemplazar con los 48 nuevos equipos
-- Buscar `const introStickers = [` y actualizar las FWC1-N
-- Buscar `const historyStickers = [` y actualizar
-- Si cambia la cantidad de stickers por equipo, buscar `for (let i = 1; i <= 20; i++)` y otros usos del `20`
+**Opción A — Manual (recomendada si nunca usaste el script):**
 
-**En `cambios/index.html`:**
-- Buscar `equiposDefault = [` y replicar los 48 equipos
-- Buscar `introStickers` y `historyStickers` igual
+En `apps-script-deploy/index.html`:
+1. Buscar `const CATALOGO = {` (cerca del inicio del `<script>`)
+2. Reemplazar el objeto completo con el del nuevo `catalogo.json`
+3. Las variables `introStickers`, `historyStickers`, `ordenInicial` se derivan solas — no tocarlas.
 
-**En `apps-script-deploy/Code.js`:**
-- Probablemente no haya nada que cambiar (el backend es agnóstico al catálogo)
+En `cambios/index.html`: idéntico, mismo bloque `CATALOGO`. La única diferencia es que ahí se deriva `equiposDefault` en vez de `ordenInicial`.
+
+**Opción B — Automática con script:**
+
+```bash
+./scripts/sync-catalog.sh
+```
+
+Esto lee `catalogo.json` y reemplaza los bloques `CATALOGO` en ambos HTMLs automáticamente. Después solo hacer commit + deploy.
+
+### Rotación de `STORAGE_KEY` (importante)
+
+En `apps-script-deploy/index.html` hay claves de localStorage versionadas:
+
+```js
+const STORAGE_KEY = 'panini_mundial_2026_v5';
+const ORDER_KEY = 'panini_mundial_2026_v5_order';
+const STORAGE_FIN_KEY = 'panini_mundial_2026_v5_finanzas';
+```
+
+**Cuando migrés a 2030, ROTAR estas claves** (cambiar `2026_v5` → `2030_v1`). ¿Por qué?
+- localStorage en el iPhone no se limpia automáticamente al cambiar el código
+- Si dejás las mismas keys, la PWA cargaría datos viejos del 2026 mezclados con la app del 2030
+- Rotar la key hace que la app arranque fresh, como un install nuevo
+
+Buscar `panini_mundial_2026_v5` en ambos archivos y reemplazar por `panini_mundial_2030_v1`.
+
+### Sobre `stickersPorEquipo`
+
+Desde el refactor, el valor `20` se lee de `CATALOGO.stickersPorEquipo` en los loops principales. Si Panini cambia a 22 por equipo, solo hay que actualizar `CATALOGO.stickersPorEquipo` en ambos archivos.
+
+### En `apps-script-deploy/Code.js`
+
+No hay nada que cambiar — el backend es agnóstico al catálogo. La función `resetParaProximoMundial()` ya está incluida (ver Fase 4).
 
 ---
 
-## Fase 4 — Reset del estado del backend (10 min)
+## Fase 4 — Reset del estado del backend (5 min)
 
-El estado del Mundial pasado está en `PropertiesService` de Apps Script. Hay que limpiarlo:
+El estado del Mundial pasado está en `PropertiesService` de Apps Script. Hay que limpiarlo.
 
-```bash
-# En Apps Script editor (script.google.com), ejecutar manualmente:
-function resetParaProximoMundial() {
-  const props = PropertiesService.getScriptProperties();
-  const allKeys = props.getKeys();
-  allKeys.forEach(k => {
-    if (k.startsWith('STATE_') || k === '__finanzas' || k === '__version' ||
-        k === '__finVersion' || k === '__orden' || k.startsWith('OFERTA_')) {
-      props.deleteProperty(k);
-    }
-  });
-  Logger.log('Reset completo: ' + allKeys.length + ' keys borradas.');
+La función `resetParaProximoMundial()` ya está incluida en `Code.js`. Solo hay que ejecutarla:
+
+1. Abrí https://script.google.com
+2. Entrá al proyecto "Panini Mundial 2026" (mantiene el nombre histórico)
+3. En el dropdown de funciones (arriba), seleccioná `resetParaProximoMundial`
+4. Click "Ejecutar"
+5. Confirmá los permisos si te los pide
+6. Revisá el log de ejecución (View → Logs o Ejecuciones): debería decir "Reset para próximo Mundial — N keys borradas"
+
+La función borra selectivamente:
+- Estado del álbum (keys con prefix `STATE_`)
+- Finanzas (`__finanzas`)
+- Versiones de sync (`__version`, `__finVersion`)
+- Orden de equipos (`__orden`)
+- Ofertas activas (keys con prefix `OFERTA_`)
+
+Otras keys que pudieran existir NO se tocan.
+
+Después en la app, hacer Reset desde Finanzas → ⋮ → Reset (limpia localStorage).
+
+---
+
+## Fase 4.5 — Strings estáticos que requieren edición manual (10 min)
+
+Algunos textos visibles NO se actualizan automáticamente desde CATALOGO porque son metadatos del HTML (los lee Safari antes que el JS corra). Hay que editarlos a mano:
+
+**En `apps-script-deploy/index.html`:**
+- `<title>` (línea ~6): `Álbum Panini Mundial 2026 · Tracker` → `Álbum Panini Mundial 2030 · Tracker`
+- `<meta name="description">`: actualizar año
+- `<meta name="apple-mobile-web-app-title" content="Panini 2026">` → `Panini 2030`
+- `<meta name="apple-mobile-web-app-title" content="Panini 2030">` (el que ve el usuario al instalar PWA)
+
+**En `cambios/index.html`:**
+- `<title>`: `Álbum Panini Mundial 2026 · Cambios` → `Álbum Panini Mundial 2030 · Cambios`
+- `<meta name="description">`: actualizar año
+
+**En `manifest.json`:**
+```json
+{
+  "name": "Álbum Panini Mundial 2030",
+  "short_name": "Panini 2030",
+  "description": "Tracker colaborativo del álbum Panini del Mundial 2030",
+  ...
 }
 ```
 
-Después en la app, hacer Reset desde Finanzas → ⋮ → Reset.
+**En `index.html` (raíz, landing page):**
+- Buscar y reemplazar todas las apariciones de "Mundial 2026" → "Mundial 2030"
 
----
+Lo que SÍ se actualiza solo (vía JS leyendo CATALOGO):
+- H1 visible en la app y en cambios
+- Títulos de share (WhatsApp)
+- Headers de mensajes de copy ("🎴 Álbum Panini ...")
 
-## Fase 5 — Branding update (opcional, 30 min)
+## Fase 5 — Branding visual (opcional, 30 min)
 
 Si querés actualizar visuales:
 
-- `icon-180.png`, `icon-192.png`, `icon-512.png` — portada del nuevo álbum
-- `doggos.jpg` — opcional, foto random del avatar
-- `manifest.json` — actualizar `"name"` y `"short_name"`
-- En `apps-script-deploy/index.html` y `cambios/index.html`: buscar "Mundial 2026" y reemplazar por "Mundial 2030"
-- En `apps-script-deploy/index.html`: actualizar `STORAGE_KEY = 'panini_mundial_2026_v5'` a `'panini_mundial_2030_v1'` para limpiar localStorage automáticamente en clientes existentes
+- `icon-180.png`, `icon-192.png`, `icon-512.png` — portada del nuevo álbum (usar una imagen oficial de Panini del 2030)
+- `doggos.jpg` — opcional, foto random del avatar del footer
 
 **Sobre la URL/repo:**
-- Mantener el repo en `panini-mundial-2026` aunque ahora sirva al 2030 (renombrar romperia QRs, links, PWAs ya instalados)
-- O renombrar a `panini-tracker` con redirect (más limpio, pero requiere migración cuidadosa)
-- Decisión depende del nivel de molestia del nombre vs costo de migración
+- Mantener el repo en `panini-mundial-2026` aunque ahora sirva al 2030 — renombrar rompería las URLs públicas, los QR impresos, los offer tokens vivos y las PWAs ya instaladas en celulares de clientes
+- Alternativa: renombrar a `panini-tracker` con redirect, pero requiere migración cuidadosa de GitHub Pages y reinstalación de PWAs
+- Decisión depende del nivel de molestia del nombre vs costo de migración. Default: mantener.
 
 ---
 

@@ -7012,10 +7012,22 @@
     const saved = localStorage.getItem(ORDER_KEY);
     if (saved) {
       const arr = JSON.parse(saved);
-      if (Array.isArray(arr) && arr.length === 48) equiposOrden = arr;
+      if (Array.isArray(arr) && arr.length === CATALOGO.equipos.length) equiposOrden = arr;
     }
   } catch(e) {}
   if (!equiposOrden) equiposOrden = ordenInicial.slice();
+
+  // Nombre canónico del evento, derivado de CATALOGO. Para Mundial 2030,
+  // basta cambiar `evento` en el bloque CATALOGO arriba — toda la UI
+  // dinámica (h1, document.title, share titles, copy headers) se actualiza.
+  // Los strings estáticos del HTML (<title>, manifest.json, etc.) hay que
+  // editarlos a mano — ver docs/NUEVO-MUNDIAL.md Fase 4.5.
+  const EVENTO_FULL_NAME = 'Álbum Panini ' + CATALOGO.evento;
+  try {
+    document.title = EVENTO_FULL_NAME + ' · Tracker';
+    const heroH1 = document.querySelector('.hero h1') || document.querySelector('h1');
+    if (heroH1) heroH1.textContent = EVENTO_FULL_NAME;
+  } catch (_) {}
 
   function saveOrden() {
     try { localStorage.setItem(ORDER_KEY, JSON.stringify(equiposOrden)); } catch(e) {}
@@ -7033,8 +7045,10 @@
 
     equiposOrden.forEach((eq, idx) => {
       const items = [];
-      // Convención Panini Mundial 2026: 1 = Escudo, 13 = Equipo, resto = jugadores
-      for (let i = 1; i <= 20; i++) {
+      // Convención Panini Mundial 2026: 1 = Escudo, 13 = Equipo, resto = jugadores.
+      // El total de stickers por equipo viene del CATALOGO — si Panini cambia
+      // el formato (ej. de 20 a 22 por equipo en 2030), actualizar CATALOGO.
+      for (let i = 1; i <= CATALOGO.stickersPorEquipo; i++) {
         let label;
         if (i === 1) label = 'Escudo';
         else if (i === 13) label = 'Equipo';
@@ -8039,7 +8053,7 @@
   async function shareOrCopy(text, btn, title) {
     if (navigator.share) {
       try {
-        await navigator.share({ title: title || 'Álbum Panini Mundial 2026', text: text });
+        await navigator.share({ title: title || EVENTO_FULL_NAME, text: text });
         if (btn) {
           const orig = btn.textContent;
           btn.textContent = '✓ Compartido';
@@ -8108,7 +8122,7 @@
       return expanded.join(', ');
     };
 
-    const lines = ['🎴 Álbum Panini Mundial 2026', ''];
+    const lines = ['🎴 ' + EVENTO_FULL_NAME, ''];
 
     if (totalFalt > 0) {
       lines.push('📋 ME FALTAN (' + totalFalt + '):');
@@ -11530,7 +11544,7 @@
     const totalF = introF.length + histF.length +
       Object.values(equipos).reduce((a, arr) => a + arr.length, 0);
 
-    const lines = ['🔴 Me faltan · Panini Mundial 2026', ''];
+    const lines = ['🔴 Me faltan · Panini ' + CATALOGO.evento, ''];
     if (totalF === 0) {
       lines.push('🎉 ¡Ninguna! Tengo el álbum completo.');
     } else {
@@ -11545,7 +11559,7 @@
       lines.push('');
       lines.push('💬 ¿Tienes alguna repetida de estas?');
     }
-    shareOrCopy(lines.join('\n'), btn, 'Me faltan · Panini 2026');
+    shareOrCopy(lines.join('\n'), btn, 'Me faltan · Panini ' + CATALOGO.evento);
   }
 
   // Compartir mis sueltas — láminas con p=0, s>=1 (en mano sin pegar).

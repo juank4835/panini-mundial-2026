@@ -1196,6 +1196,17 @@
   const historyStickers = CATALOGO.secciones.history.map(s => ({ id: s.id, displayNum: s.id }));
   const equiposDefault = CATALOGO.equipos;
 
+  // Nombre canónico del evento, derivado de CATALOGO. Para Mundial 2030
+  // basta cambiar `evento` arriba — la UI dinámica (h1, document.title,
+  // copy headers) se actualiza. Strings estáticos del HTML hay que
+  // editarlos a mano — ver docs/NUEVO-MUNDIAL.md Fase 4.5.
+  const EVENTO_FULL_NAME = 'Álbum Panini ' + CATALOGO.evento;
+  try {
+    document.title = EVENTO_FULL_NAME + ' · Cambios';
+    const heroH1 = document.querySelector('.hero h1') || document.querySelector('h1');
+    if (heroH1) heroH1.textContent = EVENTO_FULL_NAME + ' · Cambios';
+  } catch (_) {}
+
   // === Fetch via JSONP ===
   function loadData() {
     return new Promise((resolve, reject) => {
@@ -1972,7 +1983,7 @@
     const allItems = [];
     introStickers.forEach(s => allItems.push(s));
     equipos.forEach(eq => {
-      for (let i = 1; i <= 20; i++) allItems.push({ id: eq.code + '-' + i, displayNum: String(i) });
+      for (let i = 1; i <= CATALOGO.stickersPorEquipo; i++) allItems.push({ id: eq.code + '-' + i, displayNum: String(i) });
     });
     historyStickers.forEach(s => allItems.push(s));
 
@@ -2104,7 +2115,7 @@
       html += '<div class="group-row">Grupo ' + grupo + '</div>';
       teamsInGrupo.forEach(eq => {
         const items = [];
-        for (let i = 1; i <= 20; i++) items.push({ id: eq.code + '-' + i, displayNum: String(i) });
+        for (let i = 1; i <= CATALOGO.stickersPorEquipo; i++) items.push({ id: eq.code + '-' + i, displayNum: String(i) });
         html += teamRow(eq.code, items, false);
       });
     });
@@ -2171,7 +2182,7 @@
     });
     equipos.forEach(eq => {
       eqMap[eq.code] = { faltan: [], rep: [] };
-      for (let i = 1; i <= 20; i++) {
+      for (let i = 1; i <= CATALOGO.stickersPorEquipo; i++) {
         const r = statusOf(state, eq.code + '-' + i);
         if (r.st === 'falta') { eqMap[eq.code].faltan.push(String(i)); totalFalt++; }
         else if (r.st === 'rep') {
@@ -2182,7 +2193,7 @@
       }
     });
 
-    const lines = ['🎴 Álbum Panini Mundial 2026', ''];
+    const lines = ['🎴 ' + EVENTO_FULL_NAME, ''];
     if (totalFalt > 0) {
       lines.push('ME FALTAN (' + totalFalt + '):');
       if (fIntro.length) lines.push('Intro: ' + fIntro.join(', '));

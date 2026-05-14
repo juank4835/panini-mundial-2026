@@ -1,0 +1,25 @@
+{
+  "name": "panini-mundial-2026",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "sync-catalog": "node scripts/sync-catalog.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/juank4835/panini-mundial-2026.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/juank4835/panini-mundial-2026/issues"
+  },
+  "homepage": "https://github.com/juank4835/panini-mundial-2026#readme",
+  "devDependencies": {
+    "vitest": "^4.1.5"
+  }
+}
