@@ -1184,8 +1184,13 @@ function debugReset() {
 function resetParaProximoMundial() {
   const props = PropertiesService.getScriptProperties();
   const allKeys = props.getKeys();
-  const prefixesToWipe = ['STATE_', 'OFERTA_'];
-  const exactKeysToWipe = ['__finanzas', '__version', '__finVersion', '__orden'];
+  // Usar las constantes en lugar de strings literales. El prefijo real
+  // del state por equipo es STATE_PREFIX ('s_'), NO 'STATE_' uppercase
+  // — bug histórico que dejaba state de equipos sin borrar tras un reset.
+  // También limpiamos LEGACY_CLIENT_PREFIX ('client_') de migraciones viejas.
+  // FIN_VERSION_KEY ('__fin_version') antes estaba mal escrito como '__finVersion'.
+  const prefixesToWipe = [STATE_PREFIX, LEGACY_CLIENT_PREFIX, 'OFERTA_'];
+  const exactKeysToWipe = [FIN_KEY, VERSION_KEY, FIN_VERSION_KEY, ORDEN_KEY, STATE_KEY_LEGACY];
   let borradas = 0;
   let conservadas = [];
   allKeys.forEach(k => {
