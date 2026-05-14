@@ -2,6 +2,11 @@
 
 App personal para trackear el álbum Panini de la Copa Mundial. Diseñada para reutilizarse en cada edición (2026, 2030, 2034…) cambiando solo el catálogo de equipos.
 
+> ### Si llegaste porque salió un Mundial nuevo
+>
+> - **Humano**: leé `docs/NUEVO-MUNDIAL.md` para la guía paso a paso.
+> - **Agente LLM (Claude, GPT, etc.)**: leé `CLAUDE.md` — tiene la receta completa con IDs, comandos y qué pedirle al usuario.
+
 ## Qué hace
 
 Maneja todo el ciclo del coleccionista: pegadas, repetidas, faltantes, cambios bilaterales con vecinos, ventas con descuentos por volumen, ofertas personalizadas por link compartido, finanzas detalladas (precios, especiales, movimientos).
