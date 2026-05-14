@@ -168,12 +168,9 @@ git push
 **Para sandbox (staging)**, si el usuario pidió probar primero ahí:
 
 ```bash
-# Nota: por razones históricas el folder local del sandbox sigue llamándose
-# panini-pacho-2026 (Pacho era el nombre de pruebas durante el desarrollo).
-# La instancia sandbox es la misma cosa con nombre profesional.
-cd /Users/juank4835/Documents/panini-pacho-2026/apps-script-deploy
+cd /Users/juank4835/Documents/panini-sandbox-2026/apps-script-deploy
 # Copiar código de producción reemplazando URLs
-sed 's|panini-mundial-2026|panini-pacho-2026|g' /Users/juank4835/Documents/panini-mundial-2026/apps-script-deploy/index.html > index.html
+sed 's|panini-mundial-2026|panini-sandbox-2026|g' /Users/juank4835/Documents/panini-mundial-2026/apps-script-deploy/index.html > index.html
 cp /Users/juank4835/Documents/panini-mundial-2026/apps-script-deploy/Code.js Code.js
 clasp push -f
 clasp version "vN sync con prod"
