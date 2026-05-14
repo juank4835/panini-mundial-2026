@@ -82,57 +82,73 @@ Si el usuario te pide "simular X" o "probar Y" o "ver cómo se vería Z" → **e
 
 **Steps de ejecución (en orden):**
 
+**Flujo nuevo (post v253) — UN SOLO COMANDO:**
+
+Hay un script `scripts/migrate-mundial.js` que orquesta TODO automáticamente
+(backup + edit catalogo + sync + sed strings + clasp deploy + git). Lo único
+que QUEDA manual es ejecutar `resetParaProximoMundial()` en el editor de
+Apps Script (Google no permite invocar funciones de afuera de forma segura).
+
 ```bash
-# Fase 1: Backup del Mundial anterior (NUNCA SALTAR ESTO)
+# 1. Armar el archivo de migración con los datos del nuevo Mundial.
+#    Partir del template:
+cp scripts/migration-example.json /tmp/mig-NEW_YEAR.json
+# Editar: evento, year, secciones.intro, secciones.history, equipos (48)
+
+# 2. Dry-run primero (no escribe nada, solo muestra el plan):
+node scripts/migrate-mundial.js --target sandbox --config /tmp/mig-NEW_YEAR.json --dry-run
+
+# 3. Si el plan se ve bien, aplicar al sandbox PRIMERO:
+node scripts/migrate-mundial.js --target sandbox --config /tmp/mig-NEW_YEAR.json --apply
+
+# 4. Después de probar en sandbox, aplicar a producción (DOBLE FLAG por safety):
+node scripts/migrate-mundial.js --target production --config /tmp/mig-NEW_YEAR.json --apply --confirm-production
+```
+
+El script al final imprime los pasos manuales que faltan (reset + verificar PWA).
+
+**Detalles del script (qué hace en orden):**
+
+1. Pre-flight: valida config (48 equipos, 12 grupos × 4), git limpio, clasp instalado.
+2. Backup automático del target via JSONP a `backups/pre-migration-...json`.
+3. Sobrescribe `catalogo.json` con los datos nuevos.
+4. Corre `sync-catalog.js` → propaga CATALOGO a `apps-script-deploy/index.html` y `cambios/index.html`.
+5. Rota strings estáticos: "Mundial OLD" → "Mundial NEW", "Panini OLD" → "Panini NEW", `panini_mundial_OLD_YEAR_*` → `panini_mundial_NEW_YEAR_v1`.
+6. `clasp push -f` + `clasp version "..."` + `clasp redeploy -V N -d "..." DEPLOYMENT_ID`.
+7. `git add -A` + commit con mensaje generado + push.
+
+**Anti-patterns que el script previene automáticamente:**
+- Olvidarse de rotar STORAGE_KEY (PWA cacheada mezcla datos viejos+nuevos)
+- Hacer `clasp deploy` en lugar de `clasp redeploy` (genera URL nueva, rompe PWA)
+- Migrar producción por error cuando se pidió sandbox (target=sandbox por default en el plan)
+- Deployar sin backup previo
+- Commitear con working tree sucio (aborta si hay cambios sin commitear)
+
+**Flujo viejo (manual, por si el script falla y hay que hacerlo a mano):**
+
+```bash
+# Fase 1: Backup
 mkdir -p backups
 curl -sL "https://script.google.com/macros/s/AKfycbxb6U2M25Ah4ZyWu_C8PCQQGzpFzFs6a2VOsmDhTgehVi8V1tUm66LxYKntDFCx9H-6eg/exec?action=publica" \
   > backups/mundial-anterior-final-$(date +%Y%m%d).json
-# Verificar el backup es válido
-node -e "const d=require('./backups/mundial-anterior-final-$(date +%Y%m%d).json'); console.log(d.ok === true ? 'OK' : 'FAIL');"
 
-# Fase 2: Editar catalogo.json con los datos nuevos
-# (Usa la herramienta de Edit/Write para reemplazar el contenido)
+# Fase 2: Editar catalogo.json a mano con los datos nuevos
 
-# Fase 3: Sincronizar catálogo a los HTMLs
+# Fase 3: Sincronizar
 npm run sync-catalog
-# Esto reemplaza los bloques CATALOGO en apps-script-deploy/index.html y cambios/index.html
 
-# Fase 4: Strings estáticos (HTML <title>, manifest.json, meta tags)
-# Buscar y reemplazar "Mundial 2026" → "Mundial 2030" (o el año correspondiente)
-# Archivos a tocar:
-#   - apps-script-deploy/index.html (<title>, meta apple-mobile-web-app-title, meta description)
-#   - cambios/index.html (<title>, meta description)
-#   - index.html (raíz, landing)
-#   - manifest.json (name, short_name, description)
-# Adicionalmente: STORAGE_KEY rotation
-#   - En apps-script-deploy/index.html, buscar 'panini_mundial_2026_v5' y rotar a
-#     'panini_mundial_NEW_YEAR_v1'. Esto fuerza limpieza de localStorage en
-#     PWAs cacheadas existentes. CRÍTICO para evitar mix de datos viejos+nuevos.
+# Fase 4: Strings estáticos (sed sobre HTMLs y manifest.json)
+sed -i '' 's|Mundial 2026|Mundial NEW_YEAR|g' apps-script-deploy/index.html cambios/index.html index.html manifest.json
+# Y rotar STORAGE_KEYs: panini_mundial_2026_vX → panini_mundial_NEW_YEAR_v1
 
-# Fase 5: Deploy del código
+# Fase 5: Deploy
 cd apps-script-deploy
 clasp push -f
 clasp version "vN Migración a Mundial NEW_YEAR"
-# N debe ser la siguiente versión disponible. Verificar con `clasp versions` antes.
 clasp redeploy -V N -d "vN Mundial NEW_YEAR" AKfycbxb6U2M25Ah4ZyWu_C8PCQQGzpFzFs6a2VOsmDhTgehVi8V1tUm66LxYKntDFCx9H-6eg
 
-# Fase 6: Reset del backend (NUCLEAR — confirmar con usuario antes)
-# Esto se hace MANUALMENTE en https://script.google.com:
-#   1. Usuario abre el proyecto Apps Script
-#   2. Selecciona la función `resetParaProximoMundial` en el dropdown
-#   3. Click "Ejecutar"
-# Tu rol: instruir al usuario paso a paso, NO podés ejecutarla vos.
-
-# Fase 7: Commit + push
-cd ..
-git add -A
-git commit -m "Migración completa a Mundial NEW_YEAR"
-git push
-
-# Fase 8: Deploy a sandbox (opcional, si el usuario lo pidió)
-# Si el usuario pidió SANDBOX en vez de migrar prod, en lugar de Fase 5 deployás a:
-# AKfycbxO6ce9vpKOiFwRXCw9Th_R7O1PmBAKHJtCVZGKy3_IIAvaCQ_ZQgzMBSsiasd8g18
-# Y no ejecutás Fase 6 (reset) en producción — solo en el sandbox.
+# Fase 6: Reset manual (igual que el flujo nuevo — ver más abajo)
+# Fase 7: git add -A && git commit -m "..." && git push
 ```
 
 **NO TOCAR durante migración:**

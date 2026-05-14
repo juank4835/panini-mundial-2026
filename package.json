@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "sync-catalog": "node scripts/sync-catalog.js"
+    "sync-catalog": "node scripts/sync-catalog.js",
+    "migrate-mundial": "node scripts/migrate-mundial.js"
   },
   "repository": {
     "type": "git",
