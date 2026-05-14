@@ -1204,8 +1204,8 @@
   }
 
   // === Vista "Oferta personalizada" ===
-  // Cuando la URL trae ?oferta=ID1,ID2,..., en lugar del inventario completo
-  // mostramos solo esos IDs como una propuesta al vecino. Vista compacta,
+  // Cuando la URL trae ?oferta=ID1,ID2,... o ?o=TOKEN, en lugar del inventario
+  // completo mostramos solo esos IDs como propuesta al vecino. Vista compacta,
   // con grid agrupado por Grupo del álbum, total estimado de precio, y un
   // link para ver el inventario completo. Si alguna lámina del set ya no
   // está disponible (el dueño la vendió/usó), se marca como "no disponible".
@@ -1552,6 +1552,7 @@
           unitLabelShort = '$' + fmtMoney(totals.precioComunUnitario) + ' c/u común';
         }
       } else if (precioBaseComun > 0) {
+        // No hay comunes seleccionadas pero hay precio configurado
         unitLabelLong = '$' + fmtMoney(precioBaseComun) + ' por lámina común';
         unitLabelShort = '$' + fmtMoney(precioBaseComun) + ' c/u común';
       } else {
@@ -1569,6 +1570,8 @@
       // accionable: "Suma 5 más para bajar a $900 c/u" pega más fuerte que
       // un % abstracto.
       if (hintEl) {
+        // Para mostrar a qué precio unitario quedaría el común con el
+        // próximo tier (motiva al cliente con un número concreto)
         const nextUnitPrice = (totals.nextTier && precioBaseComun > 0)
           ? Math.round(precioBaseComun * (1 - totals.nextTier.descuento / 100))
           : 0;
@@ -1590,6 +1593,7 @@
           hintEl.innerHTML =
             'Sumá <b>' + totals.faltaPara + ' más</b> para bajar a <b>$' + fmtMoney(nextUnitPrice) + ' c/u común</b> (−' + totals.nextTier.descuento + '%)';
         } else if (totals.nextTier) {
+          // Fallback si no tenemos precioBaseComun (no debería pasar)
           hintEl.className = 'oferta-descuento-hint next';
           hintEl.innerHTML =
             'Sumá <b>' + totals.faltaPara + ' más</b> para destrabar <b>−' + totals.nextTier.descuento + '%</b> en las comunes';
