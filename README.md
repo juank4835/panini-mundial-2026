@@ -80,7 +80,7 @@ Toma ~1 día cuando salga el catálogo oficial de Panini.
 
 ## Notas históricas
 
-- **`panini-pacho-2026`** (repo archivado): era el ambiente de pruebas durante el desarrollo. Reemplazado por este repo como fuente única.
+- **Sandbox / staging**: el folder local `panini-pacho-2026` y su Apps Script asociado funcionan como ambiente de pruebas. El nombre "Pacho" es histórico del desarrollo — referirse a esa instancia como "sandbox". Ver `CLAUDE.md` y `docs/RUNBOOK.md` para el workflow.
 - **`legacy.html`**: versión anterior monolítica conservada por referencia.
 
 ## Convenciones

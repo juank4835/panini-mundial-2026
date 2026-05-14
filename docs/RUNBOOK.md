@@ -69,11 +69,13 @@ Las versiones se acumulan en Apps Script — el último deploy bueno suele ser `
 
 ---
 
-## Sync entre las dos instancias
+## Sync entre producción y sandbox
 
-Hasta abril 2026 había dos instancias: `panini-mundial-2026` (prod) y `panini-pacho-2026` (staging/test). El segundo fue archivado tras el merge. **Hoy solo existe la de producción.**
+Hay dos instancias:
+- **Producción**: `panini-mundial-2026` (este repo). PWA del usuario apunta acá.
+- **Sandbox / staging**: folder local `panini-pacho-2026` (nombre histórico — referirse como "sandbox"). Apps Script independiente, instancia paralela para probar antes de deployar a producción.
 
-Si en el futuro querés volver a tener staging, ver `docs/NUEVO-MUNDIAL.md` sección "Staging".
+Para sincronizar un cambio del prod al sandbox, ver `CLAUDE.md` sección "Tarea 2: Deployar un bugfix o feature" — bloque "Para sandbox (staging)".
 
 ---
 

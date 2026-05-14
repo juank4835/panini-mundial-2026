@@ -28,7 +28,7 @@ Diseñado para reusarse cada 4 años (nuevo Mundial = nuevo catálogo de equipos
 | **scriptId** (Apps Script project) | leer de `apps-script-deploy/.clasp.json` |
 | **GitHub repo** | `https://github.com/juank4835/panini-mundial-2026` |
 | **GitHub Pages public URL** | `https://juank4835.github.io/panini-mundial-2026/cambios/` |
-| **Staging instance** (Pacho, opcional) | `AKfycbxO6ce9vpKOiFwRXCw9Th_R7O1PmBAKHJtCVZGKy3_IIAvaCQ_ZQgzMBSsiasd8g18` |
+| **Sandbox instance** (staging, opcional) | `AKfycbxO6ce9vpKOiFwRXCw9Th_R7O1PmBAKHJtCVZGKy3_IIAvaCQ_ZQgzMBSsiasd8g18` |
 
 **REGLA DE ORO:** la URL de producción está pinned a la PWA instalada en el iPhone del usuario y a QRs/links impresos circulando. **NUNCA crear deployments nuevos con `clasp deploy` (genera URL nueva). SIEMPRE usar `clasp redeploy -V N -d "..." <DEPLOYMENT_URL>`** para actualizar la URL existente.
 
@@ -50,7 +50,7 @@ Diseñado para reusarse cada 4 años (nuevo Mundial = nuevo catálogo de equipos
 
 **Q2: ¿Migrás producción o creás sandbox?**
 - **Producción** = borrar el Mundial pasado y arrancar el nuevo con el MISMO URL. La PWA del usuario se actualiza automáticamente. Irreversible sin restore manual.
-- **Sandbox** = deployar a Pacho (`AKfycbxO...sd8g18`), instancia paralela. El Mundial pasado queda intacto en producción. Útil si el usuario quiere probar primero o si todavía está activo el Mundial anterior.
+- **Sandbox** = deployar a la instancia sandbox (`AKfycbxO...sd8g18`), paralela a producción. El Mundial activo queda intacto en producción. Útil si el usuario quiere probar primero o si todavía está activo el Mundial anterior.
 
 **Q3: ¿Cuántos stickers por equipo?**
 - En Mundial 2026 son 20 (1 escudo + 1 equipo grupal + 18 jugadores). Si Panini cambió a 22 u otro número, ajustar `CATALOGO.stickersPorEquipo`.
@@ -118,7 +118,7 @@ git add -A
 git commit -m "Migración completa a Mundial NEW_YEAR"
 git push
 
-# Fase 8: Sandbox de Pacho (opcional, si el usuario lo pidió)
+# Fase 8: Deploy a sandbox (opcional, si el usuario lo pidió)
 # Si el usuario pidió SANDBOX en vez de migrar prod, en lugar de Fase 5 deployás a:
 # AKfycbxO6ce9vpKOiFwRXCw9Th_R7O1PmBAKHJtCVZGKy3_IIAvaCQ_ZQgzMBSsiasd8g18
 # Y no ejecutás Fase 6 (reset) en producción — solo en el sandbox.
@@ -154,9 +154,12 @@ git commit -m "vN descripción"
 git push
 ```
 
-**Para Pacho (staging)**, si el usuario pidió probar primero ahí:
+**Para sandbox (staging)**, si el usuario pidió probar primero ahí:
 
 ```bash
+# Nota: por razones históricas el folder local del sandbox sigue llamándose
+# panini-pacho-2026 (Pacho era el nombre de pruebas durante el desarrollo).
+# La instancia sandbox es la misma cosa con nombre profesional.
 cd /Users/juank4835/Documents/panini-pacho-2026/apps-script-deploy
 # Copiar código de producción reemplazando URLs
 sed 's|panini-mundial-2026|panini-pacho-2026|g' /Users/juank4835/Documents/panini-mundial-2026/apps-script-deploy/index.html > index.html
