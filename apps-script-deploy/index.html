@@ -14222,8 +14222,12 @@
     try { localStorage.setItem('panini_movs_grouped', _finMovsGroupedView ? '1' : '0'); } catch (_) {}
   }
   // Helper: devuelve el "grupo del álbum" de un id de lámina.
-  // Retorna: 'INTRO' (00 + FWC1-8), 'HIST' (FWC9-19), o una letra 'A'-'L'
-  // según equiposOrden. 'OTRO' como fallback.
+  // Retorna: 'INTRO' (00 + FWC1-8), 'HIST' (FWC9-19), una letra 'A'-'L'
+  // según equiposOrden, o el código de equipo crudo (ej. 'MEX') si la
+  // lámina pertenece a un equipo que ya no existe en el catálogo activo
+  // (típicamente ocurre tras migrar al próximo Mundial — los movs viejos
+  // siguen referenciando equipos del Mundial anterior). 'OTRO' como
+  // último fallback para ids con formato inesperado.
   function _idAlbumGroup(id) {
     if (!id) return 'OTRO';
     if (id === '00') return 'INTRO';
@@ -14232,16 +14236,23 @@
     const parts = id.split('-');
     if (parts.length === 2) {
       const eq = equiposOrden.find(e => e.code === parts[0]);
-      return eq && eq.grupo ? eq.grupo : 'OTRO';
+      if (eq && eq.grupo) return eq.grupo;
+      // Equipo no encontrado en catálogo activo (post-migración). Usar
+      // el código crudo como label para que el usuario al menos vea
+      // de qué equipo era la lámina.
+      return parts[0];
     }
     return 'OTRO';
   }
-  // Orden de grupos para render (intro/hist primero, luego A-L, luego otros)
+  // Orden de grupos para render (intro/hist primero, luego A-L, luego
+  // códigos legacy de Mundiales anteriores, luego 'OTRO' al final).
   function _albumGroupSortKey(g) {
     if (g === 'INTRO') return 0;
     if (g === 'HIST') return 1;
     if (g && g.length === 1 && g >= 'A' && g <= 'L') return 100 + g.charCodeAt(0);
-    return 999;
+    if (g === 'OTRO') return 999;
+    // Códigos legacy (FIFA 3-letter): ordenar alfabéticamente entre A-L y OTRO
+    return 500;
   }
   // Set de claves de día ('YYYY-MM-DD') expandidas en el tab Inventario.
   // Empieza vacío = todos los días colapsados a una sola row resumen.
