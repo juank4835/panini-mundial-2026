@@ -40,19 +40,34 @@ Diseñado para reusarse cada 4 años (nuevo Mundial = nuevo catálogo de equipos
 
 **Trigger frases:** "salió el Mundial X", "migrar al nuevo Mundial", "deploy nueva edición"
 
-**Antes de empezar, pedile al usuario:**
+**Antes de empezar, pedile al usuario los siguientes datos.**
 
-1. **Catálogo del nuevo Mundial** (en este orden):
-   - Lista de los **48 equipos clasificados** con: código FIFA (3 letras), nombre completo, grupo (A-L). Puede dictar en formato libre, vos lo estructuras.
-   - Lista de **9 secciones "intro"** del álbum (logo Panini, mascotas, anfitriones, etc.) — generalmente FWC1-8 más "00" portada.
-   - Lista de **11 secciones "history"** (Mundiales anteriores ganadores) — FWC9-19.
-   - **stickersPorEquipo**: cuántos stickers por equipo (en 2026 son 20). Si Panini cambió, ajustar.
+**UX CRÍTICO — Una pregunta a la vez.** No tires todas las preguntas en un solo mensaje, el usuario se abruma. Esperá la respuesta de cada pregunta antes de pasar a la siguiente. Ack brevemente cada respuesta antes de pedir la próxima. Orden óptimo:
 
-2. **Decisión: ¿migrar producción o crear sandbox?**
-   - **Migrar producción** = borrar todo lo del Mundial pasado y arrancar 2030 con el mismo URL. Lo más común si ya pasó el Mundial pasado.
-   - **Sandbox** = crear un proyecto Apps Script separado para simular sin tocar producción. Útil si el usuario quiere probar antes de comprometerse, o si todavía sigue activo el Mundial anterior.
+**Q1: ¿Qué Mundial y dónde se juega?**
+- Año (2030, 2034, etc.) y país(es) host.
+- Útil para el contexto general y para anticipar qué emblemas van en "intro" (cada host suele tener su emblema en las primeras láminas).
 
-3. **Confirmación explícita** del usuario antes de ejecutar `resetParaProximoMundial()` — borra MUCHA data del backend, debe estar consciente.
+**Q2: ¿Migrás producción o creás sandbox?**
+- **Producción** = borrar el Mundial pasado y arrancar el nuevo con el MISMO URL. La PWA del usuario se actualiza automáticamente. Irreversible sin restore manual.
+- **Sandbox** = deployar a Pacho (`AKfycbxO...sd8g18`), instancia paralela. El Mundial pasado queda intacto en producción. Útil si el usuario quiere probar primero o si todavía está activo el Mundial anterior.
+
+**Q3: ¿Cuántos stickers por equipo?**
+- En Mundial 2026 son 20 (1 escudo + 1 equipo grupal + 18 jugadores). Si Panini cambió a 22 u otro número, ajustar `CATALOGO.stickersPorEquipo`.
+
+**Q4: Equipos clasificados.**
+- 48 equipos. Pasame: código FIFA 3 letras + nombre + grupo (A-L). Aceptá formato libre, vos lo estructuras.
+- Si son muchos, podés pedir por grupos (4 equipos por vez). Mejor que pedir los 48 de golpe.
+
+**Q5: Secciones "intro" del álbum.**
+- Típicamente 9 láminas: "00" portada + FWC1-8 (logo Mundial sup/inf, mascotas, slogan, balón, emblemas de los hosts).
+- Pedile que mire el álbum físico y dicte qué dice cada FWC.
+
+**Q6: Secciones "history" del álbum.**
+- Típicamente 11 láminas: FWC9-19 con Mundiales anteriores ganadores.
+- En 2026 son: Italia 1934, Uruguay 1950, Alemania 1954, Brasil 1962, Alemania 1974, Argentina 1986, Brasil 1994, Brasil 2002, Italia 2006, Alemania 2014, Argentina 2022. Para 2030, probablemente reemplacen el más viejo por el del 2026.
+
+**Confirmación final antes de ejecutar:** una vez tengás todos los datos, mostrá al usuario un resumen del catálogo armado y pedile confirmación antes de empezar las fases destructivas (especialmente Fase 6, reset). El usuario debe estar consciente de que `resetParaProximoMundial()` borra MUCHA data del backend.
 
 **Steps de ejecución (en orden):**
 
