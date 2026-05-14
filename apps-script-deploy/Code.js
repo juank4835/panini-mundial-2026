@@ -718,17 +718,53 @@ function pushOrden(orden) {
 }
 
 /** Resetea TODO el estado del álbum. Acción global. */
+/**
+ * Reset de PROGRESO. Borra:
+ *   - Estado del álbum (STATE_* keys)
+ *   - Movimientos de finanzas (vaciamos el array dentro de FIN_KEY)
+ *   - Ofertas activas (OFERTA_* keys)
+ * Conserva:
+ *   - Precios de categorías (FIN_KEY.precios)
+ *   - Especiales (FIN_KEY.especiales)
+ *   - Descuentos por volumen (FIN_KEY.descuentos)
+ *   - Orden de equipos (__orden)
+ *   - Versión finanzas (__finVersion — bumpeada para que clientes sincronicen)
+ *
+ * Para el reset NUCLEAR (cambio de Mundial), usar resetParaProximoMundial()
+ * desde el editor de Apps Script — ese borra TODO incluso config.
+ */
 function resetAll() {
   const lock = LockService.getScriptLock();
   lock.waitLock(5000);
   try {
     const props = PropertiesService.getScriptProperties();
     const all = props.getProperties();
+    // 1. Borrar estado del álbum (STATE_* + legacy keys)
     Object.keys(all).filter(k =>
       k.indexOf(STATE_PREFIX) === 0 ||
       k.indexOf(LEGACY_CLIENT_PREFIX) === 0 ||
       k === STATE_KEY_LEGACY
     ).forEach(k => props.deleteProperty(k));
+    // 2. Borrar ofertas activas (cada OFERTA_token vive por 30 días, pero
+    //    si estamos reseteando todo lo del progreso, ya no aplican).
+    Object.keys(all).filter(k => k.indexOf('OFERTA_') === 0)
+      .forEach(k => props.deleteProperty(k));
+    // 3. Vaciar movimientos del FIN_KEY, conservando precios/especiales/descuentos.
+    //    Si no existe FIN_KEY (cliente fresh), no hay nada que limpiar.
+    const finRaw = props.getProperty(FIN_KEY);
+    if (finRaw) {
+      try {
+        const fin = JSON.parse(finRaw);
+        if (fin && typeof fin === 'object') {
+          fin.movimientos = [];
+          _writeFinanzas(props, fin);
+          _bumpFinVersion(props);
+        }
+      } catch (_) {
+        // Si el FIN_KEY está corrupto, lo dejamos como estaba — el reset del
+        // álbum es lo crítico, el FIN_KEY queda para que el usuario lo arregle.
+      }
+    }
     const v = _bumpVersion(props);
     return { ok: true, version: v };
   } finally {
