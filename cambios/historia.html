@@ -34,8 +34,9 @@
   --amber: #EF9F27;
   --amber-dim: #BA7517;
   --amber-glow: rgba(239, 159, 39, 0.20);
-  --green: #7fb069;
-  --green-dim: #5a8049;
+  --green: #00D685;
+  --green-dim: #00A065;
+  --green-glow: rgba(0, 214, 133, 0.28);
   --red: #d4574e;
   --highlight: rgba(255, 140, 26, 0.22);
 
@@ -325,31 +326,87 @@ section.chapter {
   .pricetag { padding: 14px 14px 12px; }
 }
 
-/* === COMPARATIVO PER-LÁMINA · dos marcadores apilados === */
-.hl-compare {
+/* === COMPARATIVO PER-LÁMINA · ecuación Bonnie − Clyde = $335 === */
+.vs-laminas {
   margin: 32px 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  align-items: flex-start;
+  gap: 8px;
 }
-.hl-compare-delta {
-  margin-top: 14px;
-  padding-left: 12px;
-  font-family: var(--mono);
-  font-size: 13px;
-  color: var(--ink-dim);
-  letter-spacing: 0.06em;
-  line-height: 1.5;
-  text-transform: uppercase;
-}
-.hl-compare-delta strong {
+.vs-laminas .lamina-card { margin: 0; }
+
+.vs-op {
+  max-width: 440px;
+  font-family: var(--display);
+  font-weight: 300;
+  font-style: italic;
+  font-size: 44px;
   color: var(--orange);
+  line-height: 1;
+  text-align: center;
+  padding: 2px 0;
+}
+
+.vs-equals {
+  max-width: 440px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 6px 0 8px;
+}
+.vs-equals::before,
+.vs-equals::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--orange);
+}
+.vs-equals span {
+  font-family: var(--display);
+  font-weight: 300;
+  font-style: italic;
+  font-size: 32px;
+  color: var(--orange);
+  line-height: 1;
+}
+
+.vs-result {
+  max-width: 440px;
+  padding: 18px 20px 16px;
+  background: var(--bg-warm);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--orange);
+  text-align: center;
+}
+.vs-result-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  display: block;
+  margin-bottom: 6px;
+}
+.vs-result-value {
   font-family: var(--display);
   font-weight: 500;
-  font-size: 20px;
-  letter-spacing: -0.01em;
-  text-transform: none;
+  font-size: 36px;
+  letter-spacing: -0.02em;
+  color: var(--orange);
+  line-height: 1;
+}
+.vs-result-pct {
+  display: block;
+  margin-top: 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+}
+.vs-result-pct strong {
+  color: var(--orange);
+  font-weight: 600;
 }
 
 /* === MODIFICADORES DE TEMA POR CAPÍTULO === */
@@ -373,6 +430,52 @@ section.chapter {
 .chapter--opt .app-capture-frame::before,
 .chapter--opt .app-capture-frame::after {
   border-color: var(--amber);
+}
+
+/* Capítulo "win" — todo en verde neón con glow */
+.chapter--win .chapter-eyebrow .roman {
+  background: var(--green);
+  box-shadow: 0 0 18px rgba(0, 214, 133, 0.45);
+}
+.chapter--win .chapter-eyebrow .sep,
+.chapter--win .chapter-title em,
+.chapter--win .prose em,
+.chapter--win .prose strong,
+.chapter--win .big-number-label,
+.chapter--win .app-capture-label {
+  color: var(--green);
+  text-shadow: 0 0 10px rgba(0, 214, 133, 0.4);
+}
+.chapter--win .big-number-value,
+.chapter--win .big-number-value.win {
+  color: var(--green) !important;
+  text-shadow:
+    0 0 18px rgba(0, 214, 133, 0.55),
+    0 0 36px rgba(0, 214, 133, 0.25);
+}
+.chapter--win .big-number {
+  border-color: rgba(0, 214, 133, 0.35);
+  box-shadow:
+    0 0 40px rgba(0, 214, 133, 0.10),
+    inset 0 0 20px rgba(0, 214, 133, 0.03);
+}
+.chapter--win .big-number::before,
+.chapter--win .big-number::after,
+.chapter--win .app-capture-frame::before,
+.chapter--win .app-capture-frame::after {
+  border-color: var(--green);
+}
+.chapter--win .pull-quote {
+  border-color: rgba(0, 214, 133, 0.3);
+}
+.chapter--win .pull-quote blockquote em {
+  color: var(--green);
+  text-shadow: 0 0 12px rgba(0, 214, 133, 0.4);
+}
+.chapter--win .vs-laminas-delta,
+.chapter--win .vs-result,
+.chapter--win .vs-bars-delta-amount {
+  color: var(--green);
 }
 
 .big-number-foot {
@@ -992,15 +1095,33 @@ footer a:hover { border-color: var(--orange); }
 
       <p>Ese dinero extra es el <em>sobrecosto del azar</em> y de seguir la receta de siempre: comprar una caja, cambiar algunas láminas, comprar al detal las faltantes.</p>
 
-      <div class="hl-compare">
-        <div><span class="hl hl-opt"><strong>Precio promedio por lámina (caso teórico):</strong> $765</span></div>
-        <div><span class="hl hl-prom"><strong>Precio promedio por lámina (caso real):</strong> $1.100</span></div>
-        <div class="hl-compare-delta">
-          Sobrecosto: <strong>+$335</strong> por cada lámina · <strong>44%</strong> más
+      <div class="vs-laminas">
+        <div class="lamina-card">
+          <img class="lamina-thumb" src="img-historia/lamina-bonnie.png" alt="Una lámina del álbum (Bonnie)">
+          <div class="pricetag">
+            <span class="pricetag-label">Precio promedio por lámina</span>
+            <span class="pricetag-value">$1.100</span>
+            <span class="pricetag-foot">Caso real</span>
+          </div>
+        </div>
+        <div class="vs-op">−</div>
+        <div class="lamina-card">
+          <img class="lamina-thumb" src="img-historia/lamina-clyde.png" alt="Una lámina del álbum (Clyde)">
+          <div class="pricetag amber">
+            <span class="pricetag-label">Precio promedio por lámina</span>
+            <span class="pricetag-value">$765</span>
+            <span class="pricetag-foot">Caso teórico</span>
+          </div>
+        </div>
+        <div class="vs-equals"><span>=</span></div>
+        <div class="vs-result">
+          <span class="vs-result-label">Sobrecosto por lámina</span>
+          <span class="vs-result-value">$335</span>
+          <span class="vs-result-pct"><strong>44%</strong> más que el caso teórico</span>
         </div>
       </div>
 
-      <p>Cada lámina del álbum, $335 extra por la imperfección del azar.</p>
+      <p>Cada lámina cuesta $335 más porque los sobres están llenos de las mismas y al final toca cerrar el álbum una por una, al detal.</p>
 
       <figure class="app-capture">
         <div class="app-capture-frame">
@@ -1015,7 +1136,7 @@ footer a:hover { border-color: var(--orange); }
   </section>
 
   <!-- CAPÍTULO 4 -->
-  <section class="chapter">
+  <section class="chapter chapter--win">
     <div class="chapter-eyebrow">
       <span class="roman">4</span>
       <span>Capítulo 4</span>
