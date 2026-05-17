@@ -296,6 +296,34 @@ section.chapter {
   background: var(--amber);
   box-shadow: 0 8px 20px rgba(239, 159, 39, 0.18);
 }
+.pricetag.green {
+  background: var(--green);
+  box-shadow:
+    0 0 20px rgba(0, 214, 133, 0.75),
+    0 0 48px rgba(0, 214, 133, 0.45),
+    0 0 90px rgba(0, 214, 133, 0.25),
+    0 10px 28px rgba(0, 214, 133, 0.35);
+  animation: pricetag-pulse 2.6s ease-in-out infinite;
+}
+@keyframes pricetag-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 20px rgba(0, 214, 133, 0.75),
+      0 0 48px rgba(0, 214, 133, 0.45),
+      0 0 90px rgba(0, 214, 133, 0.25),
+      0 10px 28px rgba(0, 214, 133, 0.35);
+  }
+  50% {
+    box-shadow:
+      0 0 28px rgba(0, 214, 133, 0.9),
+      0 0 64px rgba(0, 214, 133, 0.55),
+      0 0 120px rgba(0, 214, 133, 0.35),
+      0 10px 28px rgba(0, 214, 133, 0.4);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pricetag.green { animation: none; }
+}
 .pricetag-label {
   font-family: var(--mono);
   font-size: 10px;
@@ -338,13 +366,15 @@ section.chapter {
 .vs-op {
   max-width: 440px;
   font-family: var(--display);
-  font-weight: 300;
+  font-weight: 400;
   font-style: italic;
-  font-size: 44px;
+  font-size: 64px;
   color: var(--orange);
   line-height: 1;
   text-align: center;
-  padding: 2px 0;
+  padding-left: 124px;   /* alinea con el centro del pricetag (lamina 110px + gap 14px) */
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
 
 .vs-equals {
@@ -353,6 +383,7 @@ section.chapter {
   align-items: center;
   gap: 14px;
   margin: 6px 0 8px;
+  padding-left: 124px;   /* mismo offset que el minus */
 }
 .vs-equals::before,
 .vs-equals::after {
@@ -363,11 +394,17 @@ section.chapter {
 }
 .vs-equals span {
   font-family: var(--display);
-  font-weight: 300;
+  font-weight: 400;
   font-style: italic;
-  font-size: 32px;
+  font-size: 50px;
   color: var(--orange);
   line-height: 1;
+}
+
+@media (max-width: 380px) {
+  .vs-op { padding-left: 109px; font-size: 54px; }   /* lamina 95px + gap 14px */
+  .vs-equals { padding-left: 109px; }
+  .vs-equals span { font-size: 42px; }
 }
 
 .vs-result {
@@ -475,6 +512,29 @@ section.chapter {
 .chapter--win .vs-laminas-delta,
 .chapter--win .vs-result,
 .chapter--win .vs-bars-delta-amount {
+  color: var(--green);
+}
+
+/* Ecuación per-lámina en verde para chapter--win */
+.chapter--win .vs-op,
+.chapter--win .vs-equals span {
+  color: var(--green);
+  text-shadow: 0 0 14px rgba(0, 214, 133, 0.4);
+}
+.chapter--win .vs-equals::before,
+.chapter--win .vs-equals::after {
+  background: var(--green);
+}
+.chapter--win .vs-result {
+  border-left-color: var(--green);
+}
+.chapter--win .vs-result-value {
+  color: var(--green);
+  text-shadow:
+    0 0 16px rgba(0, 214, 133, 0.5),
+    0 0 32px rgba(0, 214, 133, 0.2);
+}
+.chapter--win .vs-result-pct strong {
   color: var(--green);
 }
 
@@ -1164,8 +1224,31 @@ footer a:hover { border-color: var(--orange); }
         </blockquote>
       </div>
 
-      <p><strong>Precio promedio por lámina:</strong> $564 · en el caso óptimo: $765</p>
-      <p>Diferencia positiva de <strong>$201</strong> por cada lámina comprada.</p>
+      <div class="vs-laminas">
+        <div class="lamina-card">
+          <img class="lamina-thumb" src="img-historia/lamina-clyde.png" alt="Una lámina del álbum (Clyde)">
+          <div class="pricetag amber">
+            <span class="pricetag-label">Precio promedio por lámina</span>
+            <span class="pricetag-value">$765</span>
+            <span class="pricetag-foot">Caso teórico</span>
+          </div>
+        </div>
+        <div class="vs-op">−</div>
+        <div class="lamina-card">
+          <img class="lamina-thumb" src="img-historia/lamina-bonnie.png" alt="Una lámina del álbum (Bonnie)">
+          <div class="pricetag green">
+            <span class="pricetag-label">Nuestro precio promedio por lámina</span>
+            <span class="pricetag-value">$564</span>
+            <span class="pricetag-foot">Nuestro caso</span>
+          </div>
+        </div>
+        <div class="vs-equals"><span>=</span></div>
+        <div class="vs-result">
+          <span class="vs-result-label">Ahorro por lámina</span>
+          <span class="vs-result-value">$201</span>
+          <span class="vs-result-pct"><strong>26%</strong> menos que el caso teórico</span>
+        </div>
+      </div>
 
       <figure class="app-capture">
         <div class="app-capture-frame">
@@ -1180,7 +1263,7 @@ footer a:hover { border-color: var(--orange); }
   </section>
 
   <!-- CAPÍTULO 5 -->
-  <section class="chapter">
+  <section class="chapter chapter--win">
     <div class="chapter-eyebrow">
       <span class="roman">5</span>
       <span>Capítulo 5</span>
@@ -1206,7 +1289,31 @@ footer a:hover { border-color: var(--orange); }
 
       <p><strong>¿La herramienta detrás?</strong> Un tracker construido con <strong>Vibe Coding</strong> en menos de una semana, en mejora continua. Sin medir cada compra, intercambio y venta, esta estrategia es imposible de ejecutar.</p>
 
-      <p><strong>Precio promedio por lámina:</strong> $564 vs comprador promedio: $1.100</p>
+      <div class="vs-laminas">
+        <div class="lamina-card">
+          <img class="lamina-thumb" src="img-historia/lamina-bonnie.png" alt="Una lámina del álbum (Bonnie) — comprador promedio">
+          <div class="pricetag">
+            <span class="pricetag-label">Precio promedio por lámina</span>
+            <span class="pricetag-value">$1.100</span>
+            <span class="pricetag-foot">Comprador promedio</span>
+          </div>
+        </div>
+        <div class="vs-op">−</div>
+        <div class="lamina-card">
+          <img class="lamina-thumb" src="img-historia/lamina-bonnie.png" alt="Una lámina del álbum (Bonnie) — nuestro caso">
+          <div class="pricetag green">
+            <span class="pricetag-label">Nuestro precio promedio por lámina</span>
+            <span class="pricetag-value">$564</span>
+            <span class="pricetag-foot">Nuestro caso</span>
+          </div>
+        </div>
+        <div class="vs-equals"><span>=</span></div>
+        <div class="vs-result">
+          <span class="vs-result-label">Ahorro por lámina</span>
+          <span class="vs-result-value">$536</span>
+          <span class="vs-result-pct"><strong>49%</strong> menos que el comprador promedio</span>
+        </div>
+      </div>
 
       <figure class="app-capture">
         <div class="app-capture-frame">
