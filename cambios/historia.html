@@ -1129,10 +1129,17 @@ section.chapter {
   color: var(--orange);
   font-style: italic;
 }
-.lesson-text.highlight {
-  font-style: italic;
-  color: var(--orange);
-  font-weight: 400;
+.lesson-box {
+  padding: 36px 32px;
+  border: 1px solid rgba(255, 107, 0, 0.55);
+  border-radius: 14px;
+  background: rgba(255, 107, 0, 0.04);
+  box-shadow:
+    0 0 36px rgba(255, 107, 0, 0.22),
+    0 0 80px rgba(255, 107, 0, 0.10);
+}
+@media (max-width: 600px) {
+  .lesson-box { padding: 28px 22px; }
 }
 
 /* === FOOTER === */
@@ -1570,15 +1577,14 @@ footer a:hover { border-color: var(--orange); }
   <!-- LECCIÓN FINAL -->
   <section class="lesson">
     <div class="lesson-inner">
-      <p class="lesson-text">
-        Al parecer, el nuevo skill no será saber <strong>programar</strong>. Parece ser que la nueva habilidad será saber <strong>qué problema vale la pena resolver y cómo medirlo</strong>.
-      </p>
-      <p class="lesson-text highlight">
-        La IA pone el código.
-      </p>
-      <p class="lesson-text">
-        <strong>Aprender a definir bien los problemas</strong> puede llegar a ser la habilidad más valiosa de la próxima década.
-      </p>
+      <div class="lesson-box">
+        <p class="lesson-text">
+          Al parecer, el nuevo skill no será saber <strong>programar</strong>. Parece ser que la nueva habilidad será saber <strong>qué problema vale la pena resolver y cómo medirlo</strong>.
+        </p>
+        <p class="lesson-text">
+          <strong>Aprender a definir bien los problemas</strong> puede llegar a ser la habilidad más valiosa de la próxima década.
+        </p>
+      </div>
     </div>
   </section>
 
