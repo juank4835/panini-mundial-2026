@@ -3,24 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cómo llenamos el álbum del Mundial 2026 por la mitad del costo</title>
+<title>Cómo llenar el álbum del Mundial 2026 por la mitad del costo</title>
 <meta name="description" content="Historia de una estrategia + IA: terminamos $525k bajo el comprador promedio y $197k bajo el piso teórico óptimo.">
-<meta property="og:title" content="Cómo llenamos el álbum del Mundial 2026 por la mitad del costo">
+<meta property="og:title" content="Cómo llenar el álbum del Mundial 2026 por la mitad del costo">
 <meta property="og:description" content="Historia de una estrategia + IA: terminamos $525k bajo el comprador promedio y $197k bajo el piso teórico óptimo.">
 <meta property="og:type" content="article">
 <meta property="og:locale" content="es_CO">
-<meta name="theme-color" content="#0f0f0e">
+<meta name="theme-color" content="#000000">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&family=Caveat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&family=Patrick+Hand&display=swap" rel="stylesheet">
 
 <style>
 :root {
-  --bg: #0f0f0e;
-  --bg-panel: #181816;
-  --bg-elevated: #1f1f1d;
-  --bg-warm: #141312;
+  --bg: #000000;
+  --bg-panel: #0c0c0b;
+  --bg-elevated: #131311;
+  --bg-warm: #0a0a09;
   --ink: #ededed;
   --ink-soft: #d4d4d2;
   --ink-dim: #a0a09c;
@@ -28,9 +28,12 @@
   --rule: #2a2a27;
   --rule-strong: #3a3a37;
 
-  --orange: #FF8C1A;
-  --orange-dim: #c46b13;
-  --orange-glow: rgba(255, 140, 26, 0.15);
+  --orange: #FF6B00;
+  --orange-dim: #C95400;
+  --orange-glow: rgba(255, 107, 0, 0.20);
+  --amber: #EF9F27;
+  --amber-dim: #BA7517;
+  --amber-glow: rgba(239, 159, 39, 0.20);
   --green: #7fb069;
   --green-dim: #5a8049;
   --red: #d4574e;
@@ -39,7 +42,7 @@
   --display: 'Fraunces', Georgia, serif;
   --body: 'Inter', system-ui, sans-serif;
   --mono: 'JetBrains Mono', monospace;
-  --hand: 'Caveat', cursive;
+  --hand: 'Patrick Hand', cursive;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -83,60 +86,12 @@ body::after {
 
 main { position: relative; z-index: 1; }
 
-/* === MASTHEAD === */
-.masthead {
-  border-bottom: 1px solid var(--rule);
-  padding: 16px 0;
-  background: var(--bg);
-}
-.masthead-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 28px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-.masthead-title {
-  font-family: var(--display);
-  font-style: italic;
-  font-weight: 500;
-  font-size: 18px;
-  color: var(--orange);
-  letter-spacing: -0.01em;
-}
-.masthead-meta {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--ink-dim);
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-}
-
 /* === HERO === */
 .hero {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 72px 28px 56px;
+  padding: 72px 28px 40px;
   position: relative;
-}
-.hero-eyebrow {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  color: var(--orange);
-  margin-bottom: 28px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.hero-eyebrow .line {
-  width: 40px;
-  height: 1px;
-  background: var(--orange);
 }
 .hero h1 {
   font-family: var(--display);
@@ -146,61 +101,12 @@ main { position: relative; z-index: 1; }
   letter-spacing: -0.025em;
   color: var(--ink);
   font-variation-settings: "opsz" 144;
-  margin-bottom: 32px;
   max-width: 980px;
 }
 .hero h1 em {
   font-style: italic;
   color: var(--orange);
   font-weight: 300;
-}
-.hero h1 .underline {
-  position: relative;
-  display: inline-block;
-}
-.hero h1 .underline::after {
-  content: '';
-  position: absolute;
-  left: -2px; right: -2px;
-  bottom: 8%;
-  height: 14px;
-  background: var(--orange);
-  z-index: -1;
-  opacity: 0.35;
-}
-.hero-deck {
-  font-family: var(--body);
-  font-weight: 400;
-  font-style: normal;
-  font-size: clamp(18px, 1.8vw, 22px);
-  line-height: 1.55;
-  color: var(--ink-soft);
-  max-width: 760px;
-  letter-spacing: -0.005em;
-}
-.hero-deck strong {
-  font-weight: 600;
-  color: var(--orange);
-}
-.hero-byline {
-  margin-top: 36px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--ink-dim);
-  letter-spacing: 0.05em;
-}
-.hero-byline strong {
-  color: var(--ink);
-  font-weight: 600;
-}
-.hero-byline .dot {
-  width: 4px; height: 4px;
-  background: var(--ink-faint);
-  border-radius: 50%;
 }
 
 /* === DIVISOR ORANGE === */
@@ -334,6 +240,93 @@ section.chapter {
 }
 .big-number-value.win { color: var(--green); }
 .big-number-value.neg { color: var(--red); }
+
+/* === HIGHLIGHTER · marcador para líneas clave === */
+.prose .hl {
+  padding: 3px 10px;
+  font-weight: 500;
+  line-height: 1.9;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.prose .hl strong { font-weight: 700; }
+.prose .hl-prom            { background: var(--orange); color: #000 !important; }
+.prose .hl-opt             { background: var(--amber);  color: #000 !important; }
+.prose .hl-prom strong,
+.prose .hl-opt strong,
+.prose .hl-prom em,
+.prose .hl-opt em          { color: #000 !important; }
+
+/* === LÁMINA THUMB · imagen de Bonnie encima del precio === */
+.lamina-with-price {
+  margin: 24px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+.lamina-thumb {
+  width: 150px;
+  height: auto;
+  display: block;
+  border-radius: 10px;
+  box-shadow:
+    0 14px 36px rgba(0,0,0,0.75),
+    0 0 0 1px rgba(255,255,255,0.05);
+  transform: rotate(-3deg);
+  transform-origin: center;
+}
+
+/* === COMPARATIVO PER-LÁMINA · dos marcadores apilados === */
+.hl-compare {
+  margin: 32px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+}
+.hl-compare-delta {
+  margin-top: 14px;
+  padding-left: 12px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink-dim);
+  letter-spacing: 0.06em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+.hl-compare-delta strong {
+  color: var(--orange);
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 20px;
+  letter-spacing: -0.01em;
+  text-transform: none;
+}
+
+/* === MODIFICADORES DE TEMA POR CAPÍTULO === */
+/* Capítulo "promedio" — todo en naranja como el numero grande */
+.chapter--prom .big-number-value { color: var(--orange); }
+.chapter--prom .prose strong       { color: var(--orange); }
+
+/* Capítulo "óptimo" — todo en dorado (amber) */
+.chapter--opt .chapter-eyebrow .roman { background: var(--amber); }
+.chapter--opt .chapter-eyebrow .sep,
+.chapter--opt .chapter-title em,
+.chapter--opt .prose em,
+.chapter--opt .prose strong,
+.chapter--opt .big-number-label,
+.chapter--opt .big-number-value,
+.chapter--opt .app-capture-label {
+  color: var(--amber);
+}
+.chapter--opt .big-number::before,
+.chapter--opt .big-number::after,
+.chapter--opt .app-capture-frame::before,
+.chapter--opt .app-capture-frame::after {
+  border-color: var(--amber);
+}
+
 .big-number-foot {
   margin-top: 16px;
   font-family: var(--mono);
@@ -346,102 +339,128 @@ section.chapter {
   font-weight: 500;
 }
 
-/* === COMPARATIVO · DOS TARJETAS LADO A LADO === */
-.vs-pair {
-  margin: 36px 0 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-.vs-card {
+/* === COMPARATIVO · BARRAS HORIZONTALES === */
+.vs-bars {
+  margin: 36px 0;
+  padding: 28px 26px 22px;
   background: var(--bg-panel);
   border: 1px solid var(--rule);
-  padding: 26px 24px 22px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.vs-card.opt  { border-top: 2px solid var(--ink-faint); }
-.vs-card.prom { border-top: 2px solid var(--orange); }
-.vs-card .vs-label {
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  color: var(--ink-dim);
-  font-weight: 500;
-}
-.vs-card.prom .vs-label { color: var(--orange); }
-.vs-card .vs-value {
-  font-family: var(--display);
-  font-weight: 400;
-  font-size: clamp(30px, 4vw, 44px);
-  line-height: 1;
-  letter-spacing: -0.025em;
-  color: var(--ink);
-  font-variation-settings: "opsz" 144;
-}
-.vs-card.prom .vs-value { color: var(--orange); }
-.vs-card .vs-note {
-  font-family: var(--display);
-  font-style: italic;
-  font-weight: 300;
-  font-size: 14px;
-  line-height: 1.4;
-  color: var(--ink-dim);
-}
-.vs-delta {
-  margin: 18px auto 32px;
-  max-width: 360px;
-  padding: 16px 20px;
-  background: var(--bg-warm);
-  border: 1px solid var(--rule);
-  border-top: 2px solid var(--orange);
-  text-align: center;
   position: relative;
 }
-.vs-delta::before {
+.vs-bars::before {
   content: '';
   position: absolute;
-  top: -12px;
-  left: 50%;
-  transform: translateX(-50%) rotate(45deg);
-  width: 10px; height: 10px;
-  background: var(--orange);
+  top: 0; left: 0;
+  width: 32px; height: 32px;
+  border-top: 1px solid var(--orange);
+  border-left: 1px solid var(--orange);
+  opacity: 0.5;
 }
-.vs-delta .vs-delta-label {
+.vs-bars::after {
+  content: '';
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 32px; height: 32px;
+  border-bottom: 1px solid var(--orange);
+  border-right: 1px solid var(--orange);
+  opacity: 0.5;
+}
+.vs-bar {
+  margin-bottom: 22px;
+}
+.vs-bar:last-of-type { margin-bottom: 14px; }
+.vs-bar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+  gap: 12px;
+}
+.vs-bar-label {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--ink-dim);
-  margin-bottom: 6px;
-}
-.vs-delta .vs-delta-value {
-  font-family: var(--display);
   font-weight: 500;
-  font-size: 24px;
-  letter-spacing: -0.01em;
-  color: var(--orange);
+}
+.vs-bar.opt  .vs-bar-label { color: var(--amber); }
+.vs-bar.prom .vs-bar-label { color: var(--orange); }
+.vs-bar-value {
+  font-family: var(--display);
+  font-size: clamp(22px, 3vw, 28px);
+  font-weight: 500;
+  line-height: 1;
+  color: var(--ink);
+  letter-spacing: -0.015em;
   font-variation-settings: "opsz" 96;
 }
-.vs-delta .vs-delta-pct {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--ink-dim);
-  margin-top: 4px;
-  letter-spacing: 0.05em;
+.vs-bar.opt  .vs-bar-value { color: var(--amber); }
+.vs-bar.prom .vs-bar-value { color: var(--orange); }
+.vs-bar-track {
+  height: 16px;
+  background: var(--bg-warm);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
 }
-.vs-delta .vs-delta-pct strong {
+.vs-bar-fill {
+  height: 100%;
+  background: var(--ink-faint);
+  border-radius: 1px;
+}
+.vs-bar.opt .vs-bar-fill {
+  background: linear-gradient(90deg, var(--amber-dim) 0%, var(--amber) 100%);
+  box-shadow: 0 0 12px var(--amber-glow);
+}
+.vs-bar.prom .vs-bar-fill {
+  background: linear-gradient(90deg, var(--orange-dim) 0%, var(--orange) 100%);
+  box-shadow: 0 0 12px var(--orange-glow);
+}
+.vs-bars-delta {
+  margin-top: 18px;
+  padding: 12px 16px;
+  border-top: 1px dashed var(--rule);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink-dim);
+  letter-spacing: 0.04em;
+  flex-wrap: wrap;
+}
+.vs-bars-delta-arrow {
+  color: var(--orange);
+  font-size: 14px;
+  font-weight: 600;
+}
+.vs-bars-delta-amount {
+  color: var(--orange);
+  font-weight: 500;
+  font-family: var(--display);
+  font-size: 18px;
+  letter-spacing: -0.01em;
+}
+.vs-bars-delta-pct {
+  color: var(--ink-soft);
+}
+.vs-bars-delta-pct strong {
   color: var(--orange);
   font-weight: 500;
 }
 @media (max-width: 600px) {
-  .vs-pair { grid-template-columns: 1fr; gap: 12px; }
-  .vs-card { padding: 22px 20px 18px; }
-  .vs-card .vs-value { font-size: 30px; }
-  .vs-delta { margin: 16px auto 24px; }
+  .vs-bars { padding: 22px 18px 16px; }
+  .vs-bar-header { margin-bottom: 8px; }
+  .vs-bar-value { font-size: 22px; }
+  .vs-bars-delta {
+    padding: 10px 0 0;
+    justify-content: space-between;
+    font-size: 12px;
+  }
+  .vs-bars-delta-amount { font-size: 17px; }
 }
 
 /* === FORMULA LIST === */
@@ -612,39 +631,43 @@ section.chapter {
 .app-capture-frame:hover img {
   filter: brightness(1) contrast(1);
 }
-.app-capture-label {
-  position: absolute;
-  top: 22px;
-  right: 22px;
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: 0.25em;
-  color: var(--orange);
-  background: var(--bg);
-  padding: 4px 10px;
-  border: 1px solid var(--rule);
-  text-transform: uppercase;
-  z-index: 2;
-}
 .app-capture-caption {
-  margin-top: 14px;
+  margin-top: 16px;
+  padding-left: 4px;
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--ink-dim);
-  letter-spacing: 0.02em;
-  line-height: 1.6;
-  font-style: italic;
+  flex-direction: column;
+  gap: 8px;
 }
-.app-capture-caption::before {
-  content: '◢';
-  color: var(--orange);
+.app-capture-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
   font-size: 10px;
-  flex-shrink: 0;
-  margin-top: 4px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--orange);
+  font-weight: 500;
+  align-self: flex-start;
+}
+.app-capture-label::before {
+  content: '';
+  display: inline-block;
+  width: 18px;
+  height: 1px;
+  background: var(--orange);
+}
+.app-capture-caption .note {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--ink-dim);
+  line-height: 1.7;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
   font-style: normal;
+  display: block;
+  max-width: 580px;
 }
 
 /* === PULL QUOTE === */
@@ -674,7 +697,7 @@ section.chapter {
 
 /* === LESSON / SEMILLA === */
 .lesson {
-  background: linear-gradient(180deg, var(--bg) 0%, #050505 100%);
+  background: var(--bg);
   padding: 96px 28px;
   position: relative;
   overflow: hidden;
@@ -774,7 +797,7 @@ footer a:hover { border-color: var(--orange); }
   .prose { font-size: 16px; }
   .app-capture { margin: 28px 0; }
   .app-capture-frame { padding: 8px; }
-  .app-capture-label { top: 16px; right: 16px; font-size: 8px; padding: 3px 8px; }
+  .app-capture-caption .note { font-size: 10px; letter-spacing: 0.16em; }
   .pull-quote { padding: 32px 20px; }
   .formula li { padding: 16px 20px 16px 56px; font-size: 15px; }
   .formula li::before { left: 16px; width: 26px; height: 26px; font-size: 14px; }
@@ -789,37 +812,19 @@ footer a:hover { border-color: var(--orange); }
 
 <body>
 
-<div class="masthead">
-  <div class="masthead-inner">
-    <span class="masthead-title">Historia · Álbum Panini Mundial 2026</span>
-    <span class="masthead-meta">Bogotá · Lectura ~6 min</span>
-  </div>
-</div>
-
 <main>
 
   <!-- HERO -->
   <header class="hero">
-    <div class="hero-eyebrow"><span class="line"></span>Historia · Álbum Panini Mundial 2026</div>
     <h1>
-      Cómo llenamos el álbum por <em>la mitad del costo</em> del comprador promedio.
+      Cómo llenar el álbum por <em>la mitad del costo</em> del comprador promedio.
     </h1>
-    <p class="hero-deck">
-      Una historia de estrategia, intercambios y una app construida con IA en menos de una semana. Terminamos <strong>$525k debajo</strong> del comprador común — y <strong>$197k debajo</strong> del piso teórico que supuestamente era imposible de romper.
-    </p>
-    <div class="hero-byline">
-      <span><strong>Juan Camilo</strong></span>
-      <span class="dot"></span>
-      <span>Bogotá · 2026</span>
-      <span class="dot"></span>
-      <span>Lectura ~6 min</span>
-    </div>
   </header>
 
   <div class="divider-orange"></div>
 
   <!-- CAPÍTULO 1 -->
-  <section class="chapter">
+  <section class="chapter chapter--prom">
     <div class="chapter-eyebrow">
       <span class="roman">1</span>
       <span>Capítulo 1</span>
@@ -837,22 +842,25 @@ footer a:hover { border-color: var(--orange); }
 
       <p>Esta es la realidad de la mayoría: comprar una caja, intercambiar lo que se pueda con vecinos, y al final terminar comprando las láminas faltantes una a una en el mercado secundario.</p>
 
-      <p><strong>Precio por lámina:</strong> $1.100</p>
+      <div class="lamina-with-price">
+        <img class="lamina-thumb" src="img-historia/lamina-bonnie.png" alt="Una lámina del álbum (Bonnie Alvarez Osorio)">
+        <span class="hl hl-prom"><strong>Precio promedio por lámina (caso real):</strong> $1.100</span>
+      </div>
 
       <figure class="app-capture">
         <div class="app-capture-frame">
-          <span class="app-capture-label">Captura · App</span>
           <img src="img-historia/01.png" alt="Vista del costo promedio en la app — $1.077.780, precio por lámina $1.100">
         </div>
         <figcaption class="app-capture-caption">
-          <span>Vista del costo promedio en la app del tracker.</span>
+          <span class="app-capture-label">Captura · App</span>
+          <span class="note">Lo que sale el álbum cuando se compra a la brava.</span>
         </figcaption>
       </figure>
     </div>
   </section>
 
   <!-- CAPÍTULO 2 -->
-  <section class="chapter">
+  <section class="chapter chapter--opt">
     <div class="chapter-eyebrow">
       <span class="roman">2</span>
       <span>Capítulo 2</span>
@@ -870,15 +878,18 @@ footer a:hover { border-color: var(--orange); }
 
       <p>Es <strong>imposible</strong> llegar aquí en la realidad porque siempre salen repetidas. Sirve sólo como referencia: el mejor caso teórico posible.</p>
 
-      <p><strong>Precio por lámina (caso teórico):</strong> $765</p>
+      <div class="lamina-with-price">
+        <img class="lamina-thumb" src="img-historia/lamina-clyde.png" alt="Una lámina del álbum (Clyde Alvarez Osorio)">
+        <span class="hl hl-opt"><strong>Precio promedio por lámina (caso teórico):</strong> $765</span>
+      </div>
 
       <figure class="app-capture">
         <div class="app-capture-frame">
-          <span class="app-capture-label">Captura · App</span>
           <img src="img-historia/02.png" alt="Vista del costo óptimo en la app — $750.000, precio por lámina $765">
         </div>
         <figcaption class="app-capture-caption">
-          <span>Vista del costo óptimo (piso teórico) en la app.</span>
+          <span class="app-capture-label">Captura · App</span>
+          <span class="note">Vista del costo óptimo (piso teórico) en la app.</span>
         </figcaption>
       </figure>
     </div>
@@ -892,41 +903,56 @@ footer a:hover { border-color: var(--orange); }
       <span class="sep">·</span>
       <span>La brecha</span>
     </div>
-    <h2 class="chapter-title">Lo caro que sale <em>hacer lo de siempre</em>.</h2>
+    <h2 class="chapter-title">El costo de <em>hacer lo de siempre</em></h2>
 
     <div class="prose">
       <p>Comparando los dos extremos:</p>
 
-      <div class="vs-pair">
-        <div class="vs-card opt">
-          <div class="vs-label">Óptimo</div>
-          <div class="vs-value">$750.000</div>
-          <div class="vs-note">piso teórico — imposible de alcanzar</div>
+      <div class="vs-bars">
+        <div class="vs-bar opt">
+          <div class="vs-bar-header">
+            <span class="vs-bar-label">Óptimo · piso teórico</span>
+            <span class="vs-bar-value">$750.000</span>
+          </div>
+          <div class="vs-bar-track">
+            <div class="vs-bar-fill" style="width: 69.6%"></div>
+          </div>
         </div>
-        <div class="vs-card prom">
-          <div class="vs-label">Promedio</div>
-          <div class="vs-value">$1.077.780</div>
-          <div class="vs-note">lo que paga el comprador común</div>
+        <div class="vs-bar prom">
+          <div class="vs-bar-header">
+            <span class="vs-bar-label">Promedio · comprador común</span>
+            <span class="vs-bar-value">$1.077.780</span>
+          </div>
+          <div class="vs-bar-track">
+            <div class="vs-bar-fill" style="width: 100%"></div>
+          </div>
         </div>
-      </div>
-
-      <div class="vs-delta">
-        <div class="vs-delta-label">Diferencia</div>
-        <div class="vs-delta-value">+$327.780</div>
-        <div class="vs-delta-pct"><strong>44%</strong> de sobreprecio sobre el ideal</div>
+        <div class="vs-bars-delta">
+          <span class="vs-bars-delta-arrow">↑</span>
+          <span class="vs-bars-delta-amount">+$327.780</span>
+          <span class="vs-bars-delta-pct"><strong>44%</strong> sobre el ideal</span>
+        </div>
       </div>
 
       <p>Ese dinero extra es el <em>sobrecosto del azar</em> y de seguir la receta de siempre: comprar una caja, cambiar algunas láminas, comprar al detal las faltantes.</p>
 
-      <p>Por lámina, el promedio paga <strong>$335 más</strong> que el caso óptimo. Cada cromo del álbum, $335 extra por la imperfección del azar.</p>
+      <div class="hl-compare">
+        <div><span class="hl hl-opt"><strong>Precio promedio por lámina (caso teórico):</strong> $765</span></div>
+        <div><span class="hl hl-prom"><strong>Precio promedio por lámina (caso real):</strong> $1.100</span></div>
+        <div class="hl-compare-delta">
+          Sobrecosto: <strong>+$335</strong> por cada lámina · <strong>44%</strong> más
+        </div>
+      </div>
+
+      <p>Cada lámina del álbum, $335 extra por la imperfección del azar.</p>
 
       <figure class="app-capture">
         <div class="app-capture-frame">
-          <span class="app-capture-label">Captura · App</span>
           <img src="img-historia/03.png" alt="Comparativo óptimo vs promedio — +$327.780 de sobreprecio, 44% por encima del piso teórico">
         </div>
         <figcaption class="app-capture-caption">
-          <span>Comparativo en la app: el sobrecosto del comprador promedio sobre el piso óptimo.</span>
+          <span class="app-capture-label">Captura · App</span>
+          <span class="note">Comparativo en la app: el sobrecosto del comprador promedio sobre el piso óptimo.</span>
         </figcaption>
       </figure>
     </div>
@@ -961,16 +987,16 @@ footer a:hover { border-color: var(--orange); }
         </blockquote>
       </div>
 
-      <p><strong>Precio por lámina:</strong> $564 · en el caso óptimo: $765</p>
+      <p><strong>Precio promedio por lámina:</strong> $564 · en el caso óptimo: $765</p>
       <p>Diferencia positiva de <strong>$201</strong> por cada lámina comprada.</p>
 
       <figure class="app-capture">
         <div class="app-capture-frame">
-          <span class="app-capture-label">Captura · App</span>
           <img src="img-historia/04.png" alt="Costo neto vs óptimo en la app — $552.264 vs $750.000, ahorro de $197.736 (26% bajo el piso teórico)">
         </div>
         <figcaption class="app-capture-caption">
-          <span>Vista del ahorro vs el piso teórico óptimo: 26% por debajo de lo "imposible".</span>
+          <span class="app-capture-label">Captura · App</span>
+          <span class="note">Vista del ahorro vs el piso teórico óptimo: 26% por debajo de lo "imposible".</span>
         </figcaption>
       </figure>
     </div>
@@ -1003,15 +1029,15 @@ footer a:hover { border-color: var(--orange); }
 
       <p><strong>¿La herramienta detrás?</strong> Un tracker construido con <strong>Vibe Coding</strong> en menos de una semana, en mejora continua. Sin medir cada compra, intercambio y venta, esta estrategia es imposible de ejecutar.</p>
 
-      <p><strong>Precio por lámina:</strong> $564 vs comprador promedio: $1.100</p>
+      <p><strong>Precio promedio por lámina:</strong> $564 vs comprador promedio: $1.100</p>
 
       <figure class="app-capture">
         <div class="app-capture-frame">
-          <span class="app-capture-label">Captura · App · Resultado final</span>
           <img src="img-historia/05.png" alt="Costo neto vs promedio en la app — $552.264 vs $1.077.780, ahorro de $525.516 (49% menos)">
         </div>
         <figcaption class="app-capture-caption">
-          <span>Vista del ahorro vs el comprador promedio: 49% menos, casi la mitad.</span>
+          <span class="app-capture-label">Captura · App · Resultado final</span>
+          <span class="note">Vista del ahorro vs el comprador promedio: 49% menos, casi la mitad.</span>
         </figcaption>
       </figure>
     </div>
