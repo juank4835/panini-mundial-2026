@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#000000">
+<title>Cómo llenamos el álbum del Mundial 2026 por la mitad del costo</title>
+
+<!-- Open Graph para que WhatsApp/redes muestren un preview decente -->
+<meta property="og:title" content="Cómo llenamos el álbum del Mundial 2026 por la mitad del costo">
+<meta property="og:description" content="Historia de una estrategia + IA: terminamos $525k bajo el comprador promedio y $197k bajo el piso teórico óptimo.">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="es_CO">
+
+<style>
+  :root {
+    --bg: #000;
+    --bg-2: #1a1a1a;
+    --bg-3: #2a2a2a;
+    --border: #3a3a37;
+    --text: #f0eee6;
+    --text-2: #b4b2a9;
+    --text-3: #888780;
+    --green: #00D685;
+    --green-dark: #00A065;
+    --amber: #EF9F27;
+    --amber-dark: #BA7517;
+    --bitcoin: #FF6B00;
+    --bitcoin-dark: #C95400;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Background sutil con gradient verde abajo */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 50% 100%, rgba(0,214,133,0.04), transparent 60%),
+      radial-gradient(ellipse 50% 30% at 20% 0%, rgba(255,107,0,0.03), transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  article {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 24px 64px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ───── Header ───── */
+  header.hero {
+    margin-bottom: 56px;
+    text-align: left;
+  }
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 18px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  h1 {
+    font-size: 36px;
+    line-height: 1.15;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.5px;
+    margin-bottom: 14px;
+  }
+  h1 .accent { color: var(--green); }
+  .dek {
+    font-size: 16px;
+    color: var(--text-2);
+    line-height: 1.55;
+    max-width: 600px;
+  }
+  .byline {
+    margin-top: 24px;
+    font-size: 12px;
+    color: var(--text-3);
+    font-family: "JetBrains Mono", Menlo, monospace;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+  .byline .dot { color: var(--text-3); }
+  .byline a {
+    color: var(--green);
+    text-decoration: none;
+    border-bottom: 0.5px solid rgba(0,214,133,0.4);
+  }
+
+  /* ───── Section base ───── */
+  section.chapter {
+    margin-bottom: 56px;
+    padding-top: 32px;
+    border-top: 0.5px solid var(--border);
+  }
+  section.chapter.no-top { padding-top: 0; border-top: 0; }
+  .ch-num {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 12px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  h2 {
+    font-size: 28px;
+    line-height: 1.2;
+    font-weight: 800;
+    margin-bottom: 24px;
+    letter-spacing: -0.3px;
+  }
+  /* Colores temáticos por sección */
+  h2.prom    { color: var(--bitcoin); }
+  h2.opt     { color: var(--amber); }
+  h2.gap     { color: var(--text); }
+  h2.win-opt { color: var(--green); }
+  h2.win-prom { color: var(--green); }
+  h2.lesson  { color: var(--text); }
+  .ch-num.prom { color: var(--bitcoin); }
+  .ch-num.opt { color: var(--amber); }
+  .ch-num.win { color: var(--green); }
+
+  /* ───── Big stat card ───── */
+  .stat-card {
+    background: var(--bg-2);
+    border: 0.5px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 28px 24px;
+    margin: 24px 0;
+  }
+  .stat-card.prom {
+    background: linear-gradient(180deg, rgba(255,107,0,0.05), rgba(255,107,0,0.01));
+    border-color: rgba(255,107,0,0.3);
+  }
+  .stat-card.opt {
+    background: linear-gradient(180deg, rgba(239,159,39,0.05), rgba(239,159,39,0.01));
+    border-color: rgba(239,159,39,0.3);
+  }
+  .stat-card.green {
+    background: linear-gradient(180deg, rgba(0,214,133,0.06), rgba(0,214,133,0.02));
+    border-color: rgba(0,214,133,0.3);
+  }
+  .stat-card .label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 8px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .stat-card.prom .label { color: var(--bitcoin); }
+  .stat-card.opt .label { color: var(--amber); }
+  .stat-card.green .label { color: var(--green); }
+  .stat-card .value {
+    font-size: 44px;
+    font-weight: 800;
+    line-height: 1;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    letter-spacing: -1px;
+  }
+  .stat-card.prom .value { color: var(--bitcoin); text-shadow: 0 0 16px rgba(255,107,0,0.25); }
+  .stat-card.opt .value  { color: var(--amber);   text-shadow: 0 0 16px rgba(239,159,39,0.25); }
+  .stat-card.green .value{ color: var(--green);   text-shadow: 0 0 16px rgba(0,214,133,0.25); }
+  .stat-card .sub {
+    margin-top: 14px;
+    font-size: 14px;
+    color: var(--text-2);
+  }
+  .stat-card .sub b { color: var(--text); font-family: "JetBrains Mono", Menlo, monospace; font-weight: 700; }
+
+  /* ───── Text blocks ───── */
+  p {
+    color: var(--text-2);
+    margin-bottom: 16px;
+    font-size: 16px;
+    line-height: 1.7;
+  }
+  p strong, p b {
+    color: var(--text);
+    font-weight: 700;
+  }
+  .accent-green   { color: var(--green);   font-weight: 700; }
+  .accent-amber   { color: var(--amber);   font-weight: 700; }
+  .accent-bitcoin { color: var(--bitcoin); font-weight: 700; }
+  .mono { font-family: "JetBrains Mono", Menlo, monospace; }
+
+  /* Inline cifra resaltada */
+  .pill {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 100px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-weight: 700;
+    font-size: 0.92em;
+  }
+  .pill.green   { background: rgba(0,214,133,0.15);  color: var(--green); }
+  .pill.amber   { background: rgba(239,159,39,0.15); color: var(--amber); }
+  .pill.bitcoin { background: rgba(255,107,0,0.15);  color: var(--bitcoin); }
+
+  /* Per-lámina callout */
+  .per-lamina {
+    margin: 16px 0;
+    padding: 12px 16px;
+    background: var(--bg-2);
+    border-left: 3px solid var(--text-3);
+    border-radius: 6px;
+    font-size: 14px;
+    color: var(--text-2);
+  }
+  .per-lamina.green   { border-left-color: var(--green); }
+  .per-lamina.amber   { border-left-color: var(--amber); }
+  .per-lamina.bitcoin { border-left-color: var(--bitcoin); }
+  .per-lamina .lbl {
+    color: var(--text-3);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 4px;
+    display: block;
+  }
+  .per-lamina .v {
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-weight: 800;
+    font-size: 16px;
+  }
+  .per-lamina .v.green   { color: var(--green); }
+  .per-lamina .v.amber   { color: var(--amber); }
+  .per-lamina .v.bitcoin { color: var(--bitcoin); }
+
+  /* Image placeholder */
+  .img-slot {
+    margin: 28px 0;
+    aspect-ratio: 9 / 16;
+    max-height: 540px;
+    background: var(--bg-2);
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-3);
+    font-size: 12px;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    text-align: center;
+    padding: 24px;
+    gap: 6px;
+  }
+  .img-slot .num {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--text-3);
+    opacity: 0.4;
+    line-height: 1;
+  }
+  .img-slot .caption {
+    opacity: 0.7;
+    max-width: 220px;
+    line-height: 1.4;
+  }
+  /* Imagen real con su caption */
+  .img-figure {
+    margin: 32px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .img-real {
+    width: 100%;
+    max-width: 480px;
+    height: auto;
+    object-fit: contain;
+    border-radius: 14px;
+    background: var(--bg-2);
+    border: 0.5px solid var(--border);
+    display: block;
+    box-shadow: 0 16px 40px -16px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.02);
+  }
+  .img-figure figcaption {
+    font-size: 12px;
+    color: var(--text-3);
+    text-align: center;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    letter-spacing: 0.3px;
+    line-height: 1.5;
+    max-width: 480px;
+  }
+
+  /* Formula list (numerada) */
+  .formula {
+    background: var(--bg-2);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin: 20px 0;
+  }
+  .formula .title {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--green);
+    margin-bottom: 12px;
+    font-weight: 700;
+    font-family: "JetBrains Mono", Menlo, monospace;
+  }
+  .formula ol {
+    padding-left: 0;
+    list-style: none;
+    counter-reset: step;
+  }
+  .formula ol li {
+    counter-increment: step;
+    padding: 8px 0 8px 38px;
+    position: relative;
+    color: var(--text-2);
+    font-size: 15px;
+  }
+  .formula ol li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: rgba(0,214,133,0.15);
+    color: var(--green);
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-weight: 800;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .formula ol li b { color: var(--text); }
+
+  /* Feature list (la app que construimos) */
+  .features {
+    background: var(--bg-2);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin: 20px 0;
+  }
+  .features ul {
+    padding-left: 0;
+    list-style: none;
+  }
+  .features li {
+    padding: 8px 0 8px 26px;
+    position: relative;
+    color: var(--text-2);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+  .features li::before {
+    content: '·';
+    position: absolute;
+    left: 6px;
+    top: 6px;
+    color: var(--green);
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  /* Highlight block para la lección final */
+  .lesson-block {
+    background: linear-gradient(180deg, rgba(0,214,133,0.06), rgba(0,214,133,0.02));
+    border: 0.5px solid rgba(0,214,133,0.3);
+    border-radius: 16px;
+    padding: 28px 28px 24px;
+    margin: 28px 0;
+  }
+  .lesson-block .punch {
+    font-size: 22px;
+    line-height: 1.35;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 16px;
+    letter-spacing: -0.2px;
+  }
+  .lesson-block .punch b { color: var(--green); }
+  .lesson-block .takeaway {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 0.5px solid rgba(0,214,133,0.2);
+    font-size: 15px;
+    color: var(--text-2);
+  }
+  .lesson-block .takeaway b { color: var(--green); }
+
+  /* Techie list — concepts que antes eran necesarios */
+  .techie-list {
+    margin: 18px 0;
+    padding: 18px 22px;
+    background: var(--bg-3);
+    border-radius: 10px;
+    font-size: 13px;
+    color: var(--text-3);
+    line-height: 1.7;
+    font-family: "JetBrains Mono", Menlo, monospace;
+    letter-spacing: 0.2px;
+  }
+  .techie-list b { color: var(--text-2); }
+
+  /* Pull quote */
+  .pull-quote {
+    margin: 32px 0;
+    padding: 20px 0 20px 24px;
+    border-left: 3px solid var(--green);
+    font-size: 19px;
+    line-height: 1.4;
+    color: var(--text);
+    font-weight: 600;
+    font-style: italic;
+  }
+  .pull-quote .accent { color: var(--green); font-style: normal; font-weight: 800; }
+
+  /* Footer */
+  footer {
+    margin-top: 80px;
+    padding-top: 32px;
+    border-top: 0.5px solid var(--border);
+    font-size: 12px;
+    color: var(--text-3);
+    text-align: center;
+    line-height: 1.7;
+  }
+  footer .links { margin-top: 8px; }
+  footer a {
+    color: var(--text-2);
+    text-decoration: none;
+    border-bottom: 0.5px solid var(--border);
+    margin: 0 8px;
+  }
+  footer a:hover { color: var(--green); border-bottom-color: var(--green); }
+
+  /* Tipografía responsiva */
+  @media (max-width: 600px) {
+    article { padding: 32px 18px 48px; }
+    h1 { font-size: 28px; }
+    h2 { font-size: 22px; }
+    .stat-card { padding: 22px 20px 18px; }
+    .stat-card .value { font-size: 36px; }
+    .lesson-block .punch { font-size: 18px; }
+    .pull-quote { font-size: 17px; padding-left: 18px; }
+  }
+</style>
+</head>
+<body>
+<article>
+
+  <!-- ═════════ HERO ═════════ -->
+  <header class="hero">
+    <div class="eyebrow">HISTORIA · ÁLBUM PANINI MUNDIAL 2026</div>
+    <h1>Cómo llenamos el álbum por la <span class="accent">mitad del costo</span> del comprador promedio</h1>
+    <p class="dek">
+      Una historia de estrategia, intercambios y una app construida con IA en menos de una semana. Terminamos <b>$525k debajo</b> del comprador común — y <b>$197k debajo</b> del piso teórico que supuestamente era imposible de romper.
+    </p>
+    <div class="byline">
+      <span>Juan Camilo</span>
+      <span class="dot">·</span>
+      <span>Bogotá, 2026</span>
+      <span class="dot">·</span>
+      <span>Lectura ~6 min</span>
+    </div>
+  </header>
+
+  <!-- ═════════ CAPÍTULO 1 · COSTO PROMEDIO ═════════ -->
+  <section class="chapter no-top">
+    <div class="ch-num prom">Capítulo 1 · El promedio</div>
+    <h2 class="prom">¿Cuánto cuesta llenar el álbum del Mundial 2026?</h2>
+
+    <div class="stat-card prom">
+      <div class="label">Costo Promedio</div>
+      <div class="value">$1.077.780</div>
+      <div class="sub">Lo que paga un comprador común: <b>1 caja</b> + intercambios con vecinos + <b>~250 láminas</b> al detal para cerrar.</div>
+    </div>
+
+    <p>
+      Esta es la realidad de la mayoría: comprar una caja, intercambiar lo que se pueda con vecinos, y al final terminar comprando las láminas faltantes una a una en el mercado secundario.
+    </p>
+
+    <div class="per-lamina bitcoin">
+      <span class="lbl">Precio por lámina</span>
+      <span class="v bitcoin">$1.100</span>
+    </div>
+
+    <figure class="img-figure">
+      <img class="img-real" src="img-historia/01.png" alt="Vista del costo promedio en la app — $1.077.780, precio por lámina $1.100">
+      <figcaption>Vista del costo promedio en la app del tracker.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ═════════ CAPÍTULO 2 · COSTO ÓPTIMO ═════════ -->
+  <section class="chapter">
+    <div class="ch-num opt">Capítulo 2 · El piso teórico</div>
+    <h2 class="opt">¿Y cuánto costaría en el mejor caso posible?</h2>
+
+    <div class="stat-card opt">
+      <div class="label">Costo Óptimo</div>
+      <div class="value">$750.000</div>
+      <div class="sub">El piso teórico — si por arte de magia cada sobre tuviera <b>7 láminas únicas</b>, sin repetidas. 140 sobres exactos + el álbum.</div>
+    </div>
+
+    <p>
+      Es <b>imposible</b> llegar aquí en la realidad porque siempre salen repetidas. Sirve sólo como referencia: el mejor caso teórico posible.
+    </p>
+
+    <div class="per-lamina amber">
+      <span class="lbl">Precio por lámina (caso teórico)</span>
+      <span class="v amber">$765</span>
+    </div>
+
+    <figure class="img-figure">
+      <img class="img-real" src="img-historia/02.png" alt="Vista del costo óptimo en la app — $750.000, precio por lámina $765">
+      <figcaption>Vista del costo óptimo (piso teórico) en la app.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ═════════ CAPÍTULO 3 · LA BRECHA ═════════ -->
+  <section class="chapter">
+    <div class="ch-num">Capítulo 3 · La brecha</div>
+    <h2 class="gap">Lo caro que sale hacer lo de siempre</h2>
+
+    <p>
+      Comparando los dos extremos:
+    </p>
+
+    <p>
+      · <span class="pill amber">$750.000</span> Óptimo (lo ideal, imposible)<br>
+      · <span class="pill bitcoin">$1.077.780</span> Promedio (lo común)
+    </p>
+
+    <p>
+      El comprador común paga <b class="accent-bitcoin">$327.780 más</b> que el ideal — <b>44% de sobreprecio</b>. Ese dinero extra es el <em>sobrecosto del azar</em> y de seguir la receta de siempre: comprar una caja, cambiar algunas láminas, comprar al detal las faltantes.
+    </p>
+
+    <p>
+      Por lámina, el promedio paga <b class="accent-bitcoin">$335 más</b> que el caso óptimo. Cada cromo del álbum, $335 extra por la imperfección del azar.
+    </p>
+
+    <figure class="img-figure">
+      <img class="img-real" src="img-historia/03.png" alt="Comparativo óptimo vs promedio — +$327.780 de sobreprecio, 44% por encima del piso teórico">
+      <figcaption>Comparativo en la app: el "tax" del comprador promedio sobre el piso óptimo.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ═════════ CAPÍTULO 4 · ROMPIENDO EL PISO ═════════ -->
+  <section class="chapter">
+    <div class="ch-num win">Capítulo 4 · Rompiendo lo imposible</div>
+    <h2 class="win-opt">Nuestro costo neto está <span class="accent-green">por debajo</span> del piso teórico</h2>
+
+    <div class="stat-card green">
+      <div class="label">Costo Neto vs Óptimo</div>
+      <div class="value">−$197.736</div>
+      <div class="sub">Por debajo del piso teórico de <b>$750.000</b>. Gastamos <b>26% menos</b> que el mejor caso teórico posible.</div>
+    </div>
+
+    <p>
+      El escenario "perfecto" — donde cada sobre tendría 7 láminas únicas, cero repetidas — supuestamente era imposible de romper. Lo rompimos.
+    </p>
+
+    <p class="pull-quote">
+      ¿Cómo se vence a la perfección teórica? <span class="accent">El mercado secundario está pagando parte del álbum.</span>
+    </p>
+
+    <p>
+      La gente prefiere pagar una <b>prima por una lámina segura</b> (la que sabe que necesita) antes que arriesgarse a un <b>sobre con láminas inciertas</b>. Vendemos las repetidas a precio mercado y recuperamos el dinero que un coleccionista solitario nunca vería.
+    </p>
+
+    <p>
+      Mientras los demás compran <b>azar</b>, lo que hicimos fue vender <b class="accent-green">certeza</b>.
+    </p>
+
+    <div class="per-lamina green">
+      <span class="lbl">Precio por lámina</span>
+      <span class="v green">$564</span> <span style="color:var(--text-3);">· en el caso óptimo: </span><span class="v amber">$765</span>
+      <div style="margin-top:6px; font-size:13px; color:var(--text-3);">Diferencia positiva de <b style="color:var(--green);">$201</b> por cada lámina comprada.</div>
+    </div>
+
+    <figure class="img-figure">
+      <img class="img-real" src="img-historia/04.png" alt="Costo neto vs óptimo en la app — $552.264 vs $750.000, ahorro de $197.736 (26% bajo el piso teórico)">
+      <figcaption>Vista del ahorro vs el piso teórico óptimo: 26% por debajo de lo "imposible".</figcaption>
+    </figure>
+  </section>
+
+  <!-- ═════════ CAPÍTULO 5 · LA MITAD DEL PROMEDIO ═════════ -->
+  <section class="chapter">
+    <div class="ch-num win">Capítulo 5 · La mitad del costo</div>
+    <h2 class="win-prom">Pagamos la mitad de lo que paga el comprador promedio</h2>
+
+    <div class="stat-card green">
+      <div class="label">Ahorro vs Comprador Promedio</div>
+      <div class="value">−$525.516</div>
+      <div class="sub"><b>49% menos</b> que el comprador común. Prácticamente la mitad.</div>
+    </div>
+
+    <div class="formula">
+      <div class="title">¿La fórmula?</div>
+      <ol>
+        <li><b>Comprar 2 cajas</b> (más capital inicial → más láminas únicas)</li>
+        <li><b>Intercambiar agresivo</b> con vecinos</li>
+        <li><b>Vender activamente las repetidas</b> para recuperar parte de la inversión</li>
+      </ol>
+    </div>
+
+    <p>
+      <b>¿La herramienta detrás?</b> Un tracker construido con <b>Vibe Coding</b> en menos de una semana, en mejora continua. Sin medir cada compra, intercambio y venta, esta estrategia es imposible de ejecutar.
+    </p>
+
+    <div class="per-lamina green">
+      <span class="lbl">Precio por lámina</span>
+      <span class="v green">$564</span> <span style="color:var(--text-3);">vs comprador promedio: </span><span class="v bitcoin">$1.100</span>
+    </div>
+
+    <figure class="img-figure">
+      <img class="img-real" src="img-historia/05.png" alt="Costo neto vs promedio en la app — $552.264 vs $1.077.780, ahorro de $525.516 (49% menos)">
+      <figcaption>Vista del ahorro vs el comprador promedio: 49% menos, casi la mitad.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ═════════ CAPÍTULO 6 · LA LECCIÓN ═════════ -->
+  <section class="chapter">
+    <div class="ch-num">Capítulo 6 · La lección</div>
+    <h2 class="lesson">Para los más jóvenes — la verdadera lección</h2>
+
+    <p>
+      Esto puede parecer un ejercicio insignificante — <b>solo una app</b> que:
+    </p>
+
+    <div class="features">
+      <ul>
+        <li>Lleva el inventario de las 980 láminas del álbum con 4 filtros (faltantes, sueltas, pegadas, repetidas)</li>
+        <li>Normaliza listas de WhatsApp con un sanitizador de texto inteligente</li>
+        <li>Compara listas con otros coleccionistas y sugiere intercambios óptimos</li>
+        <li>Registra cada compra, venta e intercambio en un módulo de finanzas</li>
+        <li>Calcula en vivo el costo neto vs el óptimo teórico vs el comprador promedio</li>
+        <li>Arma a cada cliente la mejor oferta al por mayor con descuentos automáticos por volumen</li>
+        <li>Genera links compartibles para vender stock específico a vecinos</li>
+        <li>Sincroniza en tiempo real entre dispositivos</li>
+        <li>Funciona como PWA instalable con página pública read-only para los vecinos</li>
+      </ul>
+    </div>
+
+    <p>
+      Pero la verdadera lección detrás:
+    </p>
+
+    <p>
+      Antes, construir una app así requería <b>meses de desarrollo y un equipo de programadores</b> que dominaran:
+    </p>
+
+    <div class="techie-list">
+      lógica de negocio · algoritmos · estructuras de datos · complejidad algorítmica · programación orientada a objetos · programación funcional · polimorfismo · programación asíncrona · concurrencia · inyección de dependencias · idempotencia · patrones de diseño · control de versiones · testing automatizado · modelado de bases de datos · APIs REST · microservicios · CI/CD <b>— y un largo etcétera</b>.
+    </div>
+
+    <p class="pull-quote">
+      Eso está empezando a <span class="accent">cambiar</span>.
+    </p>
+
+    <p>
+      Ya no es necesario saber todo eso. Hoy construimos en <b>menos de una semana</b>, con IA que escribe código desde una conversación coloquial.
+    </p>
+
+    <div class="lesson-block">
+      <div class="punch">
+        Al parecer, el nuevo skill no será saber <b>programar</b>. Parece ser que la nueva habilidad será saber <b>qué problema vale la pena resolver y cómo medirlo</b>.
+      </div>
+      <p style="color:var(--text-2); font-size:15px; margin-bottom:0;">
+        La IA pone el código.
+      </p>
+      <div class="takeaway">
+        <b>Aprender a definir bien los problemas</b> puede llegar a ser la habilidad más valiosa de la próxima década.
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Construido con Vibe Coding · Mundial 2026
+    <div class="links">
+      <a href="https://juank4835.github.io/panini-mundial-2026/cambios/">Cambios</a>
+      <a href="https://github.com/juank4835/panini-mundial-2026">Repo</a>
+    </div>
+  </footer>
+
+</article>
+</body>
+</html>
