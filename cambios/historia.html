@@ -347,24 +347,102 @@ section.chapter {
   font-weight: 500;
 }
 
-/* === COMPARATIVO INLINE === */
-.compare-list {
-  margin: 32px 0;
-  padding: 24px 28px;
-  background: var(--bg-warm);
-  border-left: 3px solid var(--orange);
+/* === COMPARATIVO · DOS TARJETAS LADO A LADO === */
+.vs-pair {
+  margin: 36px 0 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.vs-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--rule);
+  padding: 26px 24px 22px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.vs-card.opt  { border-top: 2px solid var(--ink-faint); }
+.vs-card.prom { border-top: 2px solid var(--orange); }
+.vs-card .vs-label {
   font-family: var(--mono);
-  font-size: 15px;
-  line-height: 2;
-  color: var(--ink-soft);
-}
-.compare-list span {
-  color: var(--orange);
-  margin-right: 8px;
-}
-.compare-list strong {
-  color: var(--ink);
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
   font-weight: 500;
+}
+.vs-card.prom .vs-label { color: var(--orange); }
+.vs-card .vs-value {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(30px, 4vw, 44px);
+  line-height: 1;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+  font-variation-settings: "opsz" 144;
+}
+.vs-card.prom .vs-value { color: var(--orange); }
+.vs-card .vs-note {
+  font-family: var(--display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--ink-dim);
+}
+.vs-delta {
+  margin: 18px auto 32px;
+  max-width: 360px;
+  padding: 16px 20px;
+  background: var(--bg-warm);
+  border: 1px solid var(--rule);
+  border-top: 2px solid var(--orange);
+  text-align: center;
+  position: relative;
+}
+.vs-delta::before {
+  content: '';
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 10px; height: 10px;
+  background: var(--orange);
+}
+.vs-delta .vs-delta-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin-bottom: 6px;
+}
+.vs-delta .vs-delta-value {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 24px;
+  letter-spacing: -0.01em;
+  color: var(--orange);
+  font-variation-settings: "opsz" 96;
+}
+.vs-delta .vs-delta-pct {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-dim);
+  margin-top: 4px;
+  letter-spacing: 0.05em;
+}
+.vs-delta .vs-delta-pct strong {
+  color: var(--orange);
+  font-weight: 500;
+}
+@media (max-width: 600px) {
+  .vs-pair { grid-template-columns: 1fr; gap: 12px; }
+  .vs-card { padding: 22px 20px 18px; }
+  .vs-card .vs-value { font-size: 30px; }
+  .vs-delta { margin: 16px auto 24px; }
 }
 
 /* === FORMULA LIST === */
@@ -820,12 +898,26 @@ footer a:hover { border-color: var(--orange); }
     <div class="prose">
       <p>Comparando los dos extremos:</p>
 
-      <div class="compare-list">
-        <div><span>·</span> <strong>$750.000</strong> Óptimo (lo ideal, imposible)</div>
-        <div><span>·</span> <strong>$1.077.780</strong> Promedio (lo común)</div>
+      <div class="vs-pair">
+        <div class="vs-card opt">
+          <div class="vs-label">Óptimo</div>
+          <div class="vs-value">$750.000</div>
+          <div class="vs-note">piso teórico — imposible de alcanzar</div>
+        </div>
+        <div class="vs-card prom">
+          <div class="vs-label">Promedio</div>
+          <div class="vs-value">$1.077.780</div>
+          <div class="vs-note">lo que paga el comprador común</div>
+        </div>
       </div>
 
-      <p>El comprador común paga <strong>$327.780 más</strong> que el ideal — <strong>44% de sobreprecio</strong>. Ese dinero extra es el <em>sobrecosto del azar</em> y de seguir la receta de siempre: comprar una caja, cambiar algunas láminas, comprar al detal las faltantes.</p>
+      <div class="vs-delta">
+        <div class="vs-delta-label">Diferencia</div>
+        <div class="vs-delta-value">+$327.780</div>
+        <div class="vs-delta-pct"><strong>44%</strong> de sobreprecio sobre el ideal</div>
+      </div>
+
+      <p>Ese dinero extra es el <em>sobrecosto del azar</em> y de seguir la receta de siempre: comprar una caja, cambiar algunas láminas, comprar al detal las faltantes.</p>
 
       <p>Por lámina, el promedio paga <strong>$335 más</strong> que el caso óptimo. Cada cromo del álbum, $335 extra por la imperfección del azar.</p>
 
