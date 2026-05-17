@@ -468,6 +468,9 @@ section.chapter {
 .chapter--opt .app-capture-frame::after {
   border-color: var(--amber);
 }
+.chapter--opt .app-capture-label::before {
+  background: var(--amber);
+}
 
 /* Capítulo "win" — todo en verde neón con glow */
 .chapter--win .chapter-eyebrow .roman {
@@ -501,6 +504,9 @@ section.chapter {
 .chapter--win .app-capture-frame::before,
 .chapter--win .app-capture-frame::after {
   border-color: var(--green);
+}
+.chapter--win .app-capture-label::before {
+  background: var(--green);
 }
 .chapter--win .pull-quote {
   border-color: rgba(0, 214, 133, 0.3);
@@ -545,6 +551,132 @@ section.chapter {
 }
 .chapter--win .formula li {
   border-color: rgba(0, 214, 133, 0.25);
+}
+
+/* App features list en verde para chapter--win */
+.chapter--win .app-features {
+  border-color: rgba(0, 214, 133, 0.25);
+}
+.chapter--win .app-features-label {
+  color: var(--green);
+  text-shadow: 0 0 10px rgba(0, 214, 133, 0.4);
+}
+.chapter--win .app-features li::before {
+  color: var(--green);
+  text-shadow: 0 0 6px rgba(0, 214, 133, 0.5);
+}
+.chapter--win .app-features ul {
+  border-top-color: rgba(0, 214, 133, 0.2);
+}
+.chapter--win .app-features li {
+  border-bottom-color: rgba(0, 214, 133, 0.1);
+}
+
+/* === ARQUITECTURA · popover con (p, s) === */
+.arch-pop {
+  position: relative;
+  display: inline-block;
+}
+.arch-link {
+  color: var(--green);
+  border-bottom: 1px dashed var(--green);
+  text-decoration: none;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0 2px;
+  transition: background 0.15s;
+}
+.arch-link:hover,
+.arch-link:focus {
+  background: rgba(0, 214, 133, 0.08);
+  outline: none;
+}
+.arch-link::after {
+  content: ' ↗';
+  font-size: 0.78em;
+  opacity: 0.7;
+  font-weight: 400;
+}
+.arch-pop-content {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 320px;
+  max-width: 90vw;
+  background: var(--bg-elevated);
+  border: 1px solid rgba(0, 214, 133, 0.4);
+  border-radius: 8px;
+  padding: 14px 16px 12px;
+  font-family: var(--body);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  text-align: left;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 400;
+  font-style: normal;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s, visibility 0.2s;
+  pointer-events: none;
+  z-index: 100;
+  box-shadow:
+    0 16px 40px rgba(0,0,0,0.75),
+    0 0 24px rgba(0, 214, 133, 0.18);
+}
+.arch-pop-content::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: rgba(0, 214, 133, 0.4);
+}
+.arch-pop-title {
+  display: block;
+  color: var(--green) !important;
+  margin-bottom: 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-shadow: 0 0 8px rgba(0, 214, 133, 0.4) !important;
+  font-weight: 700;
+}
+.arch-pop-content code {
+  font-family: var(--mono);
+  background: var(--bg);
+  padding: 1px 6px;
+  border-radius: 3px;
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 500;
+}
+.arch-pop-foot {
+  display: block;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(0, 214, 133, 0.2);
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--green);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.arch-pop:hover .arch-pop-content,
+.arch-pop:focus-within .arch-pop-content {
+  opacity: 1;
+  visibility: visible;
+}
+@media (max-width: 600px) {
+  .arch-pop-content {
+    width: 280px;
+    font-size: 12px;
+    padding: 12px 14px 10px;
+  }
 }
 
 .big-number-foot {
@@ -721,36 +853,67 @@ section.chapter {
 }
 .formula li strong { color: var(--ink); font-weight: 600; }
 
-/* === APP FEATURE LIST === */
+/* === APP FEATURE LIST · colapsable === */
 .app-features {
   margin: 32px 0;
-  padding: 32px 28px;
   background: var(--bg-elevated);
   border: 1px solid var(--rule);
-  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
 }
+.app-features-summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 18px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  user-select: none;
+  transition: background 0.15s;
+}
+.app-features-summary::-webkit-details-marker { display: none; }
+.app-features-summary::marker { display: none; }
+.app-features-summary:hover { background: rgba(255,255,255,0.025); }
 .app-features-label {
-  position: absolute;
-  top: -10px;
-  left: 24px;
-  background: var(--bg);
-  padding: 0 12px;
   font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.25em;
+  font-size: 11px;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--orange);
-  font-weight: 500;
+  font-weight: 700;
 }
+.app-features-hint {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.app-features-hint .arrow {
+  display: inline-block;
+  transition: transform 0.3s ease;
+  font-size: 9px;
+}
+.app-features[open] .app-features-hint .arrow { transform: rotate(180deg); }
+.app-features[open] .app-features-hint .text-closed { display: none; }
+.app-features:not([open]) .app-features-hint .text-open { display: none; }
 .app-features ul {
   list-style: none;
-  margin-top: 8px;
+  padding: 4px 24px 16px 24px;
+  border-top: 1px solid var(--rule);
+  margin: 0;
 }
 .app-features li {
   font-size: 15px;
   color: var(--ink-soft);
-  line-height: 1.5;
-  padding: 8px 0 8px 22px;
+  line-height: 1.55;
+  padding: 12px 0 12px 22px;
   position: relative;
   border-bottom: 1px solid var(--rule);
 }
@@ -758,7 +921,7 @@ section.chapter {
 .app-features li::before {
   content: '◆';
   position: absolute;
-  left: 0; top: 12px;
+  left: 0; top: 16px;
   color: var(--orange);
   font-size: 10px;
 }
@@ -1296,7 +1459,29 @@ footer a:hover { border-color: var(--orange); }
         <li><strong>Vender activamente las repetidas</strong> para recuperar parte de la inversión</li>
       </ol>
 
-      <p><strong>¿La herramienta detrás?</strong> Un tracker construido con <strong>Vibe Coding</strong> en menos de una semana, en mejora continua. Sin medir cada compra, intercambio y venta, esta estrategia es imposible de ejecutar.</p>
+      <p><strong>¿La herramienta detrás?</strong> Un tracker construido con <strong>Vibe Coding</strong> en menos de una semana, sobre una <span class="arch-pop"><a href="https://github.com/juank4835/panini-mundial-2026/blob/main/docs/MODELO.md" target="_blank" rel="noopener" class="arch-link">arquitectura</a><span class="arch-pop-content"><strong class="arch-pop-title">Modelo (p, s)</strong>Cada lámina tiene dos contadores: <code>p</code> = pegadas en el álbum, <code>s</code> = sueltas en mano. Todo lo demás — faltantes, repetidas, intercambios, valor — se deriva de esos dos números.<span class="arch-pop-foot">↗ Tocá de nuevo para ver el código en GitHub</span></span></span> simple en mejora continua. Sin medir cada compra, intercambio y venta, esta estrategia es imposible de ejecutar.</p>
+
+      <details class="app-features">
+        <summary class="app-features-summary">
+          <span class="app-features-label">Lo que hace la app</span>
+          <span class="app-features-hint">
+            <span class="text-closed">Ver lista</span>
+            <span class="text-open">Ocultar</span>
+            <span class="arrow">▼</span>
+          </span>
+        </summary>
+        <ul>
+          <li>Lleva el inventario de las <strong>980 láminas</strong> del álbum con 4 filtros: faltantes, sueltas, pegadas y repetidas.</li>
+          <li>Normaliza listas de WhatsApp con un <strong>sanitizador de texto inteligente</strong> — pega cualquier lista enviada por un vecino y queda lista para comparar.</li>
+          <li>Cruza listas con otros coleccionistas y <strong>sugiere los intercambios óptimos</strong>: cuántas le doy, cuántas recibo, qué saldo se equilibra.</li>
+          <li>Registra cada <strong>compra, venta e intercambio</strong> en un módulo de finanzas — sobres, cajas, láminas al detal, ventas con descuento por volumen.</li>
+          <li>Calcula <strong>en vivo</strong> el costo neto vs el óptimo teórico vs el comprador promedio. Sin esto, no se puede saber si la estrategia está funcionando.</li>
+          <li>Arma a cada cliente la mejor <strong>oferta al por mayor</strong> con descuentos automáticos según volumen.</li>
+          <li>Genera <strong>links compartibles</strong> para vender stock específico a vecinos — cada link es una oferta personalizada con vencimiento.</li>
+          <li>Sincroniza en <strong>tiempo real entre dispositivos</strong>: lo que registro en el iPhone aparece en el iPad y viceversa.</li>
+          <li>Funciona como <strong>PWA instalable</strong> en el celular, con una página pública read-only para que los vecinos vean qué tengo sin entrar a mi cuenta.</li>
+        </ul>
+      </details>
 
       <div class="vs-laminas">
         <div class="lamina-card">
@@ -1347,24 +1532,7 @@ footer a:hover { border-color: var(--orange); }
     <h2 class="chapter-title">Para los más jóvenes — <em>la verdadera lección</em>.</h2>
 
     <div class="prose">
-      <p>Esto puede parecer un ejercicio insignificante — <strong>solo una app</strong> que:</p>
-
-      <div class="app-features">
-        <span class="app-features-label">Lo que hace la app</span>
-        <ul>
-          <li>Lleva el inventario de las 980 láminas del álbum con 4 filtros (faltantes, sueltas, pegadas, repetidas)</li>
-          <li>Normaliza listas de WhatsApp con un sanitizador de texto inteligente</li>
-          <li>Compara listas con otros coleccionistas y sugiere intercambios óptimos</li>
-          <li>Registra cada compra, venta e intercambio en un módulo de finanzas</li>
-          <li>Calcula en vivo el costo neto vs el óptimo teórico vs el comprador promedio</li>
-          <li>Arma a cada cliente la mejor oferta al por mayor con descuentos automáticos por volumen</li>
-          <li>Genera links compartibles para vender stock específico a vecinos</li>
-          <li>Sincroniza en tiempo real entre dispositivos</li>
-          <li>Funciona como PWA instalable con página pública read-only para los vecinos</li>
-        </ul>
-      </div>
-
-      <p>Pero la verdadera lección detrás:</p>
+      <p>Lo de arriba puede parecer un ejercicio insignificante — <strong>solo una app más</strong>. Pero la verdadera lección detrás es otra:</p>
 
       <p>Antes, construir una app así requería <strong>meses de desarrollo y un equipo de programadores</strong> que dominaran:</p>
 
