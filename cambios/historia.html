@@ -38,6 +38,7 @@
   --green-dim: #00A065;
   --green-glow: rgba(0, 214, 133, 0.28);
   --red: #d4574e;
+  --blue: #4A9EFF;
   --highlight: rgba(255, 140, 26, 0.22);
 
   --display: 'Fraunces', Georgia, serif;
@@ -1662,6 +1663,450 @@ footer a:hover { border-color: var(--orange); }
   text-shadow: 0 0 12px rgba(239, 159, 39, 0.4);
 }
 
+/* === TRACKER WIDGET · mock del home view del album === */
+.tracker-content {
+  padding: 0;
+  background: #000;
+  max-width: 414px;   /* ancho de pantalla de iPhone Plus/Pro Max — mantiene proporción de celular */
+  margin: 0 auto;     /* centra el widget dentro del .app-capture-frame */
+}
+.tracker-statusbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px 6px;
+  font-family: var(--body);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.tracker-statusbar-left {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.tracker-statusbar-user {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--ink);
+  position: relative;
+}
+.tracker-statusbar-user::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 8px;
+  background: var(--ink);
+  border-radius: 8px 8px 0 0;
+}
+.tracker-statusbar-right {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--ink);
+}
+.tracker-statusbar-right svg { display: block; }
+.tracker-header {
+  padding: 10px 16px 14px;
+}
+.tracker-header-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.tracker-title {
+  font-family: var(--body);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+}
+.tracker-sync {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--body);
+  font-size: 12px;
+  color: var(--ink-soft);
+  flex-shrink: 0;
+  padding-top: 4px;
+}
+.tracker-sync-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 6px rgba(0, 214, 133, 0.8), 0 0 12px rgba(0, 214, 133, 0.5);
+}
+.tracker-sub {
+  font-family: var(--body);
+  font-size: 11.5px;
+  color: var(--ink-dim);
+  margin-top: 5px;
+  line-height: 1.35;
+}
+.tracker-timestamp {
+  font-family: var(--body);
+  font-size: 11.5px;
+  color: var(--ink-dim);
+  margin-top: 3px;
+}
+.tracker-donut {
+  position: relative;
+  width: 210px;
+  height: 210px;
+  margin: 8px auto 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tracker-donut svg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+  filter:
+    drop-shadow(0 0 6px rgba(0, 214, 133, 0.95))
+    drop-shadow(0 0 16px rgba(0, 214, 133, 0.75))
+    drop-shadow(0 0 32px rgba(0, 214, 133, 0.5))
+    drop-shadow(0 0 64px rgba(0, 214, 133, 0.3));
+}
+.tracker-donut-center {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+.tracker-donut-pct {
+  font-family: var(--display);
+  font-size: 50px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--green);
+  text-shadow:
+    0 0 8px rgba(0, 214, 133, 0.95),
+    0 0 20px rgba(0, 214, 133, 0.75),
+    0 0 40px rgba(0, 214, 133, 0.5);
+  line-height: 1;
+}
+.tracker-donut-ratio {
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--green);
+  margin-top: 6px;
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 8px rgba(0, 214, 133, 0.6);
+}
+.tracker-donut-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin-top: 6px;
+  font-weight: 600;
+}
+.tracker-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  padding: 0 12px;
+}
+.tracker-stat {
+  padding: 14px 8px;
+  background: var(--bg-warm);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  text-align: center;
+}
+.tracker-stat-value {
+  font-family: var(--display);
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.tracker-stat-label {
+  font-family: var(--body);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+.tracker-stat-sub {
+  font-family: var(--body);
+  font-size: 10.5px;
+  color: var(--ink-dim);
+  margin-top: 3px;
+}
+.tracker-stat.blue .tracker-stat-value  {
+  color: var(--blue);
+  text-shadow:
+    0 0 6px rgba(74, 158, 255, 0.85),
+    0 0 16px rgba(74, 158, 255, 0.55),
+    0 0 32px rgba(74, 158, 255, 0.35);
+}
+.tracker-stat.blue {
+  border-color: rgba(74, 158, 255, 0.5);
+  box-shadow: 0 0 14px rgba(74, 158, 255, 0.18) inset;
+}
+.tracker-stat.red .tracker-stat-value   {
+  color: var(--red);
+  text-shadow:
+    0 0 6px rgba(212, 87, 78, 0.9),
+    0 0 16px rgba(212, 87, 78, 0.6),
+    0 0 32px rgba(212, 87, 78, 0.35);
+}
+.tracker-stat.red {
+  border-color: rgba(212, 87, 78, 0.5);
+  box-shadow: 0 0 14px rgba(212, 87, 78, 0.2) inset;
+}
+.tracker-stat.amber .tracker-stat-value {
+  color: var(--amber);
+  text-shadow:
+    0 0 6px rgba(239, 159, 39, 0.9),
+    0 0 16px rgba(239, 159, 39, 0.6),
+    0 0 32px rgba(239, 159, 39, 0.35);
+}
+.tracker-stat.amber {
+  border-color: rgba(239, 159, 39, 0.5);
+  box-shadow: 0 0 14px rgba(239, 159, 39, 0.2) inset;
+}
+.tracker-header-icons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink-soft);
+  flex-shrink: 0;
+}
+.tracker-header-icons svg { display: block; }
+.tracker-header-icons .icon-btn {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-soft);
+}
+.tracker-sub-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 5px;
+}
+.tracker-sub-row .tracker-sub {
+  margin-top: 0;
+  flex: 1;
+}
+/* === Quick-jump chips (filtros A-L) — copia fiel del .qj-chip del app ===
+   Ver apps-script-deploy/index.html L3348-3377. Removemos cursor, transition
+   y tap-highlight porque acá es un mock estático, no interactivo. */
+.tracker-filters {
+  display: flex;
+  gap: 4px;
+  padding: 6px 12px 8px;
+  margin: 18px 0 10px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  border-bottom: 0.5px solid var(--rule);
+}
+.tracker-filters::-webkit-scrollbar { display: none; }
+.qj-chip {
+  flex-shrink: 0;
+  background: var(--bg-panel);
+  border: 0.5px solid var(--rule);
+  border-radius: 100px;
+  color: var(--ink-dim);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 12px;
+}
+.qj-chip.selected {
+  color: var(--amber);
+  border-color: var(--amber);
+  background: rgba(239, 159, 39, 0.08);
+  text-shadow: 0 0 4px rgba(239, 159, 39, 0.55);
+  box-shadow: 0 0 0 0.5px var(--amber) inset, 0 0 8px rgba(239, 159, 39, 0.25);
+}
+
+/* === Search input — copia fiel del .search-team-input del app === */
+.tracker-search-bar {
+  padding: 4px 12px 8px;
+  border-bottom: 0.5px solid var(--rule);
+  margin-bottom: 10px;
+}
+.search-team-input {
+  width: 100%;
+  padding: 7px 14px;
+  background: var(--bg-panel);
+  border: 0.5px solid var(--rule);
+  border-radius: 100px;
+  color: var(--ink-dim);   /* en estado vacío con placeholder, va atenuado */
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+/* === Tabla compacta — copia fiel del .home-compact-tabla del app ===
+   Ver apps-script-deploy/index.html L3302-3502.
+   Grid: 44px (team-name) + 10 columnas iguales = 11 cols total.
+   Cada equipo: team-name spans 2 filas + 20 cells (2 filas de 10).
+   Intro: team-name.single-row + 9 cells en 1 fila.
+   Removemos sticky, hover, cursor y transitions (mock estático). */
+.tracker-groups {
+  padding: 0 12px 12px;
+}
+.home-compact-tabla {
+  display: grid;
+  grid-template-columns: 44px repeat(10, 1fr);
+  gap: 3px;
+  margin: 0 0 10px;
+  font-family: var(--mono);
+}
+.home-compact-tabla .group-row {
+  grid-column: 1 / -1;
+  background: var(--bg-panel);
+  color: var(--amber);
+  padding: 5px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-top: 6px;
+  border-radius: 4px;
+}
+.home-compact-tabla .team-name {
+  padding: 2px 4px;
+  background: var(--bg-panel);
+  border-radius: 4px;
+  color: var(--ink-soft);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  grid-row: span 2;
+}
+.home-compact-tabla .team-name.single-row {
+  grid-row: span 1;
+}
+.home-compact-tabla .cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 11px;
+  border-radius: 50%;
+  position: relative;
+  line-height: 1;
+  color: #fff;
+}
+.home-compact-tabla .cell.repetida {
+  background: var(--amber);
+  flex-direction: column;
+  gap: 0;
+}
+.home-compact-tabla .cell.pegada {
+  background: var(--green);
+}
+.home-compact-tabla .cell.falta {
+  background: var(--red);
+}
+.home-compact-tabla .cell.suelta {
+  background: var(--blue);
+  flex-direction: column;
+  gap: 0;
+}
+.home-compact-tabla .cell .x {
+  font-size: 7px;
+  font-weight: 700;
+  line-height: 1;
+  opacity: 0.85;
+  margin-top: 0;
+}
+.home-compact-tabla .cell .x::before {
+  content: '×';
+  opacity: 0.7;
+}
+.tracker-group-fade {
+  height: 28px;
+  margin: -4px -12px 0;
+  background: linear-gradient(to bottom, transparent, #000);
+  pointer-events: none;
+}
+
+/* === Phone frame: outline tipo iPhone para el widget tracker ===
+   Solo aplica cuando la <figure> tiene la clase modificadora .phone-frame-wrap.
+   La OTRA figure del Cap. 4 (foto física de las repetidas) sigue con el frame
+   estándar de brackets ámbar — este bloque NO la toca. */
+.phone-frame-wrap .app-capture-frame {
+  padding: 10px;
+  background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 52px;
+  box-shadow:
+    0 30px 80px rgba(0,0,0,0.7),
+    0 0 0 1px rgba(255,255,255,0.04);
+  max-width: 414px;
+  margin: 32px auto;
+  position: relative;
+}
+.phone-frame-wrap .app-capture-frame::before,
+.phone-frame-wrap .app-capture-frame::after {
+  display: none;
+}
+.phone-frame-wrap .tracker-content {
+  border-radius: 44px;
+  overflow: hidden;
+  position: relative;
+  max-width: none;
+  margin: 0;
+  background: #000;
+}
+.phone-frame-wrap .tracker-content::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 110px;
+  height: 30px;
+  background: #000;
+  border-radius: 100px;
+  z-index: 50;
+  pointer-events: none;
+}
+.tracker-screen-fade {
+  height: 60px;
+  margin: 0 -12px -8px;
+  background: linear-gradient(180deg, transparent 0%, #000 90%);
+  pointer-events: none;
+}
+
+@media (max-width: 600px) {
+  .tracker-donut { width: 180px; height: 180px; }
+  .tracker-donut-pct { font-size: 42px; }
+  .tracker-donut-ratio { font-size: 13px; }
+  .tracker-stat-value { font-size: 24px; }
+  .tracker-stat-label { font-size: 11px; }
+  .tracker-stat-sub { font-size: 9.5px; }
+  .tracker-title { font-size: 17px; }
+  .qj-chip { font-size: 10.5px; padding: 5px 11px; }
+  .search-team-input { font-size: 11.5px; }
+  .home-compact-tabla .group-row { font-size: 9.5px; }
+  .home-compact-tabla .team-name { font-size: 9.5px; }
+  .home-compact-tabla .cell { font-size: 10px; }
+  .home-compact-tabla .cell .x { font-size: 6.5px; }
+}
+
 ::selection {
   background: var(--orange);
   color: var(--bg);
@@ -1948,13 +2393,199 @@ footer a:hover { border-color: var(--orange); }
         </div>
         <figcaption class="app-capture-caption">
           <span class="app-capture-label">Capital de intercambio · materia</span>
-          <span class="note">Las repetidas organizadas con caucheras de colores. El inventario físico que la app virtualiza en cuatro filtros.</span>
+          <span class="note">Las repetidas organizadas con cauchos de colores. El inventario físico que la app virtualiza en cuatro filtros.</span>
         </figcaption>
       </figure>
 
-      <figure class="app-capture">
+      <p>Las pilas son la materia. El tracker es la información que las vuelve operables.</p>
+
+      <figure class="app-capture phone-frame-wrap">
         <div class="app-capture-frame">
-          <img src="img-historia/tracker-inicial.jpg" alt="Pantalla del tracker: 83.7% del álbum pegado (820 de 980 láminas), 160 faltantes por conseguir y 724 láminas repetidas listas">
+          <div class="tracker-content" role="img" aria-label="Estado del tracker en pantalla de celular: 820 de 980 láminas pegadas (83.7%), 0 sueltas, 160 faltantes y 724 repetidas. Vista parcial — se ven el panel de stats, los filtros, la sección Intro y los dos primeros equipos del Grupo A (MEX y RSA) con sus láminas repetidas como círculos ámbar; el resto del álbum continúa fuera de cuadro.">
+            <div class="tracker-statusbar">
+              <div class="tracker-statusbar-left">
+                <span>9:08</span>
+                <span class="tracker-statusbar-user" aria-hidden="true"></span>
+              </div>
+              <div class="tracker-statusbar-right" aria-hidden="true">
+                <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="2.5" height="4" rx="0.5"/><rect x="3.7" y="5" width="2.5" height="6" rx="0.5"/><rect x="7.4" y="3" width="2.5" height="8" rx="0.5"/><rect x="11.1" y="1" width="2.5" height="10" rx="0.5"/></svg>
+                <svg width="14" height="11" viewBox="0 0 14 11" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M1 4 Q7 -1 13 4" stroke-linecap="round"/><path d="M3 6.5 Q7 3 11 6.5" stroke-linecap="round"/><circle cx="7" cy="9" r="0.9" fill="currentColor" stroke="none"/></svg>
+                <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x="0.5" y="0.5" width="18" height="10" rx="2.2" stroke="currentColor" stroke-width="1"/><rect x="19.5" y="3.5" width="1.5" height="4" rx="0.5" fill="currentColor"/><rect x="2" y="2" width="11" height="7" rx="1" fill="currentColor"/></svg>
+              </div>
+            </div>
+            <div class="tracker-header">
+              <div class="tracker-header-top">
+                <div class="tracker-title">Álbum Panini Mundial 2026</div>
+                <div class="tracker-header-icons" aria-hidden="true">
+                  <span class="icon-btn" title="Inicio">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M3 11l9-7 9 7"/>
+                      <path d="M5 10v10h14V10"/>
+                      <path d="M10 20v-6h4v6"/>
+                    </svg>
+                  </span>
+                  <span class="icon-btn" title="Intercambios">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M4 8h14"/>
+                      <path d="M14 4l4 4-4 4"/>
+                      <path d="M20 16H6"/>
+                      <path d="M10 12l-4 4 4 4"/>
+                    </svg>
+                  </span>
+                  <span class="icon-btn" title="Finanzas">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2h0V5z"/>
+                      <path d="M2 9v1c0 1.1.9 2 2 2h1"/>
+                      <path d="M16 11h0"/>
+                    </svg>
+                  </span>
+                  <span class="icon-btn" title="QR">
+                    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                      <path fill="currentColor" fill-rule="evenodd" d="M3 3h7v7H3V3zm2 2h3v3H5V5z"/>
+                      <path fill="currentColor" fill-rule="evenodd" d="M14 3h7v7h-7V3zm2 2h3v3h-3V5z"/>
+                      <path fill="currentColor" fill-rule="evenodd" d="M3 14h7v7H3v-7zm2 2h3v3H5v-3z"/>
+                      <path fill="currentColor" d="M13 13h2v2h-2zM16 13h2v2h-2zM19 13h2v2h-2zM13 16h2v2h-2zM16 16h2v2h-2zM19 16h2v2h-2zM13 19h2v2h-2zM16 19h2v2h-2zM19 19h2v2h-2z"/>
+                    </svg>
+                  </span>
+                  <span class="icon-btn" title="Más">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+                      <circle cx="5" cy="12" r="2"/>
+                      <circle cx="12" cy="12" r="2"/>
+                      <circle cx="19" cy="12" r="2"/>
+                    </svg>
+                  </span>
+                </div>
+              </div>
+              <div class="tracker-sub-row">
+                <div class="tracker-sub">Tracker colaborativo · pegadas, repetidas, faltantes e intercambio</div>
+                <div class="tracker-sync"><span class="tracker-sync-dot" aria-hidden="true"></span>Sync</div>
+              </div>
+              <div class="tracker-timestamp">9:08:19 a.m.</div>
+            </div>
+            <div class="tracker-donut">
+              <svg viewBox="0 0 200 200">
+                <circle cx="100" cy="100" r="80" stroke="rgba(255,255,255,0.08)" stroke-width="14" fill="none"/>
+                <circle cx="100" cy="100" r="80" stroke="var(--green)" stroke-width="14" fill="none"
+                        stroke-dasharray="502.65"
+                        stroke-dashoffset="81.93"
+                        transform="rotate(-90 100 100)"
+                        stroke-linecap="round"/>
+              </svg>
+              <div class="tracker-donut-center">
+                <div class="tracker-donut-pct">83.7%</div>
+                <div class="tracker-donut-ratio">820 / 980</div>
+                <div class="tracker-donut-label">Pegadas</div>
+              </div>
+            </div>
+            <div class="tracker-stats">
+              <div class="tracker-stat blue">
+                <div class="tracker-stat-value">0</div>
+                <div class="tracker-stat-label">Sueltas</div>
+                <div class="tracker-stat-sub">0 copias</div>
+              </div>
+              <div class="tracker-stat red">
+                <div class="tracker-stat-value">160</div>
+                <div class="tracker-stat-label">Faltantes</div>
+                <div class="tracker-stat-sub">por conseguir</div>
+              </div>
+              <div class="tracker-stat amber">
+                <div class="tracker-stat-value">724</div>
+                <div class="tracker-stat-label">Repetidas</div>
+                <div class="tracker-stat-sub">491 monas</div>
+              </div>
+            </div>
+            <div class="tracker-filters" aria-hidden="true">
+              <span class="qj-chip selected">Todos</span>
+              <span class="qj-chip">Intro</span>
+              <span class="qj-chip">A</span>
+              <span class="qj-chip">B</span>
+              <span class="qj-chip">C</span>
+              <span class="qj-chip">D</span>
+              <span class="qj-chip">E</span>
+              <span class="qj-chip">F</span>
+              <span class="qj-chip">G</span>
+              <span class="qj-chip">H</span>
+            </div>
+            <div class="tracker-search-bar" aria-hidden="true">
+              <div class="search-team-input">Buscar equipo · ej. col, colombia</div>
+            </div>
+            <div class="tracker-groups">
+
+              <!-- Intro: 9 láminas en 1 sola fila (team-name.single-row).
+                   Mockeamos algunas repetidas + algunas vacías. -->
+              <div class="home-compact-tabla">
+                <div class="group-row">Intro</div>
+                <div class="team-name single-row">INT</div>
+                <div class="cell repetida"><span class="num">00</span><span class="x">2</span></div>
+                <div class="cell"></div>
+                <div class="cell repetida"><span class="num">F2</span><span class="x">3</span></div>
+                <div class="cell repetida"><span class="num">F3</span><span class="x">1</span></div>
+                <div class="cell"></div>
+                <div class="cell repetida"><span class="num">F5</span><span class="x">4</span></div>
+                <div class="cell repetida"><span class="num">F6</span><span class="x">2</span></div>
+                <div class="cell"></div>
+                <div class="cell repetida"><span class="num">F8</span><span class="x">1</span></div>
+              </div>
+
+              <!-- Grupo A (solo MEX + RSA — el resto queda fuera de pantalla).
+                   Cada equipo: team-name (span 2 filas) + 20 cells (2 filas de 10).
+                   Las celdas .repetida llevan número + ×N; las vacías son slots sin clase. -->
+              <div class="home-compact-tabla">
+                <div class="group-row">Grupo A</div>
+
+                <div class="team-name">MEX</div>
+                <div class="cell repetida"><span class="num">2</span><span class="x">2</span></div>
+                <div class="cell"></div>
+                <div class="cell repetida"><span class="num">4</span><span class="x">1</span></div>
+                <div class="cell repetida"><span class="num">5</span><span class="x">3</span></div>
+                <div class="cell"></div>
+                <div class="cell repetida"><span class="num">7</span><span class="x">1</span></div>
+                <div class="cell repetida"><span class="num">8</span><span class="x">2</span></div>
+                <div class="cell repetida"><span class="num">9</span><span class="x">4</span></div>
+                <div class="cell"></div>
+                <div class="cell repetida"><span class="num">11</span><span class="x">1</span></div>
+                <div class="cell repetida"><span class="num">12</span><span class="x">2</span></div>
+                <div class="cell"></div>
+                <div class="cell repetida"><span class="num">14</span><span class="x">3</span></div>
+                <div class="cell repetida"><span class="num">15</span><span class="x">1</span></div>
+                <div class="cell"></div>
+                <div class="cell repetida"><span class="num">17</span><span class="x">2</span></div>
+                <div class="cell"></div>
+                <div class="cell repetida"><span class="num">19</span><span class="x">1</span></div>
+                <div class="cell repetida"><span class="num">20</span><span class="x">3</span></div>
+                <div class="cell"></div>
+
+                <div class="team-name">RSA</div>
+                <div class="cell repetida"><span class="num">2</span><span class="x">1</span></div>
+                <div class="cell repetida"><span class="num">3</span><span class="x">4</span></div>
+                <div class="cell"></div>
+                <div class="cell repetida"><span class="num">5</span><span class="x">2</span></div>
+                <div class="cell"></div>
+                <div class="cell repetida"><span class="num">7</span><span class="x">1</span></div>
+                <div class="cell repetida"><span class="num">8</span><span class="x">3</span></div>
+                <div class="cell"></div>
+                <div class="cell repetida"><span class="num">10</span><span class="x">1</span></div>
+                <div class="cell repetida"><span class="num">11</span><span class="x">2</span></div>
+                <div class="cell"></div>
+                <div class="cell repetida"><span class="num">13</span><span class="x">2</span></div>
+                <div class="cell repetida"><span class="num">14</span><span class="x">1</span></div>
+                <div class="cell"></div>
+                <div class="cell repetida"><span class="num">16</span><span class="x">3</span></div>
+                <div class="cell"></div>
+                <div class="cell repetida"><span class="num">18</span><span class="x">1</span></div>
+                <div class="cell repetida"><span class="num">19</span><span class="x">2</span></div>
+                <div class="cell"></div>
+                <div class="cell"></div>
+
+              </div>
+
+              <!-- Soft fade al final del Grupo A. Indica que hay más álbum
+                   debajo (Grupos B/C/D + resto del Grupo A) sin tener que
+                   mostrarlo, manteniendo el widget en una sola pantalla. -->
+              <div class="tracker-screen-fade" aria-hidden="true"></div>
+
+            </div>
+          </div>
         </div>
         <figcaption class="app-capture-caption">
           <span class="app-capture-label">El mismo inventario · información</span>
