@@ -1479,6 +1479,86 @@ footer a:hover { border-color: var(--orange); }
   .fin-hero-diff { padding-right: 100px; }
 }
 
+/* === SIMULADOR PLAYGROUND · al final del articulo === */
+.sim-playground {
+  max-width: 760px;
+  margin: 24px auto 0;
+  padding: 64px 28px 48px;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  background:
+    radial-gradient(ellipse at top left, rgba(255,107,0,0.03), transparent 50%),
+    radial-gradient(ellipse at bottom right, rgba(0,214,133,0.04), transparent 50%);
+}
+.sim-playground-eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--green);
+  font-weight: 700;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sim-playground-eyebrow::before {
+  content: '';
+  width: 22px;
+  height: 1px;
+  background: var(--green);
+  display: inline-block;
+}
+.sim-playground-title {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(24px, 3.4vw, 32px);
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  margin-bottom: 12px;
+  font-variation-settings: "opsz" 144;
+}
+.sim-playground-title em {
+  font-style: italic;
+  color: var(--green);
+}
+.sim-playground-sub {
+  font-family: var(--body);
+  font-size: 14px;
+  color: var(--ink-dim);
+  line-height: 1.55;
+  margin: 0 0 32px;
+  max-width: 600px;
+}
+.sim-block-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  font-weight: 600;
+  margin-top: 28px;
+  margin-bottom: 6px;
+  padding-left: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sim-block-label::before {
+  content: '';
+  width: 14px;
+  height: 1px;
+  background: var(--ink-faint);
+  display: inline-block;
+}
+.sim-block-label:first-of-type {
+  margin-top: 0;
+}
+@media (max-width: 600px) {
+  .sim-playground { padding: 48px 22px 36px; }
+}
+
 ::selection {
   background: var(--orange);
   color: var(--bg);
@@ -1527,7 +1607,6 @@ footer a:hover { border-color: var(--orange); }
         </div>
       </div>
 
-      <div class="fin-hero" id="fin-hero-c1"></div>
     </div>
   </section>
 
@@ -1559,7 +1638,6 @@ footer a:hover { border-color: var(--orange); }
         </div>
       </div>
 
-      <div class="fin-hero" id="fin-hero-c2"></div>
     </div>
   </section>
 
@@ -1611,8 +1689,6 @@ footer a:hover { border-color: var(--orange); }
       </div>
 
       <p>En promedio, <strong>cada lámina termina costando $335 más</strong>, porque los sobres están llenos de las mismas y al final toca cerrar el álbum una por una, al detal.</p>
-
-      <div class="fin-hero" id="fin-hero-c3"></div>
     </div>
   </section>
 
@@ -1669,7 +1745,6 @@ footer a:hover { border-color: var(--orange); }
         </div>
       </div>
 
-      <div class="fin-hero" id="fin-hero-c4"></div>
     </div>
   </section>
 
@@ -1748,8 +1823,19 @@ footer a:hover { border-color: var(--orange); }
         </div>
       </div>
 
-      <div class="fin-hero" id="fin-hero-c5"></div>
     </div>
+  </section>
+
+  <section class="sim-playground" id="playground">
+    <div class="sim-playground-eyebrow">Pruébalo tú mismo</div>
+    <h2 class="sim-playground-title">¿Y si juegas con los <em>números</em>?</h2>
+    <p class="sim-playground-sub">Estos simuladores tienen toda la data del artículo. Toca los chips para activar o apagar cada escenario y mira cómo cambia la comparación — primero contra el costo total del álbum, después contra el precio promedio por lámina.</p>
+
+    <div class="sim-block-label">Total del álbum</div>
+    <div class="fin-hero" id="fin-hero-total"></div>
+
+    <div class="sim-block-label">Por lámina</div>
+    <div class="fin-hero" id="fin-hero-pl"></div>
   </section>
 
   <!-- CAPÍTULO 6 -->
@@ -1837,15 +1923,29 @@ document.querySelectorAll('section.chapter, .lesson').forEach(el => {
 
 /* ============================================================
    Simulador interactivo fin-hero (portado de la app)
-   Reemplaza los 5 pantallazos estáticos. Cada instancia es
-   independiente: tiene su propio estado de toggles y su propia
-   función render(). Comparten los datos hardcodeados y el CSS.
+   Dos instancias en el playground del final: total del álbum
+   y precio por lámina. Cada instancia es independiente: tiene
+   su propio estado de toggles y su propia función render().
+   El modo ('total' | 'per-lamina') solo cambia los textos.
    ============================================================ */
 (function() {
   const SIM_DATA = {
     costoNetoActual: 552264,
     costoOptimo: 750000,
     costoTotalB: 1077780,
+    totalAlbum: 980,
+    sobresMinimos: 140,
+    laminasVendidas: 252,
+    totalRep: 50,
+    faltantesResiduales: 252,
+    strategyDesc: '2 cajas + intercambios + ventas',
+    diffNarrative: 'ganando al azar',
+  };
+
+  const SIM_DATA_PL = {
+    costoNetoActual: 564,
+    costoOptimo: 765,
+    costoTotalB: 1100,
     totalAlbum: 980,
     sobresMinimos: 140,
     laminasVendidas: 252,
@@ -1876,6 +1976,35 @@ document.querySelectorAll('section.chapter, .lesson').forEach(el => {
       ia:   !!opts.defaultToggles.ia,
       opt:  !!opts.defaultToggles.opt,
       prom: !!opts.defaultToggles.prom,
+    };
+
+    // Textos del modo: 'total' = costo del álbum entero,
+    // 'per-lamina' = precio unitario por lámina.
+    const isPL = opts.mode === 'per-lamina';
+    const TXT = {
+      chipNeto:        isPL ? 'Precio neto'                : 'Costo neto',
+      chipOpt:         isPL ? 'Precio óptimo'              : 'Costo óptimo',
+      chipProm:        isPL ? 'Precio promedio'            : 'Costo promedio',
+      labelNetoStrat:  isPL ? 'Precio neto: '              : 'Costo neto: ',
+      labelOpt:        isPL ? 'Precio Óptimo (Cero repetidas)' : 'Costo Óptimo (Cero repetidas)',
+      labelProm:       isPL ? 'Precio Promedio'            : 'Costo Promedio',
+      labelAhorroOpt:  isPL ? 'Ahorro por lámina vs óptimo'    : 'Ahorro vs óptimo',
+      labelAhorroProm: isPL ? 'Ahorro por lámina vs promedio'  : 'Ahorro vs promedio',
+      labelAhorroProm3:isPL ? 'Ahorro por lámina vs comprador promedio' : 'Ahorro vs comprador promedio',
+      labelTax:        isPL ? 'Tax por lámina del comprador promedio'    : 'Tax del comprador promedio',
+      labelSobreOpt:   isPL ? 'Sobre el óptimo'            : 'Sobre el óptimo',
+      labelSobreProm:  isPL ? 'Sobre el promedio'          : 'Sobre el promedio',
+      subElCosto:      isPL ? 'El precio'                  : 'El costo',
+      subElCostoNeto:  isPL ? 'El precio neto'             : 'El costo neto',
+      legendNeto:      isPL ? 'precio neto por lámina: '   : 'costo neto: ',
+      legendOpt:       isPL ? 'precio óptimo por lámina (cero repetidas) ' : 'costo óptimo (cero repetidas) ',
+      legendProm:      isPL ? 'precio promedio por lámina ' : 'costo promedio ',
+      legendNetoDesc:  isPL
+        ? 'El precio real por lámina con la estrategia aplicada: comprar cajas, intercambiar con vecinos y vender las repetidas. Apoyado por el tracker con IA.'
+        : 'El costo real con la estrategia aplicada: comprar cajas, intercambiar con vecinos y vender las repetidas. Apoyado por el tracker con IA.',
+      // En modo per-lamina ocultamos el bloque "Precio por lámina" porque los
+      // numeros mostrados YA son precios por lamina.
+      showPerLamBlock: !isPL,
     };
 
     function render() {
@@ -1921,31 +2050,41 @@ document.querySelectorAll('section.chapter, .lesson').forEach(el => {
       }
       else if (tCount === 1 && tIa) {
         heroBg = 'savings'; heroLabelCls = 'green';
-        heroLabelTxt = 'Costo neto: ' + strategyDesc;
+        heroLabelTxt = TXT.labelNetoStrat + strategyDesc;
         heroBigCls = 'green';
         heroBigTxt = _finFmt(costoNetoActual);
         heroSubHtml = '<b>' + laminasVendidas + ' láminas</b> vendidas · <b>' + totalRep + ' monas</b> pendientes en stock';
-        heroPerLamHtml = '<div class="pl-line">Precio por lámina: <span class="pl-val ia">' + _finFmt(costoPerLamIa) + '</span></div>';
+        heroPerLamHtml = TXT.showPerLamBlock
+          ? '<div class="pl-line">Precio por lámina: <span class="pl-val ia">' + _finFmt(costoPerLamIa) + '</span></div>'
+          : '';
         scaleMax = costoNetoActual; fillCls = 'green'; fillWidth = 100;
         barLbl = _finFmt(costoNetoActual);
       }
       else if (tCount === 1 && tOpt) {
         heroBg = 'amber-tint'; heroLabelCls = 'amber-text';
-        heroLabelTxt = 'Costo Óptimo (Cero repetidas)';
+        heroLabelTxt = TXT.labelOpt;
         heroBigCls = 'amber-glow';
         heroBigTxt = _finFmt(costoOptimo);
-        heroSubHtml = 'Lo mínimo posible si cada sobre te diera <b>7 láminas únicas</b>, sin repetidas. ' + sobresMinimos + ' sobres exactos + álbum.';
-        heroPerLamHtml = '<div class="pl-line">Precio por lámina: <span class="pl-val opt">' + _finFmt(costoPerLamOpt) + '</span></div>';
+        heroSubHtml = isPL
+          ? 'Lo mínimo posible <b>por lámina</b> si cada sobre te diera <b>7 láminas únicas</b>, sin repetidas.'
+          : 'Lo mínimo posible si cada sobre te diera <b>7 láminas únicas</b>, sin repetidas. ' + sobresMinimos + ' sobres exactos + álbum.';
+        heroPerLamHtml = TXT.showPerLamBlock
+          ? '<div class="pl-line">Precio por lámina: <span class="pl-val opt">' + _finFmt(costoPerLamOpt) + '</span></div>'
+          : '';
         scaleMax = costoOptimo; fillCls = 'amber'; fillWidth = 100;
         barLbl = _finFmt(costoOptimo);
       }
       else if (tCount === 1 && tProm) {
         heroBg = 'bitcoin-tint'; heroLabelCls = 'bitcoin-text';
-        heroLabelTxt = 'Costo Promedio';
+        heroLabelTxt = TXT.labelProm;
         heroBigCls = 'bitcoin-glow';
         heroBigTxt = _finFmt(costoTotalB);
-        heroSubHtml = 'Lo que paga un comprador común: <b>1 caja</b> + intercambios + ~' + faltantesResiduales + ' láminas al detal.';
-        heroPerLamHtml = '<div class="pl-line">Precio por lámina: <span class="pl-val prom">' + _finFmt(costoPerLamProm) + '</span></div>';
+        heroSubHtml = isPL
+          ? 'Lo que paga <b>por lámina</b> un comprador común: <b>1 caja</b> + intercambios + ~' + faltantesResiduales + ' láminas al detal.'
+          : 'Lo que paga un comprador común: <b>1 caja</b> + intercambios + ~' + faltantesResiduales + ' láminas al detal.';
+        heroPerLamHtml = TXT.showPerLamBlock
+          ? '<div class="pl-line">Precio por lámina: <span class="pl-val prom">' + _finFmt(costoPerLamProm) + '</span></div>'
+          : '';
         scaleMax = costoTotalB; fillCls = 'bitcoin'; fillWidth = 100;
         barLbl = _finFmt(costoTotalB);
       }
@@ -1953,13 +2092,14 @@ document.querySelectorAll('section.chapter, .lesson').forEach(el => {
         const optAhorroPct = costoOptimo > 0 ? Math.round(Math.abs(ahorroVsOptimo) / costoOptimo * 100) : 0;
         heroBg = ahorroVsOptimo > 0 ? 'savings' : '';
         heroLabelCls = ahorroVsOptimo > 0 ? 'green' : '';
-        heroLabelTxt = ahorroVsOptimo > 0 ? 'Ahorro vs óptimo' : 'Sobre el óptimo';
+        heroLabelTxt = ahorroVsOptimo > 0 ? TXT.labelAhorroOpt : TXT.labelSobreOpt;
         heroBigCls = ahorroVsOptimo > 0 ? 'green' : 'red';
         heroBigTxt = (ahorroVsOptimo > 0 ? '' : '+') + _finFmt(Math.abs(ahorroVsOptimo));
-        heroSubHtml = 'El costo: <b>' + _finFmt(costoNetoActual) + '</b> · óptimo: <b>' + _finFmt(costoOptimo) + '</b>';
-        heroPerLamHtml =
-          '<div class="pl-line">Precio por lámina: <span class="pl-val ia">' + _finFmt(costoPerLamIa) + '</span></div>' +
-          '<div class="pl-line">Precio por lámina: <span class="pl-val opt">' + _finFmt(costoPerLamOpt) + '</span></div>';
+        heroSubHtml = TXT.subElCosto + ': <b>' + _finFmt(costoNetoActual) + '</b> · óptimo: <b>' + _finFmt(costoOptimo) + '</b>';
+        heroPerLamHtml = TXT.showPerLamBlock
+          ? '<div class="pl-line">Precio por lámina: <span class="pl-val ia">' + _finFmt(costoPerLamIa) + '</span></div>' +
+            '<div class="pl-line">Precio por lámina: <span class="pl-val opt">' + _finFmt(costoPerLamOpt) + '</span></div>'
+          : '';
         heroBadgeCls = ahorroVsOptimo > 0 ? '' : 'neg';
         heroBadgeTxt = (ahorroVsOptimo > 0 ? '' : '+') + optAhorroPct + (ahorroVsOptimo > 0 ? '% ahorro' : '% sobre piso');
         scaleMax = costoOptimo; fillCls = 'green';
@@ -1974,13 +2114,14 @@ document.querySelectorAll('section.chapter, .lesson').forEach(el => {
       else if (tCount === 2 && tIa && tProm) {
         heroBg = winningPromedio ? 'savings' : '';
         heroLabelCls = winningPromedio ? 'green' : '';
-        heroLabelTxt = winningPromedio ? 'Ahorro vs promedio' : 'Sobre el promedio';
+        heroLabelTxt = winningPromedio ? TXT.labelAhorroProm : TXT.labelSobreProm;
         heroBigCls = winningPromedio ? 'green' : 'red';
         heroBigTxt = (winningPromedio ? '' : '+') + _finFmt(Math.abs(ahorroVsPromedio));
-        heroSubHtml = 'El costo: <b>' + _finFmt(costoNetoActual) + '</b> · promedio: <b>' + _finFmt(costoTotalB) + '</b>';
-        heroPerLamHtml =
-          '<div class="pl-line">Precio por lámina: <span class="pl-val ia">' + _finFmt(costoPerLamIa) + '</span></div>' +
-          '<div class="pl-line">Precio por lámina: <span class="pl-val prom">' + _finFmt(costoPerLamProm) + '</span></div>';
+        heroSubHtml = TXT.subElCosto + ': <b>' + _finFmt(costoNetoActual) + '</b> · promedio: <b>' + _finFmt(costoTotalB) + '</b>';
+        heroPerLamHtml = TXT.showPerLamBlock
+          ? '<div class="pl-line">Precio por lámina: <span class="pl-val ia">' + _finFmt(costoPerLamIa) + '</span></div>' +
+            '<div class="pl-line">Precio por lámina: <span class="pl-val prom">' + _finFmt(costoPerLamProm) + '</span></div>'
+          : '';
         heroBadgeCls = winningPromedio ? '' : 'neg';
         heroBadgeTxt = (winningPromedio ? '' : '+') + ahorroPctPromedio + (winningPromedio ? '% ahorro' : '% sobre prom');
         scaleMax = costoTotalB; fillCls = 'green';
@@ -1996,13 +2137,14 @@ document.querySelectorAll('section.chapter, .lesson').forEach(el => {
         const taxPromedio = costoTotalB - costoOptimo;
         const taxPct = costoOptimo > 0 ? Math.round(taxPromedio / costoOptimo * 100) : 0;
         heroBg = 'amber-tint'; heroLabelCls = 'amber-text';
-        heroLabelTxt = 'Tax del comprador promedio';
+        heroLabelTxt = TXT.labelTax;
         heroBigCls = 'bitcoin-glow';
         heroBigTxt = '+' + _finFmt(Math.abs(taxPromedio));
         heroSubHtml = 'Óptimo: <b>' + _finFmt(costoOptimo) + '</b> · promedio: <b>' + _finFmt(costoTotalB) + '</b>';
-        heroPerLamHtml =
-          '<div class="pl-line">Precio por lámina: <span class="pl-val opt">' + _finFmt(costoPerLamOpt) + '</span></div>' +
-          '<div class="pl-line">Precio por lámina: <span class="pl-val prom">' + _finFmt(costoPerLamProm) + '</span></div>';
+        heroPerLamHtml = TXT.showPerLamBlock
+          ? '<div class="pl-line">Precio por lámina: <span class="pl-val opt">' + _finFmt(costoPerLamOpt) + '</span></div>' +
+            '<div class="pl-line">Precio por lámina: <span class="pl-val prom">' + _finFmt(costoPerLamProm) + '</span></div>'
+          : '';
         heroBadgeCls = 'neg';
         heroBadgeTxt = '+' + taxPct + '% sobre piso';
         scaleMax = costoTotalB; fillCls = 'amber';
@@ -2017,18 +2159,19 @@ document.querySelectorAll('section.chapter, .lesson').forEach(el => {
       else {  // tCount === 3
         heroBg = winningPromedio ? 'savings' : '';
         heroLabelCls = winningPromedio ? 'green' : '';
-        heroLabelTxt = winningPromedio ? 'Ahorro vs comprador promedio' : 'Sobre el promedio';
+        heroLabelTxt = winningPromedio ? TXT.labelAhorroProm3 : TXT.labelSobreProm;
         heroBigCls = winningPromedio ? 'green' : 'red';
         heroBigTxt = (winningPromedio ? '' : '+') + _finFmt(Math.abs(ahorroVsPromedio));
-        heroSubHtml = 'El costo neto: <b>' + _finFmt(costoNetoActual) + '</b> · ' +
+        heroSubHtml = TXT.subElCostoNeto + ': <b>' + _finFmt(costoNetoActual) + '</b> · ' +
           (ahorroVsOptimo > 0
             ? 'ahorro de <span class="diff-optimo">' + _finFmt(ahorroVsOptimo) + '</span> vs óptimo · '
             : '<span class="diff-optimo">+' + _finFmt(Math.abs(ahorroVsOptimo)) + '</span> sobre el óptimo · ') +
           diffNarrative;
-        heroPerLamHtml =
-          '<div class="pl-line">Precio por lámina: <span class="pl-val ia">' + _finFmt(costoPerLamIa) + '</span></div>' +
-          '<div class="pl-line">Precio por lámina: <span class="pl-val opt">' + _finFmt(costoPerLamOpt) + '</span></div>' +
-          '<div class="pl-line">Precio por lámina: <span class="pl-val prom">' + _finFmt(costoPerLamProm) + '</span></div>';
+        heroPerLamHtml = TXT.showPerLamBlock
+          ? '<div class="pl-line">Precio por lámina: <span class="pl-val ia">' + _finFmt(costoPerLamIa) + '</span></div>' +
+            '<div class="pl-line">Precio por lámina: <span class="pl-val opt">' + _finFmt(costoPerLamOpt) + '</span></div>' +
+            '<div class="pl-line">Precio por lámina: <span class="pl-val prom">' + _finFmt(costoPerLamProm) + '</span></div>'
+          : '';
         heroBadgeCls = winningPromedio ? '' : 'neg';
         heroBadgeTxt = (winningPromedio ? '' : '+') + ahorroPctPromedio + (winningPromedio ? '% ahorro' : '% sobre prom');
         scaleMax = Math.max(costoNetoActual, costoOptimo, costoTotalB);
@@ -2090,14 +2233,14 @@ document.querySelectorAll('section.chapter, .lesson').forEach(el => {
         '</div>' +
         '<div class="fin-hero-toggle-row">' +
           '<div class="fin-hero-toggle-chip ia' + (toggles.ia ? ' on' : '') + '" data-fin-toggle="ia">' +
-            '<span class="chip-dot"></span>Costo neto' +
+            '<span class="chip-dot"></span>' + TXT.chipNeto +
           '</div>' +
           '<div class="fin-hero-toggle-chip opt' + (toggles.opt ? ' on' : '') + '" data-fin-toggle="opt">' +
-            '<span class="chip-dot"></span>Costo óptimo' +
+            '<span class="chip-dot"></span>' + TXT.chipOpt +
           '</div>' +
           (costoTotalB > 0
             ? '<div class="fin-hero-toggle-chip prom' + (toggles.prom ? ' on' : '') + '" data-fin-toggle="prom">' +
-                '<span class="chip-dot"></span>Costo promedio' +
+                '<span class="chip-dot"></span>' + TXT.chipProm +
               '</div>'
             : '') +
         '</div>' +
@@ -2106,8 +2249,8 @@ document.querySelectorAll('section.chapter, .lesson').forEach(el => {
             ? '<div class="fin-hero-legend-item">' +
                 '<div class="fin-hero-legend-dot con-ia"></div>' +
                 '<div class="fin-hero-legend-text">' +
-                  '<strong class="con-ia">costo neto: ' + strategyDesc + ' ' + _finFmt(costoNetoActual) + '</strong>' +
-                  '<span>El costo real con la estrategia aplicada: comprar cajas, intercambiar con vecinos y vender las repetidas. Apoyado por el tracker con IA.</span>' +
+                  '<strong class="con-ia">' + TXT.legendNeto + strategyDesc + ' ' + _finFmt(costoNetoActual) + '</strong>' +
+                  '<span>' + TXT.legendNetoDesc + '</span>' +
                 '</div>' +
               '</div>'
             : '') +
@@ -2115,8 +2258,10 @@ document.querySelectorAll('section.chapter, .lesson').forEach(el => {
             ? '<div class="fin-hero-legend-item">' +
                 '<div class="fin-hero-legend-dot optimo"></div>' +
                 '<div class="fin-hero-legend-text">' +
-                  '<strong>costo óptimo (cero repetidas) ' + _finFmt(costoOptimo) + '</strong>' +
-                  '<span>Lo mínimo posible si cada sobre diera 7 láminas únicas, sin repetidas. ' + sobresMinimos + ' sobres exactos + álbum.</span>' +
+                  '<strong>' + TXT.legendOpt + _finFmt(costoOptimo) + '</strong>' +
+                  '<span>' + (isPL
+                    ? 'Lo mínimo posible por lámina si cada sobre diera 7 láminas únicas, sin repetidas.'
+                    : 'Lo mínimo posible si cada sobre diera 7 láminas únicas, sin repetidas. ' + sobresMinimos + ' sobres exactos + álbum.') + '</span>' +
                 '</div>' +
               '</div>'
             : '') +
@@ -2124,8 +2269,10 @@ document.querySelectorAll('section.chapter, .lesson').forEach(el => {
             ? '<div class="fin-hero-legend-item">' +
                 '<div class="fin-hero-legend-dot tipico"></div>' +
                 '<div class="fin-hero-legend-text">' +
-                  '<strong class="tipico">costo promedio ' + _finFmt(costoTotalB) + '</strong>' +
-                  '<span>Lo que paga un comprador común: 1 caja + intercambios + ~' + faltantesResiduales + ' láminas al detal para cerrar.</span>' +
+                  '<strong class="tipico">' + TXT.legendProm + _finFmt(costoTotalB) + '</strong>' +
+                  '<span>' + (isPL
+                    ? 'Lo que paga por lámina un comprador común: 1 caja + intercambios + ~' + faltantesResiduales + ' láminas al detal para cerrar.'
+                    : 'Lo que paga un comprador común: 1 caja + intercambios + ~' + faltantesResiduales + ' láminas al detal para cerrar.') + '</span>' +
                 '</div>' +
               '</div>'
             : '') +
@@ -2161,13 +2308,12 @@ document.querySelectorAll('section.chapter, .lesson').forEach(el => {
     render();
   }
 
-  // Cinco simuladores, uno por capítulo. Cada uno arranca en el estado
-  // que mostraba el pantallazo original.
-  createSimulator({ hostId: 'fin-hero-c1', data: SIM_DATA, defaultToggles: {ia: false, opt: false, prom: true},  locked: true });
-  createSimulator({ hostId: 'fin-hero-c2', data: SIM_DATA, defaultToggles: {ia: false, opt: true,  prom: false}, locked: true });
-  createSimulator({ hostId: 'fin-hero-c3', data: SIM_DATA, defaultToggles: {ia: false, opt: true,  prom: true},  locked: true });
-  createSimulator({ hostId: 'fin-hero-c4', data: SIM_DATA, defaultToggles: {ia: true,  opt: true,  prom: false}, locked: true });
-  createSimulator({ hostId: 'fin-hero-c5', data: SIM_DATA, defaultToggles: {ia: true,  opt: false, prom: true},  locked: true });
+  // Dos simuladores interactivos en el playground al final del Cap. 5:
+  // uno con el costo total del álbum, otro con el precio por lámina.
+  // Cada uno es independiente: tiene su propio estado de toggles y su
+  // propia función render() — cambiar uno no afecta al otro.
+  createSimulator({ hostId: 'fin-hero-total', data: SIM_DATA,    defaultToggles: {ia: true, opt: true, prom: true}, mode: 'total' });
+  createSimulator({ hostId: 'fin-hero-pl',    data: SIM_DATA_PL, defaultToggles: {ia: true, opt: true, prom: true}, mode: 'per-lamina' });
 })();
 </script>
 
