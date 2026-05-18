@@ -2063,7 +2063,8 @@ footer a:hover { border-color: var(--orange); }
 .phone-frame-wrap .app-capture-frame::after {
   display: none;
 }
-.phone-frame-wrap .tracker-content {
+.phone-frame-wrap .tracker-content,
+.phone-frame-wrap .phone-screen {
   border-radius: 44px;
   overflow: hidden;
   position: relative;
@@ -2071,7 +2072,8 @@ footer a:hover { border-color: var(--orange); }
   margin: 0;
   background: #000;
 }
-.phone-frame-wrap .tracker-content::before {
+.phone-frame-wrap .tracker-content::before,
+.phone-frame-wrap .phone-screen::before {
   content: '';
   position: absolute;
   top: 8px;
@@ -2083,6 +2085,13 @@ footer a:hover { border-color: var(--orange); }
   border-radius: 100px;
   z-index: 50;
   pointer-events: none;
+}
+.phone-frame-wrap .phone-screen img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 0;
+  margin: 0;
 }
 .tracker-screen-fade {
   height: 60px;
@@ -2379,13 +2388,13 @@ footer a:hover { border-color: var(--orange); }
         <div class="fin-hero-diff"><b>26% de ventaja</b> sobre la suerte perfecta. Sin magia, sin sobres con suerte, sin trampa. <b>Solo pensando distinto.</b></div>
       </div>
 
-      <p>La suerte perfecta — donde cada sobre tendría 7 láminas distintas, cero repetidas — supuestamente era imposible de romper. En el papel, vencerla es obvio: basta con comprar suficientes cajas para que el total de láminas supere las 980 del álbum, y vender el sobrante por encima del costo del sobre, cobrándole al comprador una prima por la certeza de tener justo la lámina que necesita.</p>
+      <p>La suerte perfecta — donde cada sobre traería 7 láminas distintas, cero repetidas — supuestamente era el piso. Imposible bajarlo. En el papel, sin embargo, vencerla es obvio: comprar suficientes cajas para que el total de láminas supere las 980 del álbum, intercambiar las repetidas por faltantes a costo cero, y vender el sobrante cobrando una prima por la certeza de entregar justo la lámina que el otro necesita. El plan no es el problema.</p>
 
-      <p>El plan no es el problema. El problema es ejecutarlo en el mundo material — donde el cuerpo es uno solo, donde no se puede estar en todas partes a la vez, y donde cada intercambio exige tres coincidencias simultáneas: estar en el lugar indicado, en el momento indicado, con la mercancía indicada — la propia y la del otro. Basta con que una condición falle para que el azar se imponga y el intercambio no se dé.</p>
+      <p>El problema es ejecutarlo en el mundo material — donde el cuerpo es uno solo, donde no se puede estar en todas partes a la vez, y donde cada intercambio exige tres coincidencias simultáneas: estar en el lugar indicado, en el momento indicado, con la mercancía indicada — la propia y la del otro. Basta con que una de las tres falle para que el azar se imponga y el intercambio no ocurra.</p>
 
-      <p>La solución se encontraba en el ciberespacio, que no tiene las restricciones de la materia. Si el cuerpo no puede estar en todas partes a la vez, el plan tenía que poder estarlo. Para eso hubo que virtualizar el intercambio todo lo posible — porque 100% no se puede: la lámina es un objeto físico que tarde o temprano tiene que cambiar de manos. Pero todo lo que rodea al intercambio sí se pudo: la búsqueda, el cruce, la negociación, la cita. Eso pasó del pasillo a la pantalla. Lo único que quedó del mundo material fue un sobre dejado en la portería para que el otro lo recogiera cuando pudiera.</p>
+      <p>La solución estaba en el ciberespacio, que no tiene las restricciones de la materia. Si el cuerpo no puede estar en todas partes a la vez, el plan tenía que poder estarlo. Para eso hubo que virtualizar el intercambio todo lo posible — porque 100% no se puede: la lámina es un objeto físico que tarde o temprano cambia de manos. Pero todo lo que rodea al intercambio sí se pudo trasladar: la búsqueda, el cruce, la negociación, la cita. Eso pasó del pasillo a la pantalla. Del mundo material quedó apenas un sobre dejado en la portería para que el otro lo recogiera cuando pudiera.</p>
 
-      <p>La app que sostuvo todo esto se construyó con <strong>IA conversacional</strong>, en menos de una semana — algo que hace pocos años habría sido imposible. La primera decisión, sobre esa base, fue comprar <strong>dos cajas en lugar de una</strong>. Más sobres no son más suerte — son más matemática: dos cajas garantizan más láminas únicas desde el primer día y dejan suficientes repetidas para funcionar como capital de intercambio. Sobre ese inventario opera el resto del sistema. Y cada pieza del sistema hace lo mismo: <strong>reemplazar una acción del mundo material por una operación de información</strong>.</p>
+      <p>La app que sostuvo todo esto se construyó con <strong>IA conversacional</strong> en menos de una semana — algo que hace pocos años habría sido inviable. La primera decisión, sobre esa base, fue comprar <strong>dos cajas en lugar de una</strong>. Más sobres no son más suerte — son más matemática: dos cajas garantizan más láminas únicas desde el primer día y dejan suficientes repetidas para funcionar como capital de intercambio. Sobre ese inventario opera el resto del sistema. Y cada pieza del sistema hace lo mismo: <strong>reemplazar una acción del mundo material por una operación de información</strong>.</p>
 
       <figure class="app-capture">
         <div class="app-capture-frame">
@@ -2397,7 +2406,7 @@ footer a:hover { border-color: var(--orange); }
         </figcaption>
       </figure>
 
-      <p>Las pilas son la materia. El tracker es la información que las vuelve operables.</p>
+      <p>Las repetidas son la materia. La app es el sistema que las vuelve operables fuera del mundo material.</p>
 
       <figure class="app-capture phone-frame-wrap">
         <div class="app-capture-frame">
@@ -2593,7 +2602,21 @@ footer a:hover { border-color: var(--orange); }
         </figcaption>
       </figure>
 
-      <p>Las 980 láminas del álbum dejan de existir como objetos sueltos y pasan a un inventario virtual con cuatro filtros — faltantes, sueltas, pegadas, repetidas — que cabe en una pantalla. Las listas que los vecinos envían por WhatsApp llegan en cualquier formato; un sanitizador las normaliza para que el motor pueda compararlas sin que nadie las lea a mano. El cruce que antes pedía sentarse con otro coleccionista a comparar línea por línea ahora ocurre en segundos: cuántas dar, cuántas recibir, cómo equilibrar el saldo. Cada compra, venta o intercambio se anota solo — sin lápiz, sin libreta, sin memoria humana — y a partir de esos registros el sistema calcula en vivo cómo va el costo neto frente a la suerte perfecta y frente al comprador promedio. Para vender, las ofertas se arman con descuentos automáticos por volumen y se distribuyen como links compartibles: cada link es una tienda completa que cabe en un mensaje de chat. <strong>La información, a diferencia del cuerpo, sí puede estar en todas partes a la vez.</strong></p>
+      <p>Las 980 láminas dejan de existir como objetos sueltos y pasan a un inventario virtual con cuatro filtros — faltantes, sueltas, pegadas, repetidas — que cabe en una pantalla. Las listas que los vecinos mandan por WhatsApp llegan en cualquier formato: un sanitizador las normaliza para que el motor pueda compararlas sin que nadie las lea a mano. El cruce que antes pedía sentarse con otro coleccionista a comparar línea por línea ahora ocurre en segundos: cuántas dar, cuántas recibir, cómo equilibrar el saldo. Cada compra, venta o intercambio se anota solo — sin lápiz, sin libreta, sin memoria humana — y a partir de esos registros el sistema calcula en vivo cómo va el costo neto frente a la suerte perfecta y frente al comprador promedio. Para vender, las ofertas se arman con descuentos automáticos por volumen y se distribuyen como links compartibles: cada link es una tienda completa que cabe en un mensaje de chat. <strong>La información, a diferencia del cuerpo, sí puede estar en todas partes a la vez.</strong></p>
+
+      <figure class="app-capture phone-frame-wrap">
+        <div class="app-capture-frame">
+          <div class="phone-screen">
+            <img src="img-historia/oferta-link.jpg" alt="Pantalla del link de oferta tal como la recibe el vecino: 68 láminas seleccionadas agrupadas por equipo (Intro, Grupo A, Grupo B), cada lámina representada por un círculo ámbar con su número. El total estimado pasa de $69.000 a $59.100 ($850 por lámina) tras aplicar un descuento de -15% por volumen. Botón inferior 'Revisar pedido'.">
+          </div>
+        </div>
+        <figcaption class="app-capture-caption">
+          <span class="app-capture-label">El link que llega al vecino · tienda en un mensaje</span>
+          <span class="note">68 láminas seleccionadas, agrupadas por equipo. El vecino puede sacar las que no le interesan y el descuento por volumen se recalcula en vivo — $850 c/u con −15%. Lo que antes era una negociación lámina por lámina ahora cabe en un toque sobre el chat.</span>
+        </figcaption>
+      </figure>
+
+      <p>El link no es un mensaje: es una tienda con inventario en vivo, carrito propio y descuento automático por volumen — todo en una URL que el vecino abre desde el mismo WhatsApp. La oferta queda activa 30 días y, si alguna de esas láminas se vende en otro intercambio, desaparece sola del catálogo. <strong>Una conversación de pasillo convertida en infraestructura.</strong></p>
 
       <p>En números, así se ve la ventaja en el álbum entero:</p>
 
