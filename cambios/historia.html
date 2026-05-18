@@ -1445,7 +1445,7 @@ footer a:hover { border-color: var(--orange); }
 }
 /* Legend block debajo de la barra */
 .fin-hero-legend-block {
-  margin-top: 14px;
+  margin-top: 28px;
   padding: 10px 12px;
   background: var(--bg-panel);
   border: 0.5px solid var(--rule);
@@ -1559,6 +1559,106 @@ footer a:hover { border-color: var(--orange); }
   .sim-playground { padding: 48px 22px 36px; }
 }
 
+/* === DESGLOSE DE COSTOS · factura/recibo === */
+.cost-breakdown {
+  margin: 28px 0;
+  padding: 24px 26px;
+  background: var(--bg-panel);
+  border: 0.5px solid var(--rule);
+  border-radius: 12px;
+}
+.cost-breakdown-title {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cost-breakdown-title::before {
+  content: '';
+  width: 22px;
+  height: 1px;
+  background: var(--orange);
+  display: inline-block;
+}
+.cost-breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 18px;
+  padding: 14px 0;
+  border-bottom: 1px dashed var(--rule);
+}
+.cost-breakdown-row:last-child { border-bottom: none; }
+.cost-breakdown-row .item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.cost-breakdown-row .item strong {
+  font-family: var(--body);
+  font-weight: 600;
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.4;
+}
+.cost-breakdown-row .item .note {
+  font-family: var(--body);
+  font-size: 13px;
+  color: var(--ink-dim);
+  line-height: 1.55;
+  font-weight: 400;
+}
+.cost-breakdown-row .amount {
+  font-family: var(--mono);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.cost-breakdown-row.total {
+  margin-top: 8px;
+  padding-top: 18px;
+  border-top: 1px solid var(--orange);
+  border-bottom: none;
+}
+.cost-breakdown-row.total .item strong {
+  color: var(--orange);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-family: var(--mono);
+  font-weight: 700;
+}
+.cost-breakdown-row.total .amount {
+  color: var(--orange);
+  font-size: 20px;
+  text-shadow: 0 0 12px rgba(255, 107, 0, 0.4);
+}
+@media (max-width: 600px) {
+  .cost-breakdown { padding: 20px 22px; }
+  .cost-breakdown-row { gap: 12px; }
+  .cost-breakdown-row .amount { font-size: 15px; }
+  .cost-breakdown-row.total .amount { font-size: 18px; }
+}
+
+/* Override de tema: en chapter--opt los acentos van en amber */
+.chapter--opt .cost-breakdown-title { color: var(--amber); }
+.chapter--opt .cost-breakdown-title::before { background: var(--amber); }
+.chapter--opt .cost-breakdown-row.total { border-top-color: var(--amber); }
+.chapter--opt .cost-breakdown-row.total .item strong { color: var(--amber); }
+.chapter--opt .cost-breakdown-row.total .amount {
+  color: var(--amber);
+  text-shadow: 0 0 12px rgba(239, 159, 39, 0.4);
+}
+
 ::selection {
   background: var(--orange);
   color: var(--bg);
@@ -1598,6 +1698,83 @@ footer a:hover { border-color: var(--orange); }
 
       <p>Esta es la realidad de la mayoría: comprar una caja, intercambiar lo que se pueda con vecinos, y al final terminar comprando las láminas faltantes una a una en el mercado secundario.</p>
 
+      <p>En números, la cuenta suma así:</p>
+
+      <div class="cost-breakdown">
+        <div class="cost-breakdown-title">¿De dónde sale ese número?</div>
+
+        <div class="cost-breakdown-row">
+          <div class="item">
+            <strong>Álbum de pasta</strong>
+            <span class="note">La base donde se pegan las 980 láminas.</span>
+          </div>
+          <span class="amount">$50.000</span>
+        </div>
+
+        <div class="cost-breakdown-row">
+          <div class="item">
+            <strong>1 caja (104 sobres × 7 láminas = 728 láminas)</strong>
+            <span class="note">Lo que vende Panini al por mayor. La estrategia común arranca aquí. De esas 728 láminas, en promedio salen unas 500 únicas y 228 repetidas.</span>
+          </div>
+          <span class="amount">$520.000</span>
+        </div>
+
+        <div class="cost-breakdown-row">
+          <div class="item">
+            <strong>~252 láminas faltantes × ~$2.015 c/u precio promedio</strong>
+            <span class="note">Las que la caja no trajo. Comunes entre $1.000 y $3.000, raras hasta $15.000, especiales hasta $700.000.</span>
+          </div>
+          <span class="amount">$507.780</span>
+        </div>
+
+        <div class="cost-breakdown-row total">
+          <div class="item">
+            <strong>Total</strong>
+          </div>
+          <span class="amount">$1.077.780</span>
+        </div>
+      </div>
+
+      <p>Casi la mitad del costo total — <strong>$507.780</strong> — se va en las láminas que la caja no trajo. Ese es el cuello de botella: comprar al detal una a una, en el mercado secundario, es donde la cuenta se infla.</p>
+
+      <p>Repartido entre las 980 láminas del álbum, así queda por unidad:</p>
+
+      <div class="cost-breakdown">
+        <div class="cost-breakdown-title">¿Cuánto hay en cada lámina?</div>
+
+        <div class="cost-breakdown-row">
+          <div class="item">
+            <strong>Álbum de pasta</strong>
+            <span class="note">$50.000 ÷ 980 láminas (álbum <em>prorrateado</em> entre las 980)</span>
+          </div>
+          <span class="amount">$51</span>
+        </div>
+
+        <div class="cost-breakdown-row">
+          <div class="item">
+            <strong>1 caja</strong>
+            <span class="note">$520.000 ÷ 980 láminas</span>
+          </div>
+          <span class="amount">$531</span>
+        </div>
+
+        <div class="cost-breakdown-row">
+          <div class="item">
+            <strong>~252 láminas faltantes al detal</strong>
+            <span class="note">$507.780 ÷ 980 láminas (el costo se distribuye entre todas las láminas del álbum)</span>
+          </div>
+          <span class="amount">$518</span>
+        </div>
+
+        <div class="cost-breakdown-row total">
+          <div class="item">
+            <strong>Precio promedio por lámina</strong>
+            <span class="note">incluye el álbum <em>prorrateado</em> entre las 980 láminas</span>
+          </div>
+          <span class="amount">$1.100</span>
+        </div>
+      </div>
+
       <div class="lamina-card">
         <img class="lamina-thumb" src="img-historia/lamina-bonnie.png" alt="Una lámina del álbum (Bonnie Alvarez Osorio)">
         <div class="pricetag">
@@ -1629,6 +1806,67 @@ footer a:hover { border-color: var(--orange); }
 
       <p>Es <strong>imposible</strong> llegar aquí — la suerte nunca es así de buena. Pero sirve como referencia: el precio más bajo al que se puede aspirar.</p>
 
+      <p>En números, la cuenta perfecta sumaría así:</p>
+
+      <div class="cost-breakdown">
+        <div class="cost-breakdown-title">¿De dónde sale ese número?</div>
+
+        <div class="cost-breakdown-row">
+          <div class="item">
+            <strong>Álbum de pasta</strong>
+            <span class="note">La base donde se pegan las 980 láminas.</span>
+          </div>
+          <span class="amount">$50.000</span>
+        </div>
+
+        <div class="cost-breakdown-row">
+          <div class="item">
+            <strong>140 sobres × $5.000 c/u</strong>
+            <span class="note">Suficiente para llenar el álbum exacto, si cada sobre trajera 7 láminas distintas (sin repetir ninguna). 140 × 7 = 980 láminas únicas, justo las que tiene el álbum.</span>
+          </div>
+          <span class="amount">$700.000</span>
+        </div>
+
+        <div class="cost-breakdown-row total">
+          <div class="item">
+            <strong>Total</strong>
+          </div>
+          <span class="amount">$750.000</span>
+        </div>
+      </div>
+
+      <p>Aquí no hay "detal" que infle la cuenta. Cada lámina viene de un sobre, sin desperdicio. Por eso este es el piso: nada se pierde, nada se compra extra.</p>
+
+      <p>Repartido entre las 980 láminas del álbum, así queda por unidad:</p>
+
+      <div class="cost-breakdown">
+        <div class="cost-breakdown-title">¿Cuánto hay en cada lámina?</div>
+
+        <div class="cost-breakdown-row">
+          <div class="item">
+            <strong>Álbum de pasta</strong>
+            <span class="note">$50.000 ÷ 980 láminas (álbum <em>prorrateado</em> entre las 980)</span>
+          </div>
+          <span class="amount">$51</span>
+        </div>
+
+        <div class="cost-breakdown-row">
+          <div class="item">
+            <strong>140 sobres</strong>
+            <span class="note">$700.000 ÷ 980 láminas</span>
+          </div>
+          <span class="amount">$714</span>
+        </div>
+
+        <div class="cost-breakdown-row total">
+          <div class="item">
+            <strong>Precio promedio por lámina</strong>
+            <span class="note">incluye el álbum <em>prorrateado</em> entre las 980 láminas</span>
+          </div>
+          <span class="amount">$765</span>
+        </div>
+      </div>
+
       <div class="lamina-card">
         <img class="lamina-thumb" src="img-historia/lamina-clyde.png" alt="Una lámina del álbum (Clyde Alvarez Osorio)">
         <div class="pricetag amber">
@@ -1652,41 +1890,25 @@ footer a:hover { border-color: var(--orange); }
     <h2 class="chapter-title">Lo que cuesta <em>no tener suerte perfecta</em></h2>
 
     <div class="prose">
-      <p>Cualquiera que haya intentado llenar un álbum conoce la sensación: abrir un sobre y encontrar láminas que ya estaban en el montón. Esa sensación tiene un precio exacto.</p>
-
       <div class="fin-hero headline bitcoin-tint">
-        <div class="fin-hero-num-label bitcoin-text">Tax del comprador promedio</div>
+        <div class="fin-hero-num-label bitcoin-text">El precio de no tener la suerte perfecta</div>
         <div class="fin-hero-num-big bitcoin-glow">+$327.780</div>
         <div class="fin-hero-diff"><b>44% más</b> que la suerte perfecta. Comprador común: <b>$1.077.780</b> · suerte perfecta: <b>$750.000</b>.</div>
       </div>
 
+      <p>Cualquiera que haya intentado llenar un álbum conoce la sensación: abrir un sobre y encontrar láminas que ya estaban en el montón. Esa sensación tiene un precio exacto.</p>
+
       <p><strong>$327.780 de más.</strong> Eso es lo que cuesta no tener suerte perfecta — y eso ya incluye los intercambios con vecinos y las láminas al detal para cerrar.</p>
 
-      <div class="vs-laminas">
-        <div class="lamina-card">
-          <img class="lamina-thumb" src="img-historia/lamina-bonnie.png" alt="Una lámina del álbum (Bonnie)">
-          <div class="pricetag">
-            <span class="pricetag-label">Precio promedio por lámina</span>
-            <span class="pricetag-value">$1.100</span>
-            <span class="pricetag-foot">Caso real</span>
-          </div>
-        </div>
-        <div class="vs-op">−</div>
-        <div class="lamina-card">
-          <img class="lamina-thumb" src="img-historia/lamina-clyde.png" alt="Una lámina del álbum (Clyde)">
-          <div class="pricetag amber">
-            <span class="pricetag-label">Precio promedio por lámina</span>
-            <span class="pricetag-value">$765</span>
-            <span class="pricetag-foot">Suerte perfecta</span>
-          </div>
-        </div>
-        <div class="vs-equals"><span>=</span></div>
-        <div class="vs-result">
-          <span class="vs-result-label">El costo de no tener suerte perfecta</span>
-          <span class="vs-result-value">$335</span>
-          <span class="vs-result-pct">por lámina · <strong>44%</strong> más</span>
-        </div>
-      </div>
+      <p>En números, así se ve la diferencia en el álbum entero:</p>
+
+      <div class="fin-hero" id="fin-hero-c3-total"></div>
+
+      <p>El comprador común termina pagando <strong>$327.780 más</strong> que lo que costaría con una suerte que, por definición, nadie tiene.</p>
+
+      <p>Y si se mira lámina por lámina:</p>
+
+      <div class="fin-hero" id="fin-hero-c3-pl"></div>
 
       <p>En promedio, <strong>cada lámina termina costando $335 más</strong>, porque los sobres están llenos de las mismas y al final toca cerrar el álbum una por una, al detal.</p>
     </div>
@@ -1991,7 +2213,7 @@ document.querySelectorAll('section.chapter, .lesson').forEach(el => {
       labelAhorroOpt:  isPL ? 'Ahorro por lámina vs óptimo'    : 'Ahorro vs óptimo',
       labelAhorroProm: isPL ? 'Ahorro por lámina vs promedio'  : 'Ahorro vs promedio',
       labelAhorroProm3:isPL ? 'Ahorro por lámina vs comprador promedio' : 'Ahorro vs comprador promedio',
-      labelTax:        isPL ? 'Tax por lámina del comprador promedio'    : 'Tax del comprador promedio',
+      labelTax:        isPL ? 'El precio por lámina de no tener la suerte perfecta' : 'El precio de no tener la suerte perfecta',
       labelSobreOpt:   isPL ? 'Sobre el óptimo'            : 'Sobre el óptimo',
       labelSobreProm:  isPL ? 'Sobre el promedio'          : 'Sobre el promedio',
       subElCosto:      isPL ? 'El precio'                  : 'El costo',
@@ -2003,8 +2225,10 @@ document.querySelectorAll('section.chapter, .lesson').forEach(el => {
         ? 'El precio real por lámina con la estrategia aplicada: comprar cajas, intercambiar con vecinos y vender las repetidas. Apoyado por el tracker con IA.'
         : 'El costo real con la estrategia aplicada: comprar cajas, intercambiar con vecinos y vender las repetidas. Apoyado por el tracker con IA.',
       // En modo per-lamina ocultamos el bloque "Precio por lámina" porque los
-      // numeros mostrados YA son precios por lamina.
-      showPerLamBlock: !isPL,
+      // numeros mostrados YA son precios por lamina. También se puede forzar
+      // a ocultarlo con opts.hidePerLam: true (útil en simuladores locked
+      // donde el bloque per-lamina causa redundancia).
+      showPerLamBlock: !isPL && !opts.hidePerLam,
     };
 
     function render() {
@@ -2018,6 +2242,11 @@ document.querySelectorAll('section.chapter, .lesson').forEach(el => {
       const faltantesResiduales = data.faltantesResiduales;
       const strategyDesc = data.strategyDesc;
       const diffNarrative = data.diffNarrative;
+
+      // Si opts.fullNumbers, los marks de la barra usan formato completo
+      // (ej. $1.077.780) en vez del compacto ($1.08M) — útil cuando aparece
+      // el número en el texto y queremos evitar confusión.
+      const fmtMark = opts.fullNumbers ? _finFmt : _finFmtCompact;
 
       const costoPerLamIa   = totalAlbum > 0 ? costoNetoActual / totalAlbum : 0;
       const costoPerLamOpt  = totalAlbum > 0 ? costoOptimo     / totalAlbum : 0;
@@ -2105,7 +2334,7 @@ document.querySelectorAll('section.chapter, .lesson').forEach(el => {
         scaleMax = costoOptimo; fillCls = 'green';
         fillWidth = Math.min(100, (costoNetoActual / costoOptimo) * 100);
         barLbl = _finFmt(costoNetoActual);
-        marks.push({ pos: 100, cls: '', lbl: _finFmtCompact(costoOptimo), lblExtraStyle: 'transform: translateX(-100%); padding-right: 3px;' });
+        marks.push({ pos: 100, cls: '', lbl: fmtMark(costoOptimo), lblExtraStyle: 'transform: translateX(-100%); padding-right: 3px;' });
         if (100 - fillWidth >= 3) {
           braces.push({ topPx: 28, color: '', leftPct: fillWidth, widthPct: 100 - fillWidth, lblTopPx: 45,
             lblText: (ahorroVsOptimo > 0 ? '−' : '+') + _finFmt(Math.abs(ahorroVsOptimo)) });
@@ -2127,7 +2356,7 @@ document.querySelectorAll('section.chapter, .lesson').forEach(el => {
         scaleMax = costoTotalB; fillCls = 'green';
         fillWidth = Math.min(100, (costoNetoActual / costoTotalB) * 100);
         barLbl = _finFmt(costoNetoActual);
-        marks.push({ pos: 100, cls: 'dim', lbl: _finFmtCompact(costoTotalB), lblExtraStyle: 'transform: translateX(-100%); padding-right: 3px;' });
+        marks.push({ pos: 100, cls: 'dim', lbl: fmtMark(costoTotalB), lblExtraStyle: 'transform: translateX(-100%); padding-right: 3px;' });
         if (100 - fillWidth >= 3) {
           braces.push({ topPx: 28, color: 'soft', leftPct: fillWidth, widthPct: 100 - fillWidth, lblTopPx: 45,
             lblText: (winningPromedio ? '−' : '+') + _finFmt(Math.abs(ahorroVsPromedio)) });
@@ -2150,7 +2379,7 @@ document.querySelectorAll('section.chapter, .lesson').forEach(el => {
         scaleMax = costoTotalB; fillCls = 'amber';
         fillWidth = Math.min(100, (costoOptimo / costoTotalB) * 100);
         barLbl = _finFmt(costoOptimo);
-        marks.push({ pos: 100, cls: 'dim', lbl: _finFmtCompact(costoTotalB), lblExtraStyle: 'transform: translateX(-100%); padding-right: 3px;' });
+        marks.push({ pos: 100, cls: 'dim', lbl: fmtMark(costoTotalB), lblExtraStyle: 'transform: translateX(-100%); padding-right: 3px;' });
         if (100 - fillWidth >= 3) {
           braces.push({ topPx: 28, color: 'soft', leftPct: fillWidth, widthPct: 100 - fillWidth, lblTopPx: 45,
             lblText: '+' + _finFmt(taxPromedio) });
@@ -2180,8 +2409,8 @@ document.querySelectorAll('section.chapter, .lesson').forEach(el => {
         barLbl = _finFmt(costoNetoActual);
         const pctOpt = (costoOptimo / scaleMax) * 100;
         const pctProm = (costoTotalB / scaleMax) * 100;
-        marks.push({ pos: pctOpt, cls: '', lbl: _finFmtCompact(costoOptimo), lblExtraStyle: '' });
-        marks.push({ pos: pctProm, cls: 'dim', lbl: _finFmtCompact(costoTotalB), lblExtraStyle: 'transform: translateX(-100%); padding-right: 3px;' });
+        marks.push({ pos: pctOpt, cls: '', lbl: fmtMark(costoOptimo), lblExtraStyle: '' });
+        marks.push({ pos: pctProm, cls: 'dim', lbl: fmtMark(costoTotalB), lblExtraStyle: 'transform: translateX(-100%); padding-right: 3px;' });
         const b1w = pctOpt - fillWidth;
         if (b1w >= 3) {
           braces.push({ topPx: 28, color: '', leftPct: fillWidth, widthPct: b1w, lblTopPx: 45,
@@ -2314,6 +2543,27 @@ document.querySelectorAll('section.chapter, .lesson').forEach(el => {
   // propia función render() — cambiar uno no afecta al otro.
   createSimulator({ hostId: 'fin-hero-total', data: SIM_DATA,    defaultToggles: {ia: true, opt: true, prom: true}, mode: 'total' });
   createSimulator({ hostId: 'fin-hero-pl',    data: SIM_DATA_PL, defaultToggles: {ia: true, opt: true, prom: true}, mode: 'per-lamina' });
+
+  // Cap.3 — simulador locked: el precio de no tener la suerte perfecta (album total)
+  createSimulator({
+    hostId: 'fin-hero-c3-total',
+    data: SIM_DATA,
+    defaultToggles: {ia: false, opt: true, prom: true},
+    mode: 'total',
+    locked: true,
+    hidePerLam: true,    // no mostrar "Precio por lámina: $765/$1.100" (redundante)
+    fullNumbers: true,   // bar label muestra $1.077.780 en vez de $1.08M
+  });
+
+  // Cap.3 — simulador locked: el precio por lámina de no tener la suerte perfecta
+  createSimulator({
+    hostId: 'fin-hero-c3-pl',
+    data: SIM_DATA_PL,
+    defaultToggles: {ia: false, opt: true, prom: true},
+    mode: 'per-lamina',
+    locked: true,
+    fullNumbers: true,   // bar label muestra $1.100 en vez de $1.1K
+  });
 })();
 </script>
 
