@@ -2643,13 +2643,15 @@ footer a:hover { border-color: var(--orange); }
     <h2 class="chapter-title">Costó la <em>mitad</em> de lo que paga el comprador promedio.</h2>
 
     <div class="prose">
-      <p>Al comprador común llenar el álbum le cuesta cerca de <strong>$1.077.780</strong>: una caja, trueque informal con vecinos, y un sprint final comprando láminas sueltas en la papelería para cerrar los huecos. La estrategia descrita en los capítulos anteriores — 2 cajas, intercambios sistemáticos, ventas con descuento por volumen — bajó ese número a <strong>$552.264</strong>. La diferencia, <strong>$525.516</strong>, es prácticamente la mitad del costo.</p>
+      <p>Al comprador común llenar el álbum le cuesta cerca de <strong>$1.077.780</strong>: una caja, intercambio al ojo con vecinos, y una carrera final comprando láminas sueltas en la papelería para cerrar los huecos. La estrategia descrita en los capítulos anteriores — 2 cajas, intercambios sistemáticos, ventas con descuento por volumen — bajó ese número a <strong>$552.264</strong>. La diferencia, <strong>$525.516</strong>, es prácticamente la mitad del costo.</p>
 
-      <p>La ventaja no salió de comprar más ni de tener mejor suerte. Salió de <strong>medir más</strong>: saber cuántas repetidas hay y cuáles vale la pena vender, qué intercambio cierra mejor el saldo, en qué punto la caja extra deja de pagarse. Sin medir no hay manera de saber si la estrategia está funcionando — y sin saber si funciona, no es estrategia: es intuición.</p>
+      <p>Pero la ventaja contra el comprador promedio (49%) es casi el doble que la ventaja contra la suerte perfecta (26%) — y eso tiene una razón concreta. La suerte perfecta ya optimiza el azar de los sobres; vencerla exige método. El comprador promedio, en cambio, <strong>opera a ciegas</strong>: abre sobres sin saber cuántas únicas le faltan, intercambia lo que recuerda haber visto, compra al detal lo que cree que aún no tiene. Cada una de esas decisiones se toma sin medir. Y cada decisión sin medir es dinero que se va.</p>
+
+      <p>La ventaja, entonces, no salió de comprar más ni de tener mejor suerte. <strong>Salió de medir más:</strong> saber cuántas repetidas hay y cuáles vale la pena vender, qué intercambio cierra mejor el saldo, en qué punto la caja extra deja de pagarse. Sin medir no hay manera de saber si la estrategia está funcionando — y sin saber si funciona, no es estrategia: es intuición.</p>
 
       <div class="fin-hero" id="fin-hero-c5"></div>
 
-      <p>Toca los chips para encender o apagar cada referencia. El piso de la suerte perfecta también está ahí — por si quieres ver qué tan lejos quedó la estrategia del óptimo matemático y qué tan abajo del comprador promedio.</p>
+      <p>Toca los chips para encender o apagar cada referencia. El piso de la suerte perfecta también está ahí — por si quieres ver qué tan abajo de los dos quedó la estrategia.</p>
 
       <p>Y si se mira lámina por lámina, la brecha es la misma:</p>
 
@@ -2683,27 +2685,7 @@ footer a:hover { border-color: var(--orange); }
     </div>
   </section>
 
-  <!-- LECCIÓN FINAL -->
-  <section class="lesson">
-    <div class="lesson-inner">
-      <div class="lesson-box">
-        <p class="lesson-text">
-          Al parecer, el nuevo skill no será saber <strong>programar</strong>. Parece ser que la nueva habilidad será saber <strong>qué problema vale la pena resolver y cómo medirlo</strong>.
-        </p>
-        <p class="lesson-text">
-          <strong>Aprender a definir bien los problemas</strong> puede llegar a ser la habilidad más valiosa de la próxima década.
-        </p>
-      </div>
-    </div>
-  </section>
-
 </main>
-
-<footer>
-  <div class="built">Construido con Vibe Coding · Mundial 2026</div>
-  <a href="https://juank4835.github.io/panini-mundial-2026/cambios/">Cambios</a>
-  <a href="https://github.com/juank4835/panini-mundial-2026">Repo</a>
-</footer>
 
 <script>
 const io = new IntersectionObserver((entries) => {
@@ -2715,7 +2697,7 @@ const io = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.12 });
 
-document.querySelectorAll('section.chapter, .lesson').forEach(el => {
+document.querySelectorAll('section.chapter').forEach(el => {
   el.classList.add('reveal');
   io.observe(el);
 });
