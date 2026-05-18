@@ -1354,8 +1354,9 @@ footer a:hover { border-color: var(--orange); }
   pointer-events: none;
   color: var(--amber);
 }
-.fin-hero-scale-brace.neg  { color: var(--red); }
-.fin-hero-scale-brace.soft { color: var(--orange); }
+.fin-hero-scale-brace.neg   { color: var(--red); }
+.fin-hero-scale-brace.soft  { color: var(--orange); }
+.fin-hero-scale-brace.green { color: var(--green); }
 .fin-hero-scale-brace svg {
   width: 100%; height: 100%;
   display: block; overflow: visible;
@@ -1370,8 +1371,9 @@ footer a:hover { border-color: var(--orange); }
   font-family: var(--mono);
   white-space: nowrap;
 }
-.fin-hero-scale-brace-lbl.neg  { color: var(--red); }
-.fin-hero-scale-brace-lbl.soft { color: var(--orange); }
+.fin-hero-scale-brace-lbl.neg   { color: var(--red); }
+.fin-hero-scale-brace-lbl.soft  { color: var(--orange); }
+.fin-hero-scale-brace-lbl.green { color: var(--green); }
 .fin-hero-scale-mark {
   position: absolute; top: -3px; bottom: -3px; width: 2px;
   background: var(--amber) !important;
@@ -1472,6 +1474,7 @@ footer a:hover { border-color: var(--orange); }
 }
 .fin-hero-legend-text strong.tipico { color: var(--orange); }
 .fin-hero-legend-text strong.con-ia { color: var(--green); }
+.fin-hero-legend-text strong.optimo { color: var(--amber); }
 .fin-hero-legend-text span { color: var(--ink-soft); font-size: 11px; line-height: 1.4; }
 
 @media (max-width: 820px) {
@@ -1925,6 +1928,12 @@ footer a:hover { border-color: var(--orange); }
     <h2 class="chapter-title">Pero a la suerte perfecta se le puede ganar <em>pensando distinto</em>.</h2>
 
     <div class="prose">
+      <div class="fin-hero headline savings">
+        <div class="fin-hero-num-label green">Lo que se le ganó a la suerte perfecta</div>
+        <div class="fin-hero-num-big green">$197.736</div>
+        <div class="fin-hero-diff"><b>26% de ventaja</b> sobre la suerte perfecta. Sin magia, sin sobres con suerte, sin trampa. <b>Solo pensando distinto.</b></div>
+      </div>
+
       <p>La suerte perfecta — donde cada sobre tendría 7 láminas distintas, cero repetidas — supuestamente era imposible de romper. En el papel, vencerla es obvio: basta con comprar suficientes cajas para que el total de láminas supere las 980 del álbum, y vender el sobrante por encima del costo del sobre, cobrándole al comprador una prima por la certeza de tener justo la lámina que necesita.</p>
 
       <p>El plan no es el problema. El problema es ejecutarlo en el mundo material — donde el cuerpo es uno solo, donde no se puede estar en todas partes a la vez, y donde cada intercambio exige tres coincidencias simultáneas: estar en el lugar indicado, en el momento indicado, con la mercancía indicada — la propia y la del otro. Basta con que una condición falle para que el azar se imponga y el intercambio no se dé.</p>
@@ -1933,40 +1942,39 @@ footer a:hover { border-color: var(--orange); }
 
       <p>La app que sostuvo todo esto se construyó con <strong>IA conversacional</strong>, en menos de una semana — algo que hace pocos años habría sido imposible. La primera decisión, sobre esa base, fue comprar <strong>dos cajas en lugar de una</strong>. Más sobres no son más suerte — son más matemática: dos cajas garantizan más láminas únicas desde el primer día y dejan suficientes repetidas para funcionar como capital de intercambio. Sobre ese inventario opera el resto del sistema. Y cada pieza del sistema hace lo mismo: <strong>reemplazar una acción del mundo material por una operación de información</strong>.</p>
 
+      <figure class="app-capture">
+        <div class="app-capture-frame">
+          <img src="img-historia/repetidas.jpg" alt="Pilas de láminas repetidas organizadas con caucheras de colores sobre una mesa de madera, junto a una lámina del jugador japonés Yō Tanaka">
+        </div>
+        <figcaption class="app-capture-caption">
+          <span class="app-capture-label">Capital de intercambio · materia</span>
+          <span class="note">Las repetidas organizadas con caucheras de colores. El inventario físico que la app virtualiza en cuatro filtros.</span>
+        </figcaption>
+      </figure>
+
+      <figure class="app-capture">
+        <div class="app-capture-frame">
+          <img src="img-historia/tracker-inicial.jpg" alt="Pantalla del tracker: 83.7% del álbum pegado (820 de 980 láminas), 160 faltantes por conseguir y 724 láminas repetidas listas">
+        </div>
+        <figcaption class="app-capture-caption">
+          <span class="app-capture-label">El mismo inventario · información</span>
+          <span class="note">820/980 láminas pegadas (83.7% del álbum) solo con 2 cajas, antes de cualquier intercambio. 724 repetidas listas para operar — la materia, ya convertida en información.</span>
+        </figcaption>
+      </figure>
+
       <p>Las 980 láminas del álbum dejan de existir como objetos sueltos y pasan a un inventario virtual con cuatro filtros — faltantes, sueltas, pegadas, repetidas — que cabe en una pantalla. Las listas que los vecinos envían por WhatsApp llegan en cualquier formato; un sanitizador las normaliza para que el motor pueda compararlas sin que nadie las lea a mano. El cruce que antes pedía sentarse con otro coleccionista a comparar línea por línea ahora ocurre en segundos: cuántas dar, cuántas recibir, cómo equilibrar el saldo. Cada compra, venta o intercambio se anota solo — sin lápiz, sin libreta, sin memoria humana — y a partir de esos registros el sistema calcula en vivo cómo va el costo neto frente a la suerte perfecta y frente al comprador promedio. Para vender, las ofertas se arman con descuentos automáticos por volumen y se distribuyen como links compartibles: cada link es una tienda completa que cabe en un mensaje de chat. <strong>La información, a diferencia del cuerpo, sí puede estar en todas partes a la vez.</strong></p>
 
-      <div class="fin-hero headline savings">
-        <div class="fin-hero-num-label green">Lo que se le ganó a la suerte perfecta</div>
-        <div class="fin-hero-num-big green">$197.736</div>
-        <div class="fin-hero-diff"><b>26% de ventaja</b> sobre la suerte perfecta. Sin magia, sin sobres con suerte, sin trampa. <b>Solo pensando distinto.</b></div>
-      </div>
+      <p>En números, así se ve la ventaja en el álbum entero:</p>
 
-      <div class="vs-laminas">
-        <div class="lamina-card">
-          <img class="lamina-thumb" src="img-historia/lamina-clyde.png" alt="Una lámina del álbum (Clyde)">
-          <div class="pricetag amber">
-            <span class="pricetag-label">Precio promedio por lámina</span>
-            <span class="pricetag-value">$765</span>
-            <span class="pricetag-foot">Suerte perfecta</span>
-          </div>
-        </div>
-        <div class="vs-op">−</div>
-        <div class="lamina-card">
-          <img class="lamina-thumb" src="img-historia/lamina-bonnie.png" alt="Una lámina del álbum (Bonnie)">
-          <div class="pricetag green">
-            <span class="pricetag-label">Precio promedio por lámina</span>
-            <span class="pricetag-value">$564</span>
-            <span class="pricetag-foot">Caso aplicado</span>
-          </div>
-        </div>
-        <div class="vs-equals"><span>=</span></div>
-        <div class="vs-result">
-          <span class="vs-result-label">Ahorro por lámina</span>
-          <span class="vs-result-value">$201</span>
-          <span class="vs-result-pct"><strong>26%</strong> menos que con suerte perfecta</span>
-        </div>
-      </div>
+      <div class="fin-hero" id="fin-hero-c4-total"></div>
 
+      <p>Llenar el álbum costó <strong>$552.264</strong> — menos que el piso de la suerte perfecta ($750.000). La estrategia rompió un límite que, en teoría, no se podía romper.</p>
+
+      <p>Y si se mira lámina por lámina:</p>
+
+      <div class="fin-hero" id="fin-hero-c4-pl"></div>
+
+      <p>Cada lámina del álbum terminó costando <strong>$564</strong> — $201 menos que con la suerte perfecta. La ventaja es consistente en cualquier escala: <strong>el sistema le ganó al azar, no con suerte sino con método</strong>.</p>
     </div>
   </section>
 
@@ -2336,7 +2344,7 @@ document.querySelectorAll('section.chapter, .lesson').forEach(el => {
         barLbl = _finFmt(costoNetoActual);
         marks.push({ pos: 100, cls: '', lbl: fmtMark(costoOptimo), lblExtraStyle: 'transform: translateX(-100%); padding-right: 3px;' });
         if (100 - fillWidth >= 3) {
-          braces.push({ topPx: 28, color: '', leftPct: fillWidth, widthPct: 100 - fillWidth, lblTopPx: 45,
+          braces.push({ topPx: 28, color: ahorroVsOptimo > 0 ? 'green' : '', leftPct: fillWidth, widthPct: 100 - fillWidth, lblTopPx: 45,
             lblText: (ahorroVsOptimo > 0 ? '−' : '+') + _finFmt(Math.abs(ahorroVsOptimo)) });
         }
       }
@@ -2358,7 +2366,7 @@ document.querySelectorAll('section.chapter, .lesson').forEach(el => {
         barLbl = _finFmt(costoNetoActual);
         marks.push({ pos: 100, cls: 'dim', lbl: fmtMark(costoTotalB), lblExtraStyle: 'transform: translateX(-100%); padding-right: 3px;' });
         if (100 - fillWidth >= 3) {
-          braces.push({ topPx: 28, color: 'soft', leftPct: fillWidth, widthPct: 100 - fillWidth, lblTopPx: 45,
+          braces.push({ topPx: 28, color: winningPromedio ? 'green' : 'soft', leftPct: fillWidth, widthPct: 100 - fillWidth, lblTopPx: 45,
             lblText: (winningPromedio ? '−' : '+') + _finFmt(Math.abs(ahorroVsPromedio)) });
         }
       }
@@ -2413,12 +2421,12 @@ document.querySelectorAll('section.chapter, .lesson').forEach(el => {
         marks.push({ pos: pctProm, cls: 'dim', lbl: fmtMark(costoTotalB), lblExtraStyle: 'transform: translateX(-100%); padding-right: 3px;' });
         const b1w = pctOpt - fillWidth;
         if (b1w >= 3) {
-          braces.push({ topPx: 28, color: '', leftPct: fillWidth, widthPct: b1w, lblTopPx: 45,
+          braces.push({ topPx: 28, color: ahorroVsOptimo > 0 ? 'green' : '', leftPct: fillWidth, widthPct: b1w, lblTopPx: 45,
             lblText: (ahorroVsOptimo > 0 ? '−' : '+') + _finFmt(Math.abs(ahorroVsOptimo)) + ' vs óptimo' });
         }
         const b2w = pctProm - fillWidth;
         if (b2w >= 3) {
-          braces.push({ topPx: 64, color: 'soft', leftPct: fillWidth, widthPct: b2w, lblTopPx: 81,
+          braces.push({ topPx: 64, color: winningPromedio ? 'green' : 'soft', leftPct: fillWidth, widthPct: b2w, lblTopPx: 81,
             lblText: (winningPromedio ? '−' : '+') + _finFmt(Math.abs(ahorroVsPromedio)) + ' vs promedio' });
         }
       }
@@ -2487,7 +2495,7 @@ document.querySelectorAll('section.chapter, .lesson').forEach(el => {
             ? '<div class="fin-hero-legend-item">' +
                 '<div class="fin-hero-legend-dot optimo"></div>' +
                 '<div class="fin-hero-legend-text">' +
-                  '<strong>' + TXT.legendOpt + _finFmt(costoOptimo) + '</strong>' +
+                  '<strong class="optimo">' + TXT.legendOpt + _finFmt(costoOptimo) + '</strong>' +
                   '<span>' + (isPL
                     ? 'Lo mínimo posible por lámina si cada sobre diera 7 láminas únicas, sin repetidas.'
                     : 'Lo mínimo posible si cada sobre diera 7 láminas únicas, sin repetidas. ' + sobresMinimos + ' sobres exactos + álbum.') + '</span>' +
@@ -2563,6 +2571,27 @@ document.querySelectorAll('section.chapter, .lesson').forEach(el => {
     mode: 'per-lamina',
     locked: true,
     fullNumbers: true,   // bar label muestra $1.100 en vez de $1.1K
+  });
+
+  // Cap.4 — simulador locked: ventaja sobre la suerte perfecta (album total)
+  createSimulator({
+    hostId: 'fin-hero-c4-total',
+    data: SIM_DATA,
+    defaultToggles: {ia: true, opt: true, prom: false},
+    mode: 'total',
+    locked: true,
+    hidePerLam: true,
+    fullNumbers: true,
+  });
+
+  // Cap.4 — simulador locked: ventaja sobre la suerte perfecta (por lámina)
+  createSimulator({
+    hostId: 'fin-hero-c4-pl',
+    data: SIM_DATA_PL,
+    defaultToggles: {ia: true, opt: true, prom: false},
+    mode: 'per-lamina',
+    locked: true,
+    fullNumbers: true,
   });
 })();
 </script>
