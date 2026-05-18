@@ -1193,6 +1193,292 @@ footer a:hover { border-color: var(--orange); }
   .formula li::before { left: 16px; width: 26px; height: 26px; font-size: 14px; }
 }
 
+/* === Simulador interactivo fin-hero (portado de la app) ===
+   Reemplaza los pantallazos estáticos de la app. Una sola definición CSS
+   que sirve para los 5 simuladores (uno por capítulo). */
+.fin-hero {
+  background: linear-gradient(180deg, rgba(74,158,255,0.04), transparent);
+  border: 0.5px solid var(--rule);
+  border-radius: 14px;
+  padding: 16px 18px 14px;
+  margin: 32px 0;
+  max-width: none;
+  position: relative;
+}
+/* Variante bloqueada: oculta los chips (no se puede cambiar el estado). */
+.fin-hero.locked .fin-hero-toggle-row { display: none; }
+.fin-hero.savings {
+  background: linear-gradient(180deg, rgba(0,214,133,0.06), rgba(0,214,133,0.02));
+  border-color: rgba(0,214,133,0.3);
+}
+.fin-hero.amber-tint {
+  background: linear-gradient(180deg, rgba(239,159,39,0.06), rgba(239,159,39,0.02));
+  border-color: rgba(239,159,39,0.3);
+}
+.fin-hero.bitcoin-tint {
+  background: linear-gradient(180deg, rgba(255,107,0,0.06), rgba(255,107,0,0.02));
+  border-color: rgba(255,107,0,0.3);
+}
+
+/* Variante "headline": tamaño grande, sin elementos interactivos.
+   Para usar como reemplazo de big-number cards. */
+.fin-hero.headline {
+  padding: 36px 32px;
+  max-width: none;
+  margin: 40px 0;
+}
+.fin-hero.headline .fin-hero-num-label {
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  font-weight: 500;
+  margin-bottom: 14px;
+}
+.fin-hero.headline .fin-hero-num-big {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(48px, 7vw, 84px);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  font-variation-settings: "opsz" 144;
+}
+.fin-hero.headline .fin-hero-num-big.bitcoin-glow {
+  text-shadow: 0 0 24px rgba(255, 107, 0, 0.4);
+}
+.fin-hero.headline .fin-hero-num-big.amber-glow {
+  text-shadow: 0 0 24px rgba(239, 159, 39, 0.4);
+}
+.fin-hero.headline .fin-hero-num-big.green {
+  text-shadow: 0 0 24px rgba(0, 214, 133, 0.4);
+}
+.fin-hero.headline .fin-hero-diff {
+  font-size: 14px;
+  padding-right: 0;
+  min-height: 0;
+  margin-top: 16px;
+  margin-bottom: 0;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+.fin-hero.headline .fin-hero-diff b {
+  color: var(--ink);
+  font-weight: 600;
+}
+.fin-hero-num-label {
+  font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.6px;
+  color: var(--ink-dim); margin-bottom: 2px;
+}
+.fin-hero-num-label.amber { color: var(--red); }
+.fin-hero-num-label.green { color: var(--green); }
+.fin-hero-num-label.amber-text   { color: var(--amber); }
+.fin-hero-num-label.bitcoin-text { color: var(--orange); }
+.fin-hero-num-big {
+  font-size: 26px; font-weight: 800; line-height: 1;
+  font-family: var(--mono); color: var(--ink);
+}
+.fin-hero-num-big.amber { color: var(--red); }
+.fin-hero-num-big.green {
+  color: var(--green);
+  text-shadow: 0 0 12px rgba(0, 214, 133, 0.35);
+}
+.fin-hero-num-big.amber-glow {
+  color: var(--amber);
+  text-shadow: 0 0 12px rgba(239, 159, 39, 0.35);
+}
+.fin-hero-num-big.bitcoin-glow {
+  color: var(--orange);
+  text-shadow: 0 0 12px rgba(255, 107, 0, 0.35);
+}
+.fin-hero-num-big.red { color: var(--red); }
+.fin-hero-diff {
+  font-size: 12px; color: var(--ink-soft); margin-bottom: 10px;
+  padding-right: 140px;
+  min-height: 36px;
+  line-height: 1.5;
+}
+.fin-hero-diff .ahorro { color: var(--green); font-weight: 700; }
+.fin-hero-diff .deficit { color: var(--red); font-weight: 700; }
+.fin-hero-diff .diff-optimo   { color: var(--amber);  font-weight: 700; }
+.fin-hero-diff .diff-promedio { color: var(--orange); font-weight: 700; }
+.fin-hero-badge {
+  position: absolute; top: 14px; right: 14px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.4px;
+  padding: 3px 8px; border-radius: 100px;
+  text-transform: uppercase;
+  background: rgba(0,214,133,0.15); color: var(--green);
+  font-family: var(--mono);
+}
+.fin-hero-badge.neg { background: rgba(226,75,74,0.15); color: var(--red); }
+.fin-hero-per-lamina {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 0.5px solid var(--rule);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.fin-hero-per-lamina .pl-line {
+  display: flex; align-items: baseline; gap: 6px;
+  font-size: 11px;
+  color: var(--ink-dim);
+}
+.fin-hero-per-lamina .pl-val {
+  font-weight: 800;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: -0.2px;
+}
+.fin-hero-per-lamina .pl-val.ia   { color: var(--green); }
+.fin-hero-per-lamina .pl-val.opt  { color: var(--amber); }
+.fin-hero-per-lamina .pl-val.prom { color: var(--orange); }
+.fin-hero-scale {
+  height: 38px; background: var(--bg-elevated); border-radius: 6px;
+  position: relative; margin: 100px 0 4px; overflow: visible;
+}
+.fin-hero-scale.no-braces  { margin-top: 16px !important; }
+.fin-hero-scale.one-brace  { margin-top: 56px !important; }
+.fin-hero-scale.two-braces { margin-top: 100px !important; }
+.fin-hero-scale-fill {
+  position: absolute; inset: 0 auto 0 0;
+  background: linear-gradient(90deg, var(--green-dim) 0%, var(--green) 100%);
+  border-radius: 6px;
+}
+.fin-hero-scale-fill.amber {
+  background: linear-gradient(90deg, var(--amber-dim), var(--amber));
+}
+.fin-hero-scale-fill.bitcoin {
+  background: linear-gradient(90deg, #C95400, var(--orange));
+}
+.fin-hero-scale-brace {
+  position: absolute;
+  height: 16px;
+  pointer-events: none;
+  color: var(--amber);
+}
+.fin-hero-scale-brace.neg  { color: var(--red); }
+.fin-hero-scale-brace.soft { color: var(--orange); }
+.fin-hero-scale-brace svg {
+  width: 100%; height: 100%;
+  display: block; overflow: visible;
+}
+.fin-hero-scale-brace svg path { stroke: currentColor; fill: none; stroke-width: 1.5; }
+.fin-hero-scale-brace-lbl {
+  position: absolute;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: var(--amber);
+  font-weight: 700;
+  font-family: var(--mono);
+  white-space: nowrap;
+}
+.fin-hero-scale-brace-lbl.neg  { color: var(--red); }
+.fin-hero-scale-brace-lbl.soft { color: var(--orange); }
+.fin-hero-scale-mark {
+  position: absolute; top: -3px; bottom: -3px; width: 2px;
+  background: var(--amber) !important;
+  box-shadow:
+    0 0 4px var(--amber),
+    0 0 8px rgba(239, 159, 39, 0.5) !important;
+}
+.fin-hero-scale-mark.dim {
+  background: var(--orange) !important;
+  box-shadow:
+    0 0 4px var(--orange),
+    0 0 8px rgba(255, 107, 0, 0.6) !important;
+}
+.fin-hero-scale-mark-lbl {
+  position: absolute; bottom: -16px; transform: translateX(-50%);
+  font-size: 10px; color: var(--amber); font-weight: 700;
+  white-space: nowrap; text-transform: uppercase; letter-spacing: 0.3px;
+  font-family: var(--mono);
+}
+.fin-hero-scale-mark-lbl.dim { color: var(--orange); }
+.fin-hero-scale-neto-lbl {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  font-size: 18px; color: #fff; font-weight: 800;
+  font-family: var(--mono);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  letter-spacing: -0.5px;
+}
+.fin-hero-scale-axis { display: none !important; }
+/* Chips toggleables */
+.fin-hero-toggle-row {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  margin-top: 14px;
+  margin-bottom: 8px;
+}
+@keyframes fin-chip-shake {
+  0%, 100% { transform: translateX(0); }
+  25%      { transform: translateX(-3px); }
+  50%      { transform: translateX(3px); }
+  75%      { transform: translateX(-2px); }
+}
+.fin-hero-toggle-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 11px;
+  border-radius: 100px;
+  border: 1px solid var(--rule);
+  background: var(--bg-panel);
+  color: var(--ink-dim);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s;
+  font-family: var(--body);
+}
+.fin-hero-toggle-chip:hover { background: var(--bg-elevated); }
+.fin-hero-toggle-chip .chip-dot::before { content: '○'; font-size: 12px; }
+.fin-hero-toggle-chip.on .chip-dot::before { content: '●'; }
+.fin-hero-toggle-chip.on.ia {
+  background: rgba(0,214,133,0.15); color: var(--green); border-color: var(--green);
+  box-shadow: 0 0 6px rgba(0,214,133,0.3);
+}
+.fin-hero-toggle-chip.on.opt {
+  background: rgba(239,159,39,0.15); color: var(--amber); border-color: var(--amber);
+  box-shadow: 0 0 6px rgba(239,159,39,0.3);
+}
+.fin-hero-toggle-chip.on.prom {
+  background: rgba(255,107,0,0.15); color: var(--orange); border-color: var(--orange);
+  box-shadow: 0 0 6px rgba(255,107,0,0.3);
+}
+/* Legend block debajo de la barra */
+.fin-hero-legend-block {
+  margin-top: 14px;
+  padding: 10px 12px;
+  background: var(--bg-panel);
+  border: 0.5px solid var(--rule);
+  border-radius: 8px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.fin-hero-legend-item {
+  display: grid; grid-template-columns: 12px 1fr;
+  gap: 10px; align-items: start; font-size: 11px;
+  padding: 4px;
+  border-radius: 6px;
+}
+.fin-hero-legend-dot {
+  width: 8px; height: 8px; border-radius: 50%; margin-top: 4px;
+}
+.fin-hero-legend-dot.optimo { background: var(--amber);  box-shadow: 0 0 6px var(--amber); }
+.fin-hero-legend-dot.tipico { background: var(--orange); box-shadow: 0 0 6px var(--orange); }
+.fin-hero-legend-dot.con-ia { background: var(--green);  box-shadow: 0 0 6px var(--green); }
+.fin-hero-legend-text strong {
+  color: var(--amber); display: block;
+  font-family: var(--mono);
+  text-transform: uppercase; letter-spacing: 0.3px; font-size: 10px;
+  margin-bottom: 1px;
+}
+.fin-hero-legend-text strong.tipico { color: var(--orange); }
+.fin-hero-legend-text strong.con-ia { color: var(--green); }
+.fin-hero-legend-text span { color: var(--ink-soft); font-size: 11px; line-height: 1.4; }
+
+@media (max-width: 820px) {
+  .fin-hero { margin: 28px auto; padding: 14px 14px 12px; }
+  .fin-hero-diff { padding-right: 100px; }
+}
+
 ::selection {
   background: var(--orange);
   color: var(--bg);
@@ -1224,10 +1510,10 @@ footer a:hover { border-color: var(--orange); }
     <h2 class="chapter-title">¿Cuánto cuesta llenar <em>el álbum</em> del Mundial 2026?</h2>
 
     <div class="prose">
-      <div class="big-number">
-        <div class="big-number-label">Costo Promedio</div>
-        <div class="big-number-value">$1.077.780</div>
-        <div class="big-number-foot">Lo que paga un comprador común: <strong>1 caja</strong> + intercambios con vecinos + <strong>~250 láminas</strong> al detal para cerrar.</div>
+      <div class="fin-hero headline bitcoin-tint">
+        <div class="fin-hero-num-label bitcoin-text">Costo Promedio</div>
+        <div class="fin-hero-num-big bitcoin-glow">$1.077.780</div>
+        <div class="fin-hero-diff">Lo que paga un comprador común: <b>1 caja</b> + intercambios con vecinos + <b>~250 láminas</b> al detal para cerrar.</div>
       </div>
 
       <p>Esta es la realidad de la mayoría: comprar una caja, intercambiar lo que se pueda con vecinos, y al final terminar comprando las láminas faltantes una a una en el mercado secundario.</p>
@@ -1241,15 +1527,7 @@ footer a:hover { border-color: var(--orange); }
         </div>
       </div>
 
-      <figure class="app-capture">
-        <div class="app-capture-frame">
-          <img src="img-historia/01.png" alt="Vista del costo promedio en la app — $1.077.780, precio por lámina $1.100">
-        </div>
-        <figcaption class="app-capture-caption">
-          <span class="app-capture-label">Captura · App</span>
-          <span class="note">Lo que sale el álbum cuando se compra a la brava.</span>
-        </figcaption>
-      </figure>
+      <div class="fin-hero" id="fin-hero-c1"></div>
     </div>
   </section>
 
@@ -1264,10 +1542,10 @@ footer a:hover { border-color: var(--orange); }
     <h2 class="chapter-title">¿Y cuánto costaría con <em>suerte perfecta</em>?</h2>
 
     <div class="prose">
-      <div class="big-number">
-        <div class="big-number-label">Costo Óptimo</div>
-        <div class="big-number-value">$750.000</div>
-        <div class="big-number-foot">Si cada sobre trajera <strong>7 láminas distintas</strong>, sin repetir ninguna, bastarían exactamente 140 sobres + el álbum para terminar.</div>
+      <div class="fin-hero headline amber-tint">
+        <div class="fin-hero-num-label amber-text">Costo Óptimo</div>
+        <div class="fin-hero-num-big amber-glow">$750.000</div>
+        <div class="fin-hero-diff">Si cada sobre trajera <b>7 láminas distintas</b>, sin repetir ninguna, bastarían exactamente 140 sobres + el álbum para terminar.</div>
       </div>
 
       <p>Es <strong>imposible</strong> llegar aquí — la suerte nunca es así de buena. Pero sirve como referencia: el precio más bajo al que se puede aspirar.</p>
@@ -1281,15 +1559,7 @@ footer a:hover { border-color: var(--orange); }
         </div>
       </div>
 
-      <figure class="app-capture">
-        <div class="app-capture-frame">
-          <img src="img-historia/02.png" alt="Vista del costo óptimo en la app — $750.000, precio por lámina $765">
-        </div>
-        <figcaption class="app-capture-caption">
-          <span class="app-capture-label">Captura · App</span>
-          <span class="note">Vista del costo con suerte perfecta en la app.</span>
-        </figcaption>
-      </figure>
+      <div class="fin-hero" id="fin-hero-c2"></div>
     </div>
   </section>
 
@@ -1306,30 +1576,10 @@ footer a:hover { border-color: var(--orange); }
     <div class="prose">
       <p>Cualquiera que haya intentado llenar un álbum conoce la sensación: abrir un sobre y encontrar láminas que ya estaban en el montón. Esa sensación tiene un precio exacto.</p>
 
-      <div class="vs-bars">
-        <div class="vs-bar opt">
-          <div class="vs-bar-header">
-            <span class="vs-bar-label">Óptimo · suerte perfecta</span>
-            <span class="vs-bar-value">$750.000</span>
-          </div>
-          <div class="vs-bar-track">
-            <div class="vs-bar-fill" style="width: 69.6%"></div>
-          </div>
-        </div>
-        <div class="vs-bar prom">
-          <div class="vs-bar-header">
-            <span class="vs-bar-label">Promedio · comprador común</span>
-            <span class="vs-bar-value">$1.077.780</span>
-          </div>
-          <div class="vs-bar-track">
-            <div class="vs-bar-fill" style="width: 100%"></div>
-          </div>
-        </div>
-        <div class="vs-bars-delta">
-          <span class="vs-bars-delta-arrow">↑</span>
-          <span class="vs-bars-delta-amount">+$327.780</span>
-          <span class="vs-bars-delta-pct"><strong>44%</strong> más</span>
-        </div>
+      <div class="fin-hero headline bitcoin-tint">
+        <div class="fin-hero-num-label bitcoin-text">Tax del comprador promedio</div>
+        <div class="fin-hero-num-big bitcoin-glow">+$327.780</div>
+        <div class="fin-hero-diff"><b>44% más</b> que la suerte perfecta. Comprador común: <b>$1.077.780</b> · suerte perfecta: <b>$750.000</b>.</div>
       </div>
 
       <p><strong>$327.780 de más.</strong> Eso es lo que cuesta no tener suerte perfecta — y eso ya incluye los intercambios con vecinos y las láminas al detal para cerrar.</p>
@@ -1362,15 +1612,7 @@ footer a:hover { border-color: var(--orange); }
 
       <p>En promedio, <strong>cada lámina termina costando $335 más</strong>, porque los sobres están llenos de las mismas y al final toca cerrar el álbum una por una, al detal.</p>
 
-      <figure class="app-capture">
-        <div class="app-capture-frame">
-          <img src="img-historia/03.png" alt="Comparativo óptimo vs promedio — +$327.780 de sobreprecio, 44% más que con suerte perfecta">
-        </div>
-        <figcaption class="app-capture-caption">
-          <span class="app-capture-label">Captura · App</span>
-          <span class="note">Comparativo en la app: el sobrecosto del comprador promedio frente a la suerte perfecta.</span>
-        </figcaption>
-      </figure>
+      <div class="fin-hero" id="fin-hero-c3"></div>
     </div>
   </section>
 
@@ -1395,10 +1637,10 @@ footer a:hover { border-color: var(--orange); }
 
       <p>Las 980 láminas del álbum dejan de existir como objetos sueltos y pasan a un inventario virtual con cuatro filtros — faltantes, sueltas, pegadas, repetidas — que cabe en una pantalla. Las listas que los vecinos envían por WhatsApp llegan en cualquier formato; un sanitizador las normaliza para que el motor pueda compararlas sin que nadie las lea a mano. El cruce que antes pedía sentarse con otro coleccionista a comparar línea por línea ahora ocurre en segundos: cuántas dar, cuántas recibir, cómo equilibrar el saldo. Cada compra, venta o intercambio se anota solo — sin lápiz, sin libreta, sin memoria humana — y a partir de esos registros el sistema calcula en vivo cómo va el costo neto frente a la suerte perfecta y frente al comprador promedio. Para vender, las ofertas se arman con descuentos automáticos por volumen y se distribuyen como links compartibles: cada link es una tienda completa que cabe en un mensaje de chat. <strong>La información, a diferencia del cuerpo, sí puede estar en todas partes a la vez.</strong></p>
 
-      <div class="big-number">
-        <div class="big-number-label">Lo que se le ganó a la suerte perfecta</div>
-        <div class="big-number-value win">$197.736</div>
-        <div class="big-number-foot"><strong>26% de ventaja</strong> sobre la suerte perfecta. Sin magia, sin sobres con suerte, sin trampa. <strong>Solo pensando distinto.</strong></div>
+      <div class="fin-hero headline savings">
+        <div class="fin-hero-num-label green">Lo que se le ganó a la suerte perfecta</div>
+        <div class="fin-hero-num-big green">$197.736</div>
+        <div class="fin-hero-diff"><b>26% de ventaja</b> sobre la suerte perfecta. Sin magia, sin sobres con suerte, sin trampa. <b>Solo pensando distinto.</b></div>
       </div>
 
       <div class="vs-laminas">
@@ -1427,15 +1669,7 @@ footer a:hover { border-color: var(--orange); }
         </div>
       </div>
 
-      <figure class="app-capture">
-        <div class="app-capture-frame">
-          <img src="img-historia/04.png" alt="Costo neto vs óptimo en la app — $552.264 vs $750.000, ahorro de $197.736 (26% bajo lo posible con suerte perfecta)">
-        </div>
-        <figcaption class="app-capture-caption">
-          <span class="app-capture-label">Captura · App</span>
-          <span class="note">Vista del ahorro vs la suerte perfecta: 26% por debajo de lo "imposible".</span>
-        </figcaption>
-      </figure>
+      <div class="fin-hero" id="fin-hero-c4"></div>
     </div>
   </section>
 
@@ -1450,10 +1684,10 @@ footer a:hover { border-color: var(--orange); }
     <h2 class="chapter-title">Costó la <em>mitad</em> de lo que paga el comprador promedio.</h2>
 
     <div class="prose">
-      <div class="big-number">
-        <div class="big-number-label">Lo que se le ganó al comprador promedio</div>
-        <div class="big-number-value win">$525.516</div>
-        <div class="big-number-foot"><strong>49% de ventaja</strong> sobre el comprador común. Prácticamente le costó la mitad.</div>
+      <div class="fin-hero headline savings">
+        <div class="fin-hero-num-label green">Lo que se le ganó al comprador promedio</div>
+        <div class="fin-hero-num-big green">$525.516</div>
+        <div class="fin-hero-diff"><b>49% de ventaja</b> sobre el comprador común. Prácticamente le costó la mitad.</div>
       </div>
 
       <p><strong>¿La fórmula?</strong></p>
@@ -1514,15 +1748,7 @@ footer a:hover { border-color: var(--orange); }
         </div>
       </div>
 
-      <figure class="app-capture">
-        <div class="app-capture-frame">
-          <img src="img-historia/05.png" alt="Costo neto vs promedio en la app — $552.264 vs $1.077.780, ahorro de $525.516 (49% menos)">
-        </div>
-        <figcaption class="app-capture-caption">
-          <span class="app-capture-label">Captura · App · Resultado final</span>
-          <span class="note">Vista del ahorro vs el comprador promedio: 49% menos, casi la mitad.</span>
-        </figcaption>
-      </figure>
+      <div class="fin-hero" id="fin-hero-c5"></div>
     </div>
   </section>
 
@@ -1608,6 +1834,341 @@ document.querySelectorAll('section.chapter, .lesson').forEach(el => {
   el.classList.add('reveal');
   io.observe(el);
 });
+
+/* ============================================================
+   Simulador interactivo fin-hero (portado de la app)
+   Reemplaza los 5 pantallazos estáticos. Cada instancia es
+   independiente: tiene su propio estado de toggles y su propia
+   función render(). Comparten los datos hardcodeados y el CSS.
+   ============================================================ */
+(function() {
+  const SIM_DATA = {
+    costoNetoActual: 552264,
+    costoOptimo: 750000,
+    costoTotalB: 1077780,
+    totalAlbum: 980,
+    sobresMinimos: 140,
+    laminasVendidas: 252,
+    totalRep: 50,
+    faltantesResiduales: 252,
+    strategyDesc: '2 cajas + intercambios + ventas',
+    diffNarrative: 'ganando al azar',
+  };
+
+  function _finFmt(n) {
+    const sign = n < 0 ? '-' : '';
+    const abs = Math.abs(Math.round(n));
+    return sign + '$' + abs.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  }
+  function _finFmtCompact(n) {
+    const abs = Math.abs(n);
+    if (abs >= 1000000) return (n < 0 ? '-' : '') + '$' + (abs / 1000000).toFixed(2).replace(/\.?0+$/,'') + 'M';
+    if (abs >= 1000) return (n < 0 ? '-' : '') + '$' + Math.round(abs / 1000) + 'k';
+    return _finFmt(n);
+  }
+
+  function createSimulator(opts) {
+    const host = document.getElementById(opts.hostId);
+    if (!host) return;
+    const data = opts.data;
+    // Estado local — independiente de las otras instancias.
+    const toggles = {
+      ia:   !!opts.defaultToggles.ia,
+      opt:  !!opts.defaultToggles.opt,
+      prom: !!opts.defaultToggles.prom,
+    };
+
+    function render() {
+      const costoNetoActual = data.costoNetoActual;
+      const costoOptimo = data.costoOptimo;
+      const costoTotalB = data.costoTotalB;
+      const totalAlbum = data.totalAlbum;
+      const sobresMinimos = data.sobresMinimos;
+      const laminasVendidas = data.laminasVendidas;
+      const totalRep = data.totalRep;
+      const faltantesResiduales = data.faltantesResiduales;
+      const strategyDesc = data.strategyDesc;
+      const diffNarrative = data.diffNarrative;
+
+      const costoPerLamIa   = totalAlbum > 0 ? costoNetoActual / totalAlbum : 0;
+      const costoPerLamOpt  = totalAlbum > 0 ? costoOptimo     / totalAlbum : 0;
+      const costoPerLamProm = totalAlbum > 0 ? costoTotalB     / totalAlbum : 0;
+      const ahorroVsPromedio = costoTotalB - costoNetoActual;
+      const ahorroVsOptimo   = costoOptimo - costoNetoActual;
+      const winningPromedio  = ahorroVsPromedio > 0;
+      const ahorroPctPromedio = costoTotalB > 0
+        ? Math.round(Math.abs(ahorroVsPromedio) / costoTotalB * 100)
+        : 0;
+
+      const tIa   = toggles.ia   && costoNetoActual > 0;
+      const tOpt  = toggles.opt  && costoOptimo > 0;
+      const tProm = toggles.prom && costoTotalB > 0;
+      const tCount = (tIa ? 1 : 0) + (tOpt ? 1 : 0) + (tProm ? 1 : 0);
+
+      let heroBg = '', heroLabelCls = '', heroLabelTxt = '';
+      let heroBigCls = '', heroBigTxt = '';
+      let heroSubHtml = '', heroBadgeCls = '', heroBadgeTxt = '';
+      let heroPerLamHtml = '';
+      let scaleMax = 1, fillCls = 'green', fillWidth = 0, barLbl = '';
+      const marks = [];
+      const braces = [];
+
+      if (tCount === 0) {
+        heroLabelTxt = 'Activa al menos un costo';
+        heroBigTxt = '—';
+        heroSubHtml = 'Tap en alguna fila del legend para encender un hito.';
+        scaleMax = costoNetoActual || costoTotalB || costoOptimo || 1;
+      }
+      else if (tCount === 1 && tIa) {
+        heroBg = 'savings'; heroLabelCls = 'green';
+        heroLabelTxt = 'Costo neto: ' + strategyDesc;
+        heroBigCls = 'green';
+        heroBigTxt = _finFmt(costoNetoActual);
+        heroSubHtml = '<b>' + laminasVendidas + ' láminas</b> vendidas · <b>' + totalRep + ' monas</b> pendientes en stock';
+        heroPerLamHtml = '<div class="pl-line">Precio por lámina: <span class="pl-val ia">' + _finFmt(costoPerLamIa) + '</span></div>';
+        scaleMax = costoNetoActual; fillCls = 'green'; fillWidth = 100;
+        barLbl = _finFmt(costoNetoActual);
+      }
+      else if (tCount === 1 && tOpt) {
+        heroBg = 'amber-tint'; heroLabelCls = 'amber-text';
+        heroLabelTxt = 'Costo Óptimo (Cero repetidas)';
+        heroBigCls = 'amber-glow';
+        heroBigTxt = _finFmt(costoOptimo);
+        heroSubHtml = 'Lo mínimo posible si cada sobre te diera <b>7 láminas únicas</b>, sin repetidas. ' + sobresMinimos + ' sobres exactos + álbum.';
+        heroPerLamHtml = '<div class="pl-line">Precio por lámina: <span class="pl-val opt">' + _finFmt(costoPerLamOpt) + '</span></div>';
+        scaleMax = costoOptimo; fillCls = 'amber'; fillWidth = 100;
+        barLbl = _finFmt(costoOptimo);
+      }
+      else if (tCount === 1 && tProm) {
+        heroBg = 'bitcoin-tint'; heroLabelCls = 'bitcoin-text';
+        heroLabelTxt = 'Costo Promedio';
+        heroBigCls = 'bitcoin-glow';
+        heroBigTxt = _finFmt(costoTotalB);
+        heroSubHtml = 'Lo que paga un comprador común: <b>1 caja</b> + intercambios + ~' + faltantesResiduales + ' láminas al detal.';
+        heroPerLamHtml = '<div class="pl-line">Precio por lámina: <span class="pl-val prom">' + _finFmt(costoPerLamProm) + '</span></div>';
+        scaleMax = costoTotalB; fillCls = 'bitcoin'; fillWidth = 100;
+        barLbl = _finFmt(costoTotalB);
+      }
+      else if (tCount === 2 && tIa && tOpt) {
+        const optAhorroPct = costoOptimo > 0 ? Math.round(Math.abs(ahorroVsOptimo) / costoOptimo * 100) : 0;
+        heroBg = ahorroVsOptimo > 0 ? 'savings' : '';
+        heroLabelCls = ahorroVsOptimo > 0 ? 'green' : '';
+        heroLabelTxt = ahorroVsOptimo > 0 ? 'Ahorro vs óptimo' : 'Sobre el óptimo';
+        heroBigCls = ahorroVsOptimo > 0 ? 'green' : 'red';
+        heroBigTxt = (ahorroVsOptimo > 0 ? '' : '+') + _finFmt(Math.abs(ahorroVsOptimo));
+        heroSubHtml = 'El costo: <b>' + _finFmt(costoNetoActual) + '</b> · óptimo: <b>' + _finFmt(costoOptimo) + '</b>';
+        heroPerLamHtml =
+          '<div class="pl-line">Precio por lámina: <span class="pl-val ia">' + _finFmt(costoPerLamIa) + '</span></div>' +
+          '<div class="pl-line">Precio por lámina: <span class="pl-val opt">' + _finFmt(costoPerLamOpt) + '</span></div>';
+        heroBadgeCls = ahorroVsOptimo > 0 ? '' : 'neg';
+        heroBadgeTxt = (ahorroVsOptimo > 0 ? '' : '+') + optAhorroPct + (ahorroVsOptimo > 0 ? '% ahorro' : '% sobre piso');
+        scaleMax = costoOptimo; fillCls = 'green';
+        fillWidth = Math.min(100, (costoNetoActual / costoOptimo) * 100);
+        barLbl = _finFmt(costoNetoActual);
+        marks.push({ pos: 100, cls: '', lbl: _finFmtCompact(costoOptimo), lblExtraStyle: 'transform: translateX(-100%); padding-right: 3px;' });
+        if (100 - fillWidth >= 3) {
+          braces.push({ topPx: 28, color: '', leftPct: fillWidth, widthPct: 100 - fillWidth, lblTopPx: 45,
+            lblText: (ahorroVsOptimo > 0 ? '−' : '+') + _finFmt(Math.abs(ahorroVsOptimo)) });
+        }
+      }
+      else if (tCount === 2 && tIa && tProm) {
+        heroBg = winningPromedio ? 'savings' : '';
+        heroLabelCls = winningPromedio ? 'green' : '';
+        heroLabelTxt = winningPromedio ? 'Ahorro vs promedio' : 'Sobre el promedio';
+        heroBigCls = winningPromedio ? 'green' : 'red';
+        heroBigTxt = (winningPromedio ? '' : '+') + _finFmt(Math.abs(ahorroVsPromedio));
+        heroSubHtml = 'El costo: <b>' + _finFmt(costoNetoActual) + '</b> · promedio: <b>' + _finFmt(costoTotalB) + '</b>';
+        heroPerLamHtml =
+          '<div class="pl-line">Precio por lámina: <span class="pl-val ia">' + _finFmt(costoPerLamIa) + '</span></div>' +
+          '<div class="pl-line">Precio por lámina: <span class="pl-val prom">' + _finFmt(costoPerLamProm) + '</span></div>';
+        heroBadgeCls = winningPromedio ? '' : 'neg';
+        heroBadgeTxt = (winningPromedio ? '' : '+') + ahorroPctPromedio + (winningPromedio ? '% ahorro' : '% sobre prom');
+        scaleMax = costoTotalB; fillCls = 'green';
+        fillWidth = Math.min(100, (costoNetoActual / costoTotalB) * 100);
+        barLbl = _finFmt(costoNetoActual);
+        marks.push({ pos: 100, cls: 'dim', lbl: _finFmtCompact(costoTotalB), lblExtraStyle: 'transform: translateX(-100%); padding-right: 3px;' });
+        if (100 - fillWidth >= 3) {
+          braces.push({ topPx: 28, color: 'soft', leftPct: fillWidth, widthPct: 100 - fillWidth, lblTopPx: 45,
+            lblText: (winningPromedio ? '−' : '+') + _finFmt(Math.abs(ahorroVsPromedio)) });
+        }
+      }
+      else if (tCount === 2 && tOpt && tProm) {
+        const taxPromedio = costoTotalB - costoOptimo;
+        const taxPct = costoOptimo > 0 ? Math.round(taxPromedio / costoOptimo * 100) : 0;
+        heroBg = 'amber-tint'; heroLabelCls = 'amber-text';
+        heroLabelTxt = 'Tax del comprador promedio';
+        heroBigCls = 'bitcoin-glow';
+        heroBigTxt = '+' + _finFmt(Math.abs(taxPromedio));
+        heroSubHtml = 'Óptimo: <b>' + _finFmt(costoOptimo) + '</b> · promedio: <b>' + _finFmt(costoTotalB) + '</b>';
+        heroPerLamHtml =
+          '<div class="pl-line">Precio por lámina: <span class="pl-val opt">' + _finFmt(costoPerLamOpt) + '</span></div>' +
+          '<div class="pl-line">Precio por lámina: <span class="pl-val prom">' + _finFmt(costoPerLamProm) + '</span></div>';
+        heroBadgeCls = 'neg';
+        heroBadgeTxt = '+' + taxPct + '% sobre piso';
+        scaleMax = costoTotalB; fillCls = 'amber';
+        fillWidth = Math.min(100, (costoOptimo / costoTotalB) * 100);
+        barLbl = _finFmt(costoOptimo);
+        marks.push({ pos: 100, cls: 'dim', lbl: _finFmtCompact(costoTotalB), lblExtraStyle: 'transform: translateX(-100%); padding-right: 3px;' });
+        if (100 - fillWidth >= 3) {
+          braces.push({ topPx: 28, color: 'soft', leftPct: fillWidth, widthPct: 100 - fillWidth, lblTopPx: 45,
+            lblText: '+' + _finFmt(taxPromedio) });
+        }
+      }
+      else {  // tCount === 3
+        heroBg = winningPromedio ? 'savings' : '';
+        heroLabelCls = winningPromedio ? 'green' : '';
+        heroLabelTxt = winningPromedio ? 'Ahorro vs comprador promedio' : 'Sobre el promedio';
+        heroBigCls = winningPromedio ? 'green' : 'red';
+        heroBigTxt = (winningPromedio ? '' : '+') + _finFmt(Math.abs(ahorroVsPromedio));
+        heroSubHtml = 'El costo neto: <b>' + _finFmt(costoNetoActual) + '</b> · ' +
+          (ahorroVsOptimo > 0
+            ? 'ahorro de <span class="diff-optimo">' + _finFmt(ahorroVsOptimo) + '</span> vs óptimo · '
+            : '<span class="diff-optimo">+' + _finFmt(Math.abs(ahorroVsOptimo)) + '</span> sobre el óptimo · ') +
+          diffNarrative;
+        heroPerLamHtml =
+          '<div class="pl-line">Precio por lámina: <span class="pl-val ia">' + _finFmt(costoPerLamIa) + '</span></div>' +
+          '<div class="pl-line">Precio por lámina: <span class="pl-val opt">' + _finFmt(costoPerLamOpt) + '</span></div>' +
+          '<div class="pl-line">Precio por lámina: <span class="pl-val prom">' + _finFmt(costoPerLamProm) + '</span></div>';
+        heroBadgeCls = winningPromedio ? '' : 'neg';
+        heroBadgeTxt = (winningPromedio ? '' : '+') + ahorroPctPromedio + (winningPromedio ? '% ahorro' : '% sobre prom');
+        scaleMax = Math.max(costoNetoActual, costoOptimo, costoTotalB);
+        fillCls = 'green';
+        fillWidth = Math.min(100, (costoNetoActual / scaleMax) * 100);
+        barLbl = _finFmt(costoNetoActual);
+        const pctOpt = (costoOptimo / scaleMax) * 100;
+        const pctProm = (costoTotalB / scaleMax) * 100;
+        marks.push({ pos: pctOpt, cls: '', lbl: _finFmtCompact(costoOptimo), lblExtraStyle: '' });
+        marks.push({ pos: pctProm, cls: 'dim', lbl: _finFmtCompact(costoTotalB), lblExtraStyle: 'transform: translateX(-100%); padding-right: 3px;' });
+        const b1w = pctOpt - fillWidth;
+        if (b1w >= 3) {
+          braces.push({ topPx: 28, color: '', leftPct: fillWidth, widthPct: b1w, lblTopPx: 45,
+            lblText: (ahorroVsOptimo > 0 ? '−' : '+') + _finFmt(Math.abs(ahorroVsOptimo)) + ' vs óptimo' });
+        }
+        const b2w = pctProm - fillWidth;
+        if (b2w >= 3) {
+          braces.push({ topPx: 64, color: 'soft', leftPct: fillWidth, widthPct: b2w, lblTopPx: 81,
+            lblText: (winningPromedio ? '−' : '+') + _finFmt(Math.abs(ahorroVsPromedio)) + ' vs promedio' });
+        }
+      }
+
+      // Reset bg class + apply new (+ locked si aplica)
+      host.className = 'fin-hero' + (heroBg ? ' ' + heroBg : '') + (opts.locked ? ' locked' : '');
+
+      let html = '';
+      html +=
+        (heroBadgeTxt ? '<div class="fin-hero-badge ' + heroBadgeCls + '">' + heroBadgeTxt + '</div>' : '') +
+        '<div class="fin-hero-num-label ' + heroLabelCls + '">' + heroLabelTxt + '</div>' +
+        '<div class="fin-hero-num-big ' + heroBigCls + '">' + heroBigTxt + '</div>' +
+        '<div class="fin-hero-diff">' + heroSubHtml + '</div>' +
+        (heroPerLamHtml
+          ? '<div class="fin-hero-per-lamina">' + heroPerLamHtml + '</div>'
+          : '') +
+        '<div class="fin-hero-scale ' +
+          (braces.length === 0 ? 'no-braces' : braces.length === 1 ? 'one-brace' : 'two-braces') +
+          '">' +
+          '<div class="fin-hero-scale-fill ' + fillCls + '" style="width: ' + fillWidth.toFixed(1) + '%"></div>' +
+          braces.map(function(b) {
+            return '<div class="fin-hero-scale-brace ' + b.color +
+              '" style="top: -' + b.topPx + 'px; left: ' + b.leftPct.toFixed(1) + '%; width: ' + b.widthPct.toFixed(1) + '%;">' +
+                '<svg viewBox="0 0 100 16" preserveAspectRatio="none">' +
+                  '<path d="M 0,16 Q 0,4 6,4 L 47,4 Q 50,4 50,0 Q 50,4 53,4 L 94,4 Q 100,4 100,16"/>' +
+                '</svg>' +
+              '</div>' +
+              '<div class="fin-hero-scale-brace-lbl ' + b.color +
+                '" style="top: -' + b.lblTopPx + 'px; left: ' + (b.leftPct + b.widthPct / 2).toFixed(1) + '%">' + b.lblText + '</div>';
+          }).join('') +
+          marks.map(function(m) {
+            return '<div class="fin-hero-scale-mark ' + m.cls + '" style="left: ' + m.pos.toFixed(1) + '%">' +
+              '<div class="fin-hero-scale-mark-lbl ' + m.cls + '"' +
+                (m.lblExtraStyle ? ' style="' + m.lblExtraStyle + '"' : '') + '>' + m.lbl + '</div>' +
+            '</div>';
+          }).join('') +
+          (barLbl ? '<div class="fin-hero-scale-neto-lbl">' + barLbl + '</div>' : '') +
+        '</div>' +
+        '<div class="fin-hero-scale-axis">' +
+          '<span>$0</span><span>' + _finFmt(scaleMax) + '</span>' +
+        '</div>' +
+        '<div class="fin-hero-toggle-row">' +
+          '<div class="fin-hero-toggle-chip ia' + (toggles.ia ? ' on' : '') + '" data-fin-toggle="ia">' +
+            '<span class="chip-dot"></span>Costo neto' +
+          '</div>' +
+          '<div class="fin-hero-toggle-chip opt' + (toggles.opt ? ' on' : '') + '" data-fin-toggle="opt">' +
+            '<span class="chip-dot"></span>Costo óptimo' +
+          '</div>' +
+          (costoTotalB > 0
+            ? '<div class="fin-hero-toggle-chip prom' + (toggles.prom ? ' on' : '') + '" data-fin-toggle="prom">' +
+                '<span class="chip-dot"></span>Costo promedio' +
+              '</div>'
+            : '') +
+        '</div>' +
+        '<div class="fin-hero-legend-block">' +
+          (toggles.ia
+            ? '<div class="fin-hero-legend-item">' +
+                '<div class="fin-hero-legend-dot con-ia"></div>' +
+                '<div class="fin-hero-legend-text">' +
+                  '<strong class="con-ia">costo neto: ' + strategyDesc + ' ' + _finFmt(costoNetoActual) + '</strong>' +
+                  '<span>El costo real con la estrategia aplicada: comprar cajas, intercambiar con vecinos y vender las repetidas. Apoyado por el tracker con IA.</span>' +
+                '</div>' +
+              '</div>'
+            : '') +
+          (toggles.opt
+            ? '<div class="fin-hero-legend-item">' +
+                '<div class="fin-hero-legend-dot optimo"></div>' +
+                '<div class="fin-hero-legend-text">' +
+                  '<strong>costo óptimo (cero repetidas) ' + _finFmt(costoOptimo) + '</strong>' +
+                  '<span>Lo mínimo posible si cada sobre diera 7 láminas únicas, sin repetidas. ' + sobresMinimos + ' sobres exactos + álbum.</span>' +
+                '</div>' +
+              '</div>'
+            : '') +
+          (toggles.prom && costoTotalB > 0
+            ? '<div class="fin-hero-legend-item">' +
+                '<div class="fin-hero-legend-dot tipico"></div>' +
+                '<div class="fin-hero-legend-text">' +
+                  '<strong class="tipico">costo promedio ' + _finFmt(costoTotalB) + '</strong>' +
+                  '<span>Lo que paga un comprador común: 1 caja + intercambios + ~' + faltantesResiduales + ' láminas al detal para cerrar.</span>' +
+                '</div>' +
+              '</div>'
+            : '') +
+        '</div>';
+
+      host.innerHTML = html;
+
+      // Si está bloqueado, no se enganchan handlers (chips ocultos por CSS).
+      if (opts.locked) return;
+
+      // Engancha handlers a los chips de ESTA instancia.
+      host.querySelectorAll('[data-fin-toggle]').forEach(function(el) {
+        el.onclick = function() {
+          const which = el.dataset.finToggle;
+          if (!which || !(which in toggles)) return;
+          const newVal = !toggles[which];
+          // Al menos uno debe estar prendido.
+          if (!newVal) {
+            const otrosActivos = Object.keys(toggles)
+              .filter(function(k) { return k !== which && toggles[k]; });
+            if (otrosActivos.length === 0) {
+              el.style.animation = 'fin-chip-shake 0.3s';
+              setTimeout(function() { el.style.animation = ''; }, 320);
+              return;
+            }
+          }
+          toggles[which] = newVal;
+          render();
+        };
+      });
+    }
+
+    render();
+  }
+
+  // Cinco simuladores, uno por capítulo. Cada uno arranca en el estado
+  // que mostraba el pantallazo original.
+  createSimulator({ hostId: 'fin-hero-c1', data: SIM_DATA, defaultToggles: {ia: false, opt: false, prom: true},  locked: true });
+  createSimulator({ hostId: 'fin-hero-c2', data: SIM_DATA, defaultToggles: {ia: false, opt: true,  prom: false}, locked: true });
+  createSimulator({ hostId: 'fin-hero-c3', data: SIM_DATA, defaultToggles: {ia: false, opt: true,  prom: true},  locked: true });
+  createSimulator({ hostId: 'fin-hero-c4', data: SIM_DATA, defaultToggles: {ia: true,  opt: true,  prom: false}, locked: true });
+  createSimulator({ hostId: 'fin-hero-c5', data: SIM_DATA, defaultToggles: {ia: true,  opt: false, prom: true},  locked: true });
+})();
 </script>
 
 </body>
