@@ -2632,7 +2632,7 @@ footer a:hover { border-color: var(--orange); }
     </div>
   </section>
 
-  <!-- CAPÍTULO 5 -->
+  <!-- CAPÍTULO 5 · final -->
   <section class="chapter chapter--win">
     <div class="chapter-eyebrow">
       <span class="roman">5</span>
@@ -2643,43 +2643,15 @@ footer a:hover { border-color: var(--orange); }
     <h2 class="chapter-title">Costó la <em>mitad</em> de lo que paga el comprador promedio.</h2>
 
     <div class="prose">
-      <div class="fin-hero headline savings">
-        <div class="fin-hero-num-label green">Lo que se le ganó al comprador promedio</div>
-        <div class="fin-hero-num-big green">$525.516</div>
-        <div class="fin-hero-diff"><b>49% de ventaja</b> sobre el comprador común. Prácticamente le costó la mitad.</div>
-      </div>
+      <p>Al comprador común llenar el álbum le cuesta cerca de <strong>$1.077.780</strong>: una caja, trueque informal con vecinos, y un sprint final comprando láminas sueltas en la papelería para cerrar los huecos. La estrategia descrita en los capítulos anteriores — 2 cajas, intercambios sistemáticos, ventas con descuento por volumen — bajó ese número a <strong>$552.264</strong>. La diferencia, <strong>$525.516</strong>, es prácticamente la mitad del costo.</p>
 
-      <p><strong>¿La fórmula?</strong></p>
+      <p>La ventaja no salió de comprar más ni de tener mejor suerte. Salió de <strong>medir más</strong>: saber cuántas repetidas hay y cuáles vale la pena vender, qué intercambio cierra mejor el saldo, en qué punto la caja extra deja de pagarse. Sin medir no hay manera de saber si la estrategia está funcionando — y sin saber si funciona, no es estrategia: es intuición.</p>
 
-      <ol class="formula">
-        <li><strong>Comprar 2 cajas</strong> (más capital inicial → más láminas únicas)</li>
-        <li><strong>Intercambiar agresivo</strong> con vecinos</li>
-        <li><strong>Vender activamente las repetidas</strong> para recuperar parte de la inversión</li>
-      </ol>
+      <div class="fin-hero" id="fin-hero-c5"></div>
 
-      <p><strong>¿La herramienta detrás?</strong> Un tracker construido con <strong>Vibe Coding</strong> en menos de una semana, sobre una <span class="arch-pop"><a href="https://github.com/juank4835/panini-mundial-2026/blob/main/docs/MODELO.md" target="_blank" rel="noopener" class="arch-link">arquitectura</a><span class="arch-pop-content"><strong class="arch-pop-title">Modelo (p, s)</strong>Cada lámina tiene dos contadores: <code>p</code> = pegadas en el álbum, <code>s</code> = sueltas en mano. Todo lo demás — faltantes, repetidas, intercambios, valor — se deriva de esos dos números.<span class="arch-pop-foot">↗ Tocá de nuevo para ver el código en GitHub</span></span></span> simple en mejora continua. Sin medir cada compra, intercambio y venta, esta estrategia es imposible de ejecutar.</p>
+      <p>Toca los chips para encender o apagar cada referencia. El piso de la suerte perfecta también está ahí — por si quieres ver qué tan lejos quedó la estrategia del óptimo matemático y qué tan abajo del comprador promedio.</p>
 
-      <details class="app-features">
-        <summary class="app-features-summary">
-          <span class="app-features-label">Lo que hace la app</span>
-          <span class="app-features-hint">
-            <span class="text-closed">Ver lista</span>
-            <span class="text-open">Ocultar</span>
-            <span class="arrow">▼</span>
-          </span>
-        </summary>
-        <ul>
-          <li>Lleva el inventario de las <strong>980 láminas</strong> del álbum con 4 filtros: faltantes, sueltas, pegadas y repetidas.</li>
-          <li>Normaliza listas de WhatsApp con un <strong>sanitizador de texto inteligente</strong> — pega cualquier lista enviada por un vecino y queda lista para comparar.</li>
-          <li>Cruza listas con otros coleccionistas y <strong>sugiere los intercambios óptimos</strong>: cuántas le doy, cuántas recibo, qué saldo se equilibra.</li>
-          <li>Registra cada <strong>compra, venta e intercambio</strong> en un módulo de finanzas — sobres, cajas, láminas al detal, ventas con descuento por volumen.</li>
-          <li>Calcula <strong>en vivo</strong> el costo neto vs el de la suerte perfecta vs el del comprador promedio. Sin esto, no se puede saber si la estrategia está funcionando.</li>
-          <li>Arma a cada cliente la mejor <strong>oferta al por mayor</strong> con descuentos automáticos según volumen.</li>
-          <li>Genera <strong>links compartibles</strong> para vender stock específico a vecinos — cada link es una oferta personalizada con vencimiento.</li>
-          <li>Sincroniza en <strong>tiempo real entre dispositivos</strong>: lo que se registra en el iPhone aparece en el iPad y viceversa.</li>
-          <li>Funciona como <strong>PWA instalable</strong> en el celular, con una página pública read-only para que los vecinos vean el inventario sin entrar a la cuenta privada.</li>
-        </ul>
-      </details>
+      <p>Y si se mira lámina por lámina, la brecha es la misma:</p>
 
       <div class="vs-laminas">
         <div class="lamina-card">
@@ -2707,64 +2679,7 @@ footer a:hover { border-color: var(--orange); }
         </div>
       </div>
 
-    </div>
-  </section>
-
-  <section class="sim-playground" id="playground">
-    <div class="sim-playground-eyebrow">Pruébalo tú mismo</div>
-    <h2 class="sim-playground-title">¿Y si juegas con los <em>números</em>?</h2>
-    <p class="sim-playground-sub">Estos simuladores tienen toda la data del artículo. Toca los chips para activar o apagar cada escenario y mira cómo cambia la comparación — primero contra el costo total del álbum, después contra el precio promedio por lámina.</p>
-
-    <div class="sim-block-label">Total del álbum</div>
-    <div class="fin-hero" id="fin-hero-total"></div>
-
-    <div class="sim-block-label">Por lámina</div>
-    <div class="fin-hero" id="fin-hero-pl"></div>
-  </section>
-
-  <!-- CAPÍTULO 6 -->
-  <section class="chapter">
-    <div class="chapter-eyebrow">
-      <span class="roman">6</span>
-      <span>Capítulo 6</span>
-      <span class="sep">·</span>
-      <span>La lección</span>
-    </div>
-    <h2 class="chapter-title">Para los más jóvenes — <em>la verdadera lección</em>.</h2>
-
-    <div class="prose">
-      <p>Lo de arriba puede parecer un ejercicio insignificante — <strong>solo una app más</strong>. Pero la verdadera lección detrás es otra:</p>
-
-      <p>Antes, construir una app así requería <strong>meses de desarrollo y un equipo de programadores</strong> que dominaran:</p>
-
-      <div class="obsolete-skills">
-        <span class="obsolete-skills-label">Antes — barrera técnica</span>
-        <div class="obsolete-skills-list">
-          <span class="term">lógica de negocio</span><span class="sep">·</span>
-          <span class="term">algoritmos</span><span class="sep">·</span>
-          <span class="term">estructuras de datos</span><span class="sep">·</span>
-          <span class="term">complejidad algorítmica</span><span class="sep">·</span>
-          <span class="term">programación orientada a objetos</span><span class="sep">·</span>
-          <span class="term">programación funcional</span><span class="sep">·</span>
-          <span class="term">polimorfismo</span><span class="sep">·</span>
-          <span class="term">programación asíncrona</span><span class="sep">·</span>
-          <span class="term">concurrencia</span><span class="sep">·</span>
-          <span class="term">inyección de dependencias</span><span class="sep">·</span>
-          <span class="term">idempotencia</span><span class="sep">·</span>
-          <span class="term">patrones de diseño</span><span class="sep">·</span>
-          <span class="term">control de versiones</span><span class="sep">·</span>
-          <span class="term">testing automatizado</span><span class="sep">·</span>
-          <span class="term">modelado de bases de datos</span><span class="sep">·</span>
-          <span class="term">APIs REST</span><span class="sep">·</span>
-          <span class="term">microservicios</span><span class="sep">·</span>
-          <span class="term">CI/CD</span>
-          <span class="closing"> — y un largo etcétera.</span>
-        </div>
-      </div>
-
-      <p>Eso está empezando a cambiar.</p>
-
-      <p>Ya no es necesario saber todo eso. Hoy se construye en <strong>menos de una semana</strong>, con IA que escribe código desde una conversación coloquial.</p>
+      <p>La misma lámina, la mitad del precio. <strong>El método le ganó al promedio.</strong></p>
     </div>
   </section>
 
@@ -3199,12 +3114,15 @@ document.querySelectorAll('section.chapter, .lesson').forEach(el => {
     render();
   }
 
-  // Dos simuladores interactivos en el playground al final del Cap. 5:
-  // uno con el costo total del álbum, otro con el precio por lámina.
-  // Cada uno es independiente: tiene su propio estado de toggles y su
-  // propia función render() — cambiar uno no afecta al otro.
-  createSimulator({ hostId: 'fin-hero-total', data: SIM_DATA,    defaultToggles: {ia: true, opt: true, prom: true}, mode: 'total' });
-  createSimulator({ hostId: 'fin-hero-pl',    data: SIM_DATA_PL, defaultToggles: {ia: true, opt: true, prom: true}, mode: 'per-lamina' });
+  // Cap. 5 — simulador interactivo (cierre): por default muestra costo neto
+  // vs costo promedio. El costo óptimo está apagado y se puede prender desde
+  // el chip si el lector quiere ver el piso teórico.
+  createSimulator({
+    hostId: 'fin-hero-c5',
+    data: SIM_DATA,
+    defaultToggles: {ia: true, opt: false, prom: true},
+    mode: 'total',
+  });
 
   // Cap.3 — simulador locked: el precio de no tener la suerte perfecta (album total)
   createSimulator({
