@@ -6763,6 +6763,13 @@
         <div class="item-sub">Reemplaza el estado del álbum desde un backup</div>
       </span>
     </button>
+    <button class="item" data-more-act="import-repetidas">
+      <span class="item-icon" style="color: var(--amber);">+</span>
+      <span class="item-text">
+        Importar repetidas
+        <div class="item-sub">Pega la lista de un paquete o pila para sumar varias de una</div>
+      </span>
+    </button>
     <button class="item" data-more-act="reset">
       <span class="item-icon" style="color: var(--danger);">✕</span>
       <span class="item-text" style="color: var(--danger);">
@@ -18525,6 +18532,22 @@
           triggerExport();
         } else if (act === 'import') {
           triggerImport();
+        } else if (act === 'import-repetidas') {
+          // Shortcut a la pestaña Consulta — el feature de pegar lista en bulk
+          // ya vive ahí (classifyCodes + renderBulkResult). Solo cambiamos de tab
+          // y enfocamos el textarea para que el usuario llegue listo a pegar.
+          tabActiva = 'consulta';
+          renderTabs();
+          renderContenido();
+          updateBottomNavActive();
+          updateGroupSelectorVisibility();
+          setTimeout(() => {
+            const inp = document.getElementById('consulta-input');
+            if (inp) {
+              inp.focus();
+              inp.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          }, 100);
         } else if (act === 'reset') {
           triggerReset();
         }
