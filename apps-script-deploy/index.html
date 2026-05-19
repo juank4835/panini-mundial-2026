@@ -13334,18 +13334,38 @@
   }
 
   // Aplica muchos deltas localmente (optimista) y los sube en batch.
+  // El optimistic update local DEBE espejar la logica de applyManyOps en
+  // Code.js: delta > 0 suma a sueltas (p queda igual); delta < 0 resta
+  // primero de sueltas y, si todavia queda por restar, despues de pegadas.
+  // Antes esto guardaba `estado[id] = next` como NUMERO crudo, lo que
+  // rompia el formato {p, s} esperado por getSueltas/getPegada — el optimistic
+  // UI veia s=0/p=0 hasta que llegaba la respuesta del servidor y
+  // _applyServerValue lo arreglaba. Sintoma: al pegar "00, 00, FWC1, FWC1,
+  // FWC1" y aplicar, las copias se sumaban en el servidor pero la UI se
+  // quedaba mostrando estado pre-aplicacion durante el round trip.
   function applyDeltaMany(updates) {
     if (!updates || updates.length === 0) return;
     const effective = [];
     for (const u of updates) {
-      const cur = getEstado(u.id);
-      const next = Math.max(0, cur + u.delta);
-      const eff = next - cur;
+      const curP = getPegada(u.id);
+      const curS = getSueltas(u.id);
+      const curTotal = curP + curS;
+      let newP = curP, newS = curS;
+      if (u.delta > 0) {
+        newS = curS + u.delta;
+      } else if (u.delta < 0) {
+        let toRemove = -u.delta;
+        const fromS = Math.min(curS, toRemove);
+        newS = curS - fromS;
+        toRemove -= fromS;
+        if (toRemove > 0) newP = Math.max(0, curP - toRemove);
+      }
+      const newTotal = newP + newS;
+      const eff = newTotal - curTotal;
       if (eff !== 0) effective.push({ id: u.id, delta: eff });
-      if (next === 0) delete estado[u.id];
-      else estado[u.id] = next;
+      _setLocalState(u.id, newP, newS);
     }
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(estado)); } catch(e) {}
+    _persistLocal();
     for (const u of updates) actualizarSticker(u.id);
     renderStats();
     syncIncMany(updates);
